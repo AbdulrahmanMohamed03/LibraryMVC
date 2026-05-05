@@ -13,3 +13,19 @@ E:\ITI ITP\Labs\MVC\Final Project\Project.Application\obj\Debug\net10.0\Project.
 E:\ITI ITP\Labs\MVC\Final Project\Project.Application\obj\Debug\net10.0\refint\Project.Application.dll
 E:\ITI ITP\Labs\MVC\Final Project\Project.Application\obj\Debug\net10.0\Project.Application.pdb
 E:\ITI ITP\Labs\MVC\Final Project\Project.Application\obj\Debug\net10.0\ref\Project.Application.dll
+F:\iti\MVC project\LibraryMVC\Project.Application\bin\Debug\net10.0\Project.Application.deps.json
+F:\iti\MVC project\LibraryMVC\Project.Application\bin\Debug\net10.0\Project.Application.dll
+F:\iti\MVC project\LibraryMVC\Project.Application\bin\Debug\net10.0\Project.Application.pdb
+F:\iti\MVC project\LibraryMVC\Project.Application\bin\Debug\net10.0\Project.Core.dll
+F:\iti\MVC project\LibraryMVC\Project.Application\bin\Debug\net10.0\Project.Core.pdb
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.csproj.AssemblyReference.cache
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.GeneratedMSBuildEditorConfig.editorconfig
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.AssemblyInfoInputs.cache
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.AssemblyInfo.cs
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.csproj.CoreCompileInputs.cache
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.sourcelink.json
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\Project..E365C10A.Up2Date
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.dll
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\refint\Project.Application.dll
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.pdb
+F:\iti\MVC project\LibraryMVC\Project.Application\obj\Debug\net10.0\ref\Project.Application.dll

@@ -10,7 +10,7 @@ namespace Project.Core.Models
     {
         public int Id { get; set; }
         public FineType FineType { get; set; }
-        public int DayeOverDue { get; set; }
+        public int DaysOverDue { get; set; }
         public decimal DailyRate { get; set; }
         public decimal TotalFine { get; set; }
         public FineStatus FineStatus { get; set; }

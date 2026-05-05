@@ -15,3 +15,21 @@ E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\refin
 E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.pdb
 E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.genruntimeconfig.cache
 E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\ref\Project.Infrastructure.dll
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.deps.json
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.runtimeconfig.json
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.dll
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.pdb
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Core.dll
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Core.pdb
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.csproj.AssemblyReference.cache
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.AssemblyInfoInputs.cache
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.AssemblyInfo.cs
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.csproj.CoreCompileInputs.cache
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.sourcelink.json
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project..A2F26F6C.Up2Date
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.dll
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\refint\Project.Infrastructure.dll
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.pdb
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.genruntimeconfig.cache
+F:\iti\MVC project\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\ref\Project.Infrastructure.dll

@@ -1,6 +1,7 @@
 ﻿using Project.Core.Enums.Reservation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -8,7 +9,9 @@ namespace Project.Core.Models
 {
     public class Reservation
     {
+        
         public int Id { get; set; }
+        
         public int Position { get; set; }
         public ReservationType Type { get; set; }
         public DateTime ExpiresAt { get; set; }
