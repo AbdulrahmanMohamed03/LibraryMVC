@@ -9,7 +9,7 @@ namespace Project.Core.Models
         public int Id { get; set; }
         public string ISBN { get; set; }
         public string Title { get; set; }
-        public string Autor { get; set; }
+        public string Author { get; set; }
         public bool IsDeleted { get; set; }
 
         public ICollection<BookCopies> Copies { get; set; }
