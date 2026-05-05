@@ -1,0 +1,17 @@
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.deps.json
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.runtimeconfig.json
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.dll
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.pdb
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\bin\Debug\net10.0\Project.Core.dll
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\bin\Debug\net10.0\Project.Core.pdb
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.csproj.AssemblyReference.cache
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.AssemblyInfoInputs.cache
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.AssemblyInfo.cs
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.csproj.CoreCompileInputs.cache
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project..A2F26F6C.Up2Date
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.dll
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\refint\Project.Infrastructure.dll
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.pdb
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.genruntimeconfig.cache
+E:\ITI ITP\Labs\MVC\Final Project\Project.Infrastructure\obj\Debug\net10.0\ref\Project.Infrastructure.dll
