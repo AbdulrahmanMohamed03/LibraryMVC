@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Project.Application.Interfaces;
+using Project.Application.Services;
+using Project.Core;
 using Project.Core.Models;
+using Project.Infrastructure;
 using Project.Infrastructure.Data;
 
 namespace WebApplication1
@@ -17,6 +21,8 @@ namespace WebApplication1
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
 
             var app = builder.Build();
 

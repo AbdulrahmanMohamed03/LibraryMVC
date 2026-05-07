@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Project.Core.RepositoriesAbstraction;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Project.Core
 {
-    internal class IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
+        ICategoryRepository Categories { get; }
+        int Save();
     }
 }

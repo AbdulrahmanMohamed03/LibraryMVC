@@ -1,0 +1,31 @@
+﻿@model IEnumerable<Project.Application.DTOs.CreateCategoryDTO>
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<h2 class="mb-4">Categories</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No categories found.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var category in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body text-center">
+                        <h5 class="card-title mb-0">
+                            @category.Name
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
