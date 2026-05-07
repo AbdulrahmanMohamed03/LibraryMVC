@@ -12,8 +12,8 @@ using Project.Infrastructure.Data;
 namespace Project.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260505215713_initial")]
-    partial class initial
+    [Migration("20260507141135_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -170,6 +170,9 @@ namespace Project.Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -177,7 +180,11 @@ namespace Project.Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsSuspended")
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -185,6 +192,10 @@ namespace Project.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NationalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -215,6 +226,9 @@ namespace Project.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NationalId")
+                        .IsUnique();
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -228,11 +242,11 @@ namespace Project.Infrastructure.Migrations
 
             modelBuilder.Entity("Project.Core.Models.AuditLog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Action")
                         .IsRequired()
@@ -242,8 +256,18 @@ namespace Project.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("EntityType")
+                    b.Property<string>("EntityId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewValues")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OldValues")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Timestamp")
@@ -256,6 +280,32 @@ namespace Project.Infrastructure.Migrations
                     b.ToTable("AuditLogs");
                 });
 
+            modelBuilder.Entity("Project.Core.Models.Author", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nationality")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Authors");
+                });
+
             modelBuilder.Entity("Project.Core.Models.Book", b =>
                 {
                     b.Property<int>("Id")
@@ -264,27 +314,68 @@ namespace Project.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Autor")
-                        .IsRequired()
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AvailableCopies")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("BorrowFee")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CoverImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("DailyFineRate")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ISBN")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                    b.Property<int?>("PublishedYear")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TotalCopies")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Books");
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ISBN")
+                        .IsUnique();
+
+                    b.ToTable("Books", t =>
+                        {
+                            t.HasCheckConstraint("CK_Books_AvailableCopies", "AvailableCopies >= 0");
+
+                            t.HasCheckConstraint("CK_Books_TotalCopies", "TotalCopies >= AvailableCopies");
+                        });
                 });
 
-            modelBuilder.Entity("Project.Core.Models.BookCopies", b =>
+            modelBuilder.Entity("Project.Core.Models.BorrowingRecord", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -292,129 +383,33 @@ namespace Project.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("AccessExpiry")
-                        .HasColumnType("datetime2");
+                    b.Property<decimal>("AccruedFine")
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("BookId")
                         .HasColumnType("int");
 
-                    b.Property<byte>("ConditionScore")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("DownloadUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DrmToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("ReplacementCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ShelfLocation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
+                    b.Property<int>("BorrowingFeeTransactionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("BookCopies");
-                });
-
-            modelBuilder.Entity("Project.Core.Models.BorrowTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BookCopyId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("BorrowedAt")
+                    b.Property<DateTime>("CheckedOutAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
+                    b.Property<int?>("FineTransactionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProcessedByLibrarianId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookCopyId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BorrowTransactions");
-                });
-
-            modelBuilder.Entity("Project.Core.Models.Fine", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("DailyRate")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("DayeOverDue")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FineStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FineType")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalFine")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TransactionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TransactionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Fines");
-                });
-
-            modelBuilder.Entity("Project.Core.Models.Payment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("PaidAt")
+                    b.Property<DateTime?>("ReturnedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ReferenceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<byte>("Status")
+                        .HasColumnType("tinyint");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -422,9 +417,37 @@ namespace Project.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("BookId");
 
-                    b.ToTable("Payments");
+                    b.HasIndex("BorrowingFeeTransactionId");
+
+                    b.HasIndex("FineTransactionId");
+
+                    b.HasIndex("ProcessedByLibrarianId");
+
+                    b.HasIndex("UserId", "BookId", "Status");
+
+                    b.ToTable("BorrowingRecords");
+                });
+
+            modelBuilder.Entity("Project.Core.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Project.Core.Models.Reservation", b =>
@@ -441,54 +464,23 @@ namespace Project.Infrastructure.Migrations
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("ReservedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<byte>("Status")
+                        .HasColumnType("tinyint");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BookId");
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("BookId", "Status");
+
                     b.ToTable("Reservations");
-                });
-
-            modelBuilder.Entity("Project.Core.Models.Subscription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PlanId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlanId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Subscriptions");
                 });
 
             modelBuilder.Entity("Project.Core.Models.SubscriptionPlan", b =>
@@ -499,23 +491,14 @@ namespace Project.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BorrowLimit")
+                    b.Property<int>("LoanDurationDays")
                         .HasColumnType("int");
 
-                    b.Property<bool>("DigitalAccess")
-                        .HasColumnType("bit");
+                    b.Property<int>("MonthlyBorrowLimit")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("FineRatePerDay")
+                    b.Property<decimal>("MonthlyFee")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("GracePeriodDays")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LoanDays")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaxRenewals")
-                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -526,7 +509,7 @@ namespace Project.Infrastructure.Migrations
                     b.ToTable("SubscriptionPlans");
                 });
 
-            modelBuilder.Entity("Project.Core.Models.TransactionEvents", b =>
+            modelBuilder.Entity("Project.Core.Models.Transaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -534,30 +517,68 @@ namespace Project.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ActorId")
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("LibrarianId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("BorrowTransactionId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("RecordedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Metadata")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte>("Type")
+                        .HasColumnType("tinyint");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransactionId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BorrowTransactionId");
+                    b.HasIndex("LibrarianId");
 
-                    b.ToTable("TransactionEvents");
+                    b.HasIndex("RecordedAt");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("Project.Core.Models.UserSubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSubscriptions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -614,7 +635,7 @@ namespace Project.Infrastructure.Migrations
             modelBuilder.Entity("Project.Core.Models.AuditLog", b =>
                 {
                     b.HasOne("Project.Core.Models.ApplicationUser", "Actor")
-                        .WithMany("AuditLogs")
+                        .WithMany()
                         .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -622,62 +643,63 @@ namespace Project.Infrastructure.Migrations
                     b.Navigation("Actor");
                 });
 
-            modelBuilder.Entity("Project.Core.Models.BookCopies", b =>
+            modelBuilder.Entity("Project.Core.Models.Book", b =>
+                {
+                    b.HasOne("Project.Core.Models.Author", "Author")
+                        .WithMany("Books")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Core.Models.Category", "Category")
+                        .WithMany("Books")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Project.Core.Models.BorrowingRecord", b =>
                 {
                     b.HasOne("Project.Core.Models.Book", "Book")
-                        .WithMany("Copies")
+                        .WithMany("BorrowingRecords")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Project.Core.Models.Transaction", "BorrowingFeeTransaction")
+                        .WithMany()
+                        .HasForeignKey("BorrowingFeeTransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Project.Core.Models.Transaction", "FineTransaction")
+                        .WithMany()
+                        .HasForeignKey("FineTransactionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Project.Core.Models.ApplicationUser", "ProcessedByLibrarian")
+                        .WithMany()
+                        .HasForeignKey("ProcessedByLibrarianId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Project.Core.Models.ApplicationUser", "User")
+                        .WithMany("BorrowingRecords")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Book");
-                });
 
-            modelBuilder.Entity("Project.Core.Models.BorrowTransaction", b =>
-                {
-                    b.HasOne("Project.Core.Models.BookCopies", "BookCopy")
-                        .WithMany("BorrowTransactions")
-                        .HasForeignKey("BookCopyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("BorrowingFeeTransaction");
 
-                    b.HasOne("Project.Core.Models.ApplicationUser", "User")
-                        .WithMany("BorrowTransactions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("FineTransaction");
 
-                    b.Navigation("BookCopy");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Project.Core.Models.Fine", b =>
-                {
-                    b.HasOne("Project.Core.Models.BorrowTransaction", "BorrowTransaction")
-                        .WithMany("Fines")
-                        .HasForeignKey("TransactionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Project.Core.Models.ApplicationUser", "User")
-                        .WithMany("Fines")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BorrowTransaction");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Project.Core.Models.Payment", b =>
-                {
-                    b.HasOne("Project.Core.Models.ApplicationUser", "User")
-                        .WithMany("Payments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("ProcessedByLibrarian");
 
                     b.Navigation("User");
                 });
@@ -701,17 +723,36 @@ namespace Project.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Project.Core.Models.Subscription", b =>
+            modelBuilder.Entity("Project.Core.Models.Transaction", b =>
+                {
+                    b.HasOne("Project.Core.Models.ApplicationUser", "Librarian")
+                        .WithMany()
+                        .HasForeignKey("LibrarianId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Project.Core.Models.ApplicationUser", "User")
+                        .WithMany("Transactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Librarian");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Project.Core.Models.UserSubscription", b =>
                 {
                     b.HasOne("Project.Core.Models.SubscriptionPlan", "Plan")
-                        .WithMany("Subscriptions")
+                        .WithMany("UserSubscriptions")
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Core.Models.ApplicationUser", "User")
-                        .WithOne("Subscription")
-                        .HasForeignKey("Project.Core.Models.Subscription", "UserId")
+                        .WithMany("UserSubscriptions")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -720,54 +761,37 @@ namespace Project.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Project.Core.Models.TransactionEvents", b =>
-                {
-                    b.HasOne("Project.Core.Models.BorrowTransaction", "BorrowTransaction")
-                        .WithMany("TransactionEvents")
-                        .HasForeignKey("BorrowTransactionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BorrowTransaction");
-                });
-
             modelBuilder.Entity("Project.Core.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("AuditLogs");
-
-                    b.Navigation("BorrowTransactions");
-
-                    b.Navigation("Fines");
-
-                    b.Navigation("Payments");
+                    b.Navigation("BorrowingRecords");
 
                     b.Navigation("Reservations");
 
-                    b.Navigation("Subscription");
+                    b.Navigation("Transactions");
+
+                    b.Navigation("UserSubscriptions");
+                });
+
+            modelBuilder.Entity("Project.Core.Models.Author", b =>
+                {
+                    b.Navigation("Books");
                 });
 
             modelBuilder.Entity("Project.Core.Models.Book", b =>
                 {
-                    b.Navigation("Copies");
+                    b.Navigation("BorrowingRecords");
 
                     b.Navigation("Reservations");
                 });
 
-            modelBuilder.Entity("Project.Core.Models.BookCopies", b =>
+            modelBuilder.Entity("Project.Core.Models.Category", b =>
                 {
-                    b.Navigation("BorrowTransactions");
-                });
-
-            modelBuilder.Entity("Project.Core.Models.BorrowTransaction", b =>
-                {
-                    b.Navigation("Fines");
-
-                    b.Navigation("TransactionEvents");
+                    b.Navigation("Books");
                 });
 
             modelBuilder.Entity("Project.Core.Models.SubscriptionPlan", b =>
                 {
-                    b.Navigation("Subscriptions");
+                    b.Navigation("UserSubscriptions");
                 });
 #pragma warning restore 612, 618
         }

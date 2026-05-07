@@ -8,13 +8,9 @@ namespace Project.Core.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int BorrowLimit { get; set; }
-        public int LoanDays { get; set; }
-        public int MaxRenewals { get; set; }
-        public decimal FineRatePerDay { get; set; }
-        public int GracePeriodDays { get; set; }
-        public bool DigitalAccess { get; set; }
-        public ICollection<Subscription> Subscriptions { get; set; }
-
+        public int MonthlyBorrowLimit { get; set; }
+        public int LoanDurationDays { get; set; }
+        public decimal MonthlyFee { get; set; }
+        public ICollection<UserSubscription> UserSubscriptions { get; set; }
     }
 }

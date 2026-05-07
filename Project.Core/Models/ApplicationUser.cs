@@ -7,13 +7,14 @@ namespace Project.Core.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public bool IsSuspended { get; set; }
-
-        public Subscription? Subscription { get; set; }
-        public ICollection<AuditLog> AuditLogs { get; set; } 
-        public ICollection<BorrowTransaction> BorrowTransactions { get; set; }
-        public ICollection<Fine> Fines { get; set; }
-        public ICollection<Payment> Payments { get; set; }
+        public string FullName { get; set; }
+        public string NationalId { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public ICollection<UserSubscription> UserSubscriptions { get; set; }
+        public ICollection<BorrowingRecord> BorrowingRecords { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
         public ICollection<Reservation> Reservations { get; set; }
+
     }
 }
