@@ -51,3 +51,21 @@ E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\refint\P
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.pdb
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.genruntimeconfig.cache
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\ref\Project.Infrastructure.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.deps.json
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.runtimeconfig.json
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.pdb
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Core.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\bin\Debug\net10.0\Project.Core.pdb
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.csproj.AssemblyReference.cache
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.AssemblyInfoInputs.cache
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.AssemblyInfo.cs
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.csproj.CoreCompileInputs.cache
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.sourcelink.json
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project..A2F26F6C.Up2Date
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\refint\Project.Infrastructure.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.pdb
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.genruntimeconfig.cache
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\ref\Project.Infrastructure.dll

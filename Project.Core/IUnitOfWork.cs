@@ -8,6 +8,7 @@ namespace Project.Core
     public interface IUnitOfWork : IDisposable
     {
         ICategoryRepository Categories { get; }
+        ISubscriptionPlanRepository SubscriptionPlans {  get; }
         int Save();
     }
 }

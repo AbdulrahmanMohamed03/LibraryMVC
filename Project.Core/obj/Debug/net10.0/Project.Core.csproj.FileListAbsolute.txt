@@ -36,3 +36,16 @@ E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.dll
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\refint\Project.Core.dll
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.pdb
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\ref\Project.Core.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\bin\Debug\net10.0\Project.Core.deps.json
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\bin\Debug\net10.0\Project.Core.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\bin\Debug\net10.0\Project.Core.pdb
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.csproj.AssemblyReference.cache
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.AssemblyInfoInputs.cache
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.AssemblyInfo.cs
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.csproj.CoreCompileInputs.cache
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.sourcelink.json
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\obj\Debug\net10.0\refint\Project.Core.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.pdb
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Core\obj\Debug\net10.0\ref\Project.Core.dll

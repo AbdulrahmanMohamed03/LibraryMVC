@@ -45,3 +45,19 @@ E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.App
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Application\obj\Debug\net10.0\refint\Project.Application.dll
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.pdb
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Application\obj\Debug\net10.0\ref\Project.Application.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\bin\Debug\net10.0\Project.Application.deps.json
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\bin\Debug\net10.0\Project.Application.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\bin\Debug\net10.0\Project.Application.pdb
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\bin\Debug\net10.0\Project.Core.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\bin\Debug\net10.0\Project.Core.pdb
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.csproj.AssemblyReference.cache
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.AssemblyInfoInputs.cache
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.AssemblyInfo.cs
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.csproj.CoreCompileInputs.cache
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.sourcelink.json
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\Project..E365C10A.Up2Date
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\refint\Project.Application.dll
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.pdb
+D:\A_iti_matriel\17-MVC\FinalProj\LibraryMVC\Project.Application\obj\Debug\net10.0\ref\Project.Application.dll

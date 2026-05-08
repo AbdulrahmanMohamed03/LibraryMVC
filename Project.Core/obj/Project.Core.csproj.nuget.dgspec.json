@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj": {}
+    "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\Project.Core.csproj": {}
   },
   "projects": {
-    "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj": {
+    "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\Project.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj",
+        "projectUniqueName": "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\Project.Core.csproj",
         "projectName": "Project.Core",
-        "projectPath": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj",
-        "packagesPath": "C:\\Users\\podap\\.nuget\\packages\\",
-        "outputPath": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\obj\\",
+        "projectPath": "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\Project.Core.csproj",
+        "packagesPath": "C:\\Users\\RTX\\.nuget\\packages\\",
+        "outputPath": "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\podap\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\RTX\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],

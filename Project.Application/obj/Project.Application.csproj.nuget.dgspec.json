@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Application\\Project.Application.csproj": {}
+    "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Application\\Project.Application.csproj": {}
   },
   "projects": {
-    "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Application\\Project.Application.csproj": {
+    "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Application\\Project.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Application\\Project.Application.csproj",
+        "projectUniqueName": "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Application\\Project.Application.csproj",
         "projectName": "Project.Application",
-        "projectPath": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Application\\Project.Application.csproj",
-        "packagesPath": "C:\\Users\\podap\\.nuget\\packages\\",
-        "outputPath": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Application\\obj\\",
+        "projectPath": "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Application\\Project.Application.csproj",
+        "packagesPath": "C:\\Users\\RTX\\.nuget\\packages\\",
+        "outputPath": "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\podap\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\RTX\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -33,8 +33,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj": {
-                "projectPath": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj"
+              "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\Project.Core.csproj": {
+                "projectPath": "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\Project.Core.csproj"
               }
             }
           }
@@ -349,20 +349,20 @@
         }
       }
     },
-    "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj": {
+    "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\Project.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj",
+        "projectUniqueName": "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\Project.Core.csproj",
         "projectName": "Project.Core",
-        "projectPath": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj",
-        "packagesPath": "C:\\Users\\podap\\.nuget\\packages\\",
-        "outputPath": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\obj\\",
+        "projectPath": "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\Project.Core.csproj",
+        "packagesPath": "C:\\Users\\RTX\\.nuget\\packages\\",
+        "outputPath": "D:\\A_iti_matriel\\17-MVC\\FinalProj\\LibraryMVC\\Project.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\podap\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\RTX\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],

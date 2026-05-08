@@ -16,8 +16,11 @@ namespace Project.Infrastructure
         {
             this._context = _context;
             Categories = new CategoryRepository(_context);
+            SubscriptionPlans=new SubscriptionPlanRepository(_context);
         }
         public ICategoryRepository Categories { get; private set; }
+        public ISubscriptionPlanRepository SubscriptionPlans { get; private set; }
+
 
         public void Dispose()
         {

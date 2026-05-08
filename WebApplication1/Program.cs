@@ -23,6 +23,8 @@ namespace WebApplication1
                 .AddEntityFrameworkStores<AppDbContext>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
+
 
             var app = builder.Build();
 
