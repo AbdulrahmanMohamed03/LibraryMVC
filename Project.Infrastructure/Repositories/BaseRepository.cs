@@ -3,6 +3,7 @@ using Project.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace Project.Infrastructure.Repositories
 {
@@ -19,7 +20,7 @@ namespace Project.Infrastructure.Repositories
             return entity;
         }
 
-        public void Delete(int id)
+        public virtual void Delete(int id)
         {
             var entity = GetById(id);
             _context.Set<T>().Remove(entity);

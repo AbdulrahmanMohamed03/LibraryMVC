@@ -1,4 +1,4 @@
-﻿using Project.Application.DTOs;
+﻿using Project.Application.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +7,15 @@ namespace Project.Application.Interfaces
 {
     public interface ICategoryService
     {
-        bool CreateCategory(CreateCategoryDTO categoryDto);
-        IEnumerable<CreateCategoryDTO> GetAllCategories();
+        //bool CreateCategory(CategoryViewModel categoryVM);
+        //IEnumerable<CategoryViewModel> GetAllCategories();
+
+        CategoryIndexViewModel GetIndexViewModel(string? searchTerm = null, bool showDeleted = false);
+        CategoryViewModel GetById(int id);
+        CategoryFormViewModel GetFormViewModel(int id);
+        CategoryViewModel Create(CategoryFormViewModel model, string actorId);
+        CategoryViewModel Update(CategoryFormViewModel model, string actorId);
+        void Delete(int id, string actorId);
+        void Restore(int id, string actorId);
     }
 }

@@ -1,0 +1,138 @@
+﻿@* @model Project.Application.ViewModels.CategoryIndexViewModel
+@{
+
+    var isAdmin = User.IsInRole("Admin") || true; 
+    var filtered = Model.FilteredCategories.ToList();
+}
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">Category Name</th>
+                    <th class="text-center">Books Count</th>
+                    <th class="text-end pe-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in filtered)
+                {
+                    <tr>
+                        <td class="ps-4 fw-semibold">@category.Name</td>
+                        <td class="text-center">
+                            <span class="badge bg-info text-dark">@category.BookCount</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+
+                                @if (isAdmin)
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                            data-category-id="@category.Id"
+                                            data-category-name="@category.Name"
+                                            data-book-count="@category.BookCount">
+                                        Delete
+                                    </button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (isAdmin)
+{
+    <partial name="_DeleteModal" />
+} *@
+
+
+@model Project.Application.ViewModels.CategoryIndexViewModel
+@{
+    var isAdmin = User.IsInRole("Admin") || true;
+    var filtered = Model.Categories.ToList(); // تأكدي من استخدام المسمى الصحيح في الـ ViewModel
+}
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        @if (!Model.FilteredCategories.Any())
+{
+    <div class="text-center py-5 shadow-sm bg-white rounded">
+        <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+        <h4 class="mt-3 text-secondary">No Categories Found</h4>
+        <p class="text-muted">Try adjusting your search or add a new category.</p>
+        <a asp-action="Create" class="btn btn-primary btn-sm">Add New Category</a>
+    </div>
+}
+else
+{
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">Category Name</th>
+                    <th class="text-center">Books Count</th>
+                    <th class="text-end pe-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in filtered)
+                {
+                    <tr>
+                        <td class="ps-4 fw-semibold">
+                            @category.Name
+                            @if (category.IsDeleted)
+                            {
+                                <span class="badge bg-secondary ms-2 small">Archived</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-info text-dark">@category.BookCount</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+
+                                @if (category.IsDeleted)
+                                {
+                                    @* زر الاستعادة يظهر فقط للمحذوفين *@
+                                    <form asp-action="Restore" asp-route-id="@category.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    @* أزرار التعديل والحذف تظهر فقط للنشطين *@
+                                    <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+
+                                    @if (isAdmin)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                data-category-id="@category.Id"
+                                                data-category-name="@category.Name"
+                                                data-book-count="@category.BookCount">
+                                            Delete
+                                        </button>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+       }
+    </div>
+</div>
+
+@if (isAdmin)
+{
+    <partial name="_DeleteModal" />
+}

@@ -36,3 +36,16 @@ E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.dll
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\refint\Project.Core.dll
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.pdb
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\ref\Project.Core.dll
+F:\Library\Project.Core\bin\Debug\net10.0\Project.Core.deps.json
+F:\Library\Project.Core\bin\Debug\net10.0\Project.Core.dll
+F:\Library\Project.Core\bin\Debug\net10.0\Project.Core.pdb
+F:\Library\Project.Core\obj\Debug\net10.0\Project.Core.csproj.AssemblyReference.cache
+F:\Library\Project.Core\obj\Debug\net10.0\Project.Core.GeneratedMSBuildEditorConfig.editorconfig
+F:\Library\Project.Core\obj\Debug\net10.0\Project.Core.AssemblyInfoInputs.cache
+F:\Library\Project.Core\obj\Debug\net10.0\Project.Core.AssemblyInfo.cs
+F:\Library\Project.Core\obj\Debug\net10.0\Project.Core.csproj.CoreCompileInputs.cache
+F:\Library\Project.Core\obj\Debug\net10.0\Project.Core.sourcelink.json
+F:\Library\Project.Core\obj\Debug\net10.0\Project.Core.dll
+F:\Library\Project.Core\obj\Debug\net10.0\refint\Project.Core.dll
+F:\Library\Project.Core\obj\Debug\net10.0\Project.Core.pdb
+F:\Library\Project.Core\obj\Debug\net10.0\ref\Project.Core.dll

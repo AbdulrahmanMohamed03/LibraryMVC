@@ -8,5 +8,8 @@ namespace Project.Core.RepositoriesAbstraction
     public interface ICategoryRepository : IBaseRepository<Category>
     {
         public Category GetByName(string name);
+        bool NameExists(string name, int? excludeId = null);
+        int GetBookCount(int categoryId);
+
     }
 }

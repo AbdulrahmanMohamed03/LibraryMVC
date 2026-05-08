@@ -45,3 +45,19 @@ E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.App
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Application\obj\Debug\net10.0\refint\Project.Application.dll
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Application\obj\Debug\net10.0\Project.Application.pdb
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Application\obj\Debug\net10.0\ref\Project.Application.dll
+F:\Library\Project.Application\bin\Debug\net10.0\Project.Application.deps.json
+F:\Library\Project.Application\bin\Debug\net10.0\Project.Application.dll
+F:\Library\Project.Application\bin\Debug\net10.0\Project.Application.pdb
+F:\Library\Project.Application\bin\Debug\net10.0\Project.Core.dll
+F:\Library\Project.Application\bin\Debug\net10.0\Project.Core.pdb
+F:\Library\Project.Application\obj\Debug\net10.0\Project.Application.csproj.AssemblyReference.cache
+F:\Library\Project.Application\obj\Debug\net10.0\Project.Application.GeneratedMSBuildEditorConfig.editorconfig
+F:\Library\Project.Application\obj\Debug\net10.0\Project.Application.AssemblyInfoInputs.cache
+F:\Library\Project.Application\obj\Debug\net10.0\Project.Application.AssemblyInfo.cs
+F:\Library\Project.Application\obj\Debug\net10.0\Project.Application.csproj.CoreCompileInputs.cache
+F:\Library\Project.Application\obj\Debug\net10.0\Project.Application.sourcelink.json
+F:\Library\Project.Application\obj\Debug\net10.0\Project..E365C10A.Up2Date
+F:\Library\Project.Application\obj\Debug\net10.0\Project.Application.dll
+F:\Library\Project.Application\obj\Debug\net10.0\refint\Project.Application.dll
+F:\Library\Project.Application\obj\Debug\net10.0\Project.Application.pdb
+F:\Library\Project.Application\obj\Debug\net10.0\ref\Project.Application.dll

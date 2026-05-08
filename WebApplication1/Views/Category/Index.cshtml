@@ -1,31 +1,122 @@
-﻿@model IEnumerable<Project.Application.DTOs.CreateCategoryDTO>
-
+﻿
+@model Project.Application.ViewModels.CategoryIndexViewModel
 @{
     ViewData["Title"] = "Categories";
+  
+    var isLibrarian = User.IsInRole("Admin") || User.IsInRole("Librarian") || true;
 }
 
-<h2 class="mb-4">Categories</h2>
-
-@if (!Model.Any())
-{
-    <div class="alert alert-info">
-        No categories found.
-    </div>
-}
-else
-{
-    <div class="row">
-        @foreach (var category in Model)
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+        <div>
+            <h1 class="h3 mb-0 fw-bold text-dark">
+                <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Categories
+            </h1>
+        </div>
+        @if (isLibrarian)
         {
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm border-0 rounded-3">
-                    <div class="card-body text-center">
-                        <h5 class="card-title mb-0">
-                            @category.Name
-                        </h5>
-                    </div>
-                </div>
-            </div>
+            <a asp-action="Create" class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="bi bi-plus-circle-fill"></i> Add Category
+            </a>
         }
     </div>
+
+    @* Alerts Section *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* Stats *@
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3">
+                <h2 class="text-primary">@Model.TotalCategories</h2>
+                <span class="text-muted">Total Categories</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3">
+                @* should we link to the books page with a filter for this category? 
+                     <a href="/Books?categoryId=@Model.Id" class="badge bg-info text-dark text-decoration-none">
+                    @Model.TotalBooks
+                </a>
+
+                *@
+                  
+                <h2 class="text-success">@Model.TotalBooks</h2>
+                <span class="text-muted">Total Books</span>
+            </div>
+        </div>
+    </div>
+
+    @* Search *@
+    <div class="card border-0 shadow-sm mb-4 p-3">
+        <form method="get" asp-action="Index" class="d-flex gap-2">
+            <input type="text" name="search" value="@Model.SearchTerm" class="form-control" placeholder="Search..." />
+            <button type="submit" class="btn btn-primary">Search</button>
+            <div class="col-md-6 d-flex justify-content-md-end align-items-center gap-2">
+               
+                <div class="btn-group shadow-sm" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
+                    @{
+                        
+                        var currentShowDeleted = Context.Request.Query["showDeleted"].ToString().ToLower();
+                        var isActiveTab = string.IsNullOrEmpty(currentShowDeleted) || currentShowDeleted == "false";
+                        var isArchivedTab = currentShowDeleted == "true";
+                    }
+
+                    <a href="@Url.Action("Index", new { search = Model.SearchTerm, showDeleted = false })"
+                       class="btn btn-sm @(isActiveTab ? "btn-primary active" : "btn-light text-muted")">
+                        <i class="bi bi-check-circle-fill me-1"></i> Active
+                    </a>
+
+                    
+                    <a href="@Url.Action("Index", new { search = Model.SearchTerm, showDeleted = true })"
+                       class="btn btn-sm @(isArchivedTab ? "btn-primary active" : "btn-light text-muted")">
+                        <i class="bi bi-archive-fill me-1"></i> Archived
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @* Logic for View Types *@
+    @if (isLibrarian)
+    {
+        <partial name="_LibrarianTable" model="Model" />
+    }
+    else
+    {
+        <partial name="_UserCards" model="Model" />
+    }
+</div>
+
+@section Scripts {
+    <script>
+        const deleteModal = document.getElementById('deleteModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', event => {
+                const btn = event.relatedTarget;
+                const id = btn.getAttribute('data-category-id');
+                const name = btn.getAttribute('data-category-name');
+                const count = parseInt(btn.getAttribute('data-book-count'));
+
+                deleteModal.querySelector('#modalCategoryName').textContent = name;
+                deleteModal.querySelector('#deleteForm').action = `/Category/Delete/${id}`;
+
+                const warning = deleteModal.querySelector('#bookWarning');
+                if (count > 0) {
+                    warning.textContent = `Caution: This category has ${count} books and cannot be deleted.`;
+                    warning.classList.remove('d-none');
+                    deleteModal.querySelector('#confirmDeleteBtn').disabled = true;
+                } else {
+                    warning.classList.add('d-none');
+                    deleteModal.querySelector('#confirmDeleteBtn').disabled = false;
+                }
+            });
+        }
+    </script>
 }
