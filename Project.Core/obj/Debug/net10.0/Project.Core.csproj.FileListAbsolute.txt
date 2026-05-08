@@ -36,3 +36,16 @@ E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.dll
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\refint\Project.Core.dll
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\Project.Core.pdb
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Core\obj\Debug\net10.0\ref\Project.Core.dll
+E:\ITI lab\mvc project\Final2\Project.Core\bin\Debug\net10.0\Project.Core.deps.json
+E:\ITI lab\mvc project\Final2\Project.Core\bin\Debug\net10.0\Project.Core.dll
+E:\ITI lab\mvc project\Final2\Project.Core\bin\Debug\net10.0\Project.Core.pdb
+E:\ITI lab\mvc project\Final2\Project.Core\obj\Debug\net10.0\Project.Core.csproj.AssemblyReference.cache
+E:\ITI lab\mvc project\Final2\Project.Core\obj\Debug\net10.0\Project.Core.GeneratedMSBuildEditorConfig.editorconfig
+E:\ITI lab\mvc project\Final2\Project.Core\obj\Debug\net10.0\Project.Core.AssemblyInfoInputs.cache
+E:\ITI lab\mvc project\Final2\Project.Core\obj\Debug\net10.0\Project.Core.AssemblyInfo.cs
+E:\ITI lab\mvc project\Final2\Project.Core\obj\Debug\net10.0\Project.Core.csproj.CoreCompileInputs.cache
+E:\ITI lab\mvc project\Final2\Project.Core\obj\Debug\net10.0\Project.Core.sourcelink.json
+E:\ITI lab\mvc project\Final2\Project.Core\obj\Debug\net10.0\Project.Core.dll
+E:\ITI lab\mvc project\Final2\Project.Core\obj\Debug\net10.0\refint\Project.Core.dll
+E:\ITI lab\mvc project\Final2\Project.Core\obj\Debug\net10.0\Project.Core.pdb
+E:\ITI lab\mvc project\Final2\Project.Core\obj\Debug\net10.0\ref\Project.Core.dll

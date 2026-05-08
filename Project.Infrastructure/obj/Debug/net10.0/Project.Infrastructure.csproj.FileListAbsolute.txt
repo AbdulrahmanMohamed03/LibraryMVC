@@ -51,3 +51,21 @@ E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\refint\P
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.pdb
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.genruntimeconfig.cache
 E:\ITI ITP\Labs\TMP\LibraryMVC\Project.Infrastructure\obj\Debug\net10.0\ref\Project.Infrastructure.dll
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.deps.json
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.runtimeconfig.json
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.dll
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\bin\Debug\net10.0\Project.Infrastructure.pdb
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\bin\Debug\net10.0\Project.Core.dll
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\bin\Debug\net10.0\Project.Core.pdb
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.csproj.AssemblyReference.cache
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.AssemblyInfoInputs.cache
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.AssemblyInfo.cs
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.csproj.CoreCompileInputs.cache
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.sourcelink.json
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\Project..A2F26F6C.Up2Date
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.dll
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\refint\Project.Infrastructure.dll
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.pdb
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\Project.Infrastructure.genruntimeconfig.cache
+E:\ITI lab\mvc project\Final2\Project.Infrastructure\obj\Debug\net10.0\ref\Project.Infrastructure.dll

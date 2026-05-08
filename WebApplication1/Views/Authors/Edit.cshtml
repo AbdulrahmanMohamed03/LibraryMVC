@@ -1,0 +1,26 @@
+﻿@model Project.Application.DTOs.Author.UpdateAuthorDto
+
+<h2>Edit Author</h2>
+
+<form asp-action="Edit" method="post">
+
+    <input type="hidden" asp-for="Id" />
+
+    <div>
+        <label>Full Name</label>
+        <input asp-for="FullName" class="form-control" />
+    </div>
+
+    <div>
+        <label>Bio</label>
+        <input asp-for="Bio" class="form-control" />
+    </div>
+
+    <div>
+        <label>Nationality</label>
+        <input asp-for="Nationality" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+
+</form>
