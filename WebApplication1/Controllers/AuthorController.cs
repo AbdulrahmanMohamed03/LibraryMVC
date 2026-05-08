@@ -1,15 +1,15 @@
 ﻿// Project.Web/Controllers/AuthorsController.cs
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.DTOs.Author;
+using Project.Application.Interfaces;
 using Project.Application.Services;
 
 namespace Project.Web.Controllers
 {
     public class AuthorsController : Controller
     {
-        private readonly AuthorService _service;
-
-        public AuthorsController(AuthorService service) => _service = service;
+        private readonly IAuthorService _service;
+        public AuthorsController(IAuthorService service) => _service = service;
 
         // GET /Authors
         public IActionResult Index()
@@ -69,7 +69,9 @@ namespace Project.Web.Controllers
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            _service.Delete(id);
+            var deleted = _service.Delete(id);
+            if (!deleted) return NotFound();
+
             return RedirectToAction(nameof(Index));
         }
     }

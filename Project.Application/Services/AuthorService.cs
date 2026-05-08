@@ -1,4 +1,5 @@
 ﻿using Project.Application.DTOs.Author;
+using Project.Application.Interfaces;
 using Project.Core;
 using Project.Core.Models;
 using System;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace Project.Application.Services
 {
-    public class AuthorService
+    public class AuthorService : IAuthorService
     {
         private readonly IUnitOfWork _uow;
 
