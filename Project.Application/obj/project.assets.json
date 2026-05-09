@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 3,
   "targets": {
     "net10.0": {
       "Microsoft.AspNetCore.Antiforgery/2.3.0": {
@@ -2457,23 +2457,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\SAMA\\.nuget\\packages\\": {},
+    "C:\\Users\\podap\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\Library\\Project.Application\\Project.Application.csproj",
+      "projectUniqueName": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Application\\Project.Application.csproj",
       "projectName": "Project.Application",
-      "projectPath": "F:\\Library\\Project.Application\\Project.Application.csproj",
-      "packagesPath": "C:\\Users\\SAMA\\.nuget\\packages\\",
-      "outputPath": "F:\\Library\\Project.Application\\obj\\",
+      "projectPath": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Application\\Project.Application.csproj",
+      "packagesPath": "C:\\Users\\podap\\.nuget\\packages\\",
+      "outputPath": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Application\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\SAMA\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\podap\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2482,6 +2482,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -2489,8 +2490,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "F:\\Library\\Project.Core\\Project.Core.csproj": {
-              "projectPath": "F:\\Library\\Project.Core\\Project.Core.csproj"
+            "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj": {
+              "projectPath": "E:\\ITI ITP\\Labs\\TMP\\LibraryMVC\\Project.Core\\Project.Core.csproj"
             }
           }
         }
@@ -2505,7 +2506,7 @@
         "auditLevel": "low",
         "auditMode": "all"
       },
-      "SdkAnalysisLevel": "10.0.300"
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net10.0": {
@@ -2533,7 +2534,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300-preview.0.26177.108/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
