@@ -6,12 +6,13 @@ using Project.Core;
 using Project.Core.Models;
 using Project.Infrastructure;
 using Project.Infrastructure.Data;
+using Project.Infrastructure.DataSeeding;
 
 namespace Project.MVC
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ namespace Project.MVC
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IAuthorService, AuthorService>();
             builder.Services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
+            builder.Services.AddScoped<IAdminService, AdminService>();
 
             var app = builder.Build();
 
@@ -40,6 +42,15 @@ namespace Project.MVC
             app.UseRouting();
 
             app.UseAuthorization();
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                await IdentitySeeder.SeedAsync(userManager, roleManager);
+            }
 
             app.MapStaticAssets();
             app.MapControllerRoute(
@@ -47,6 +58,7 @@ namespace Project.MVC
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
+            
             app.Run();
         }
     }

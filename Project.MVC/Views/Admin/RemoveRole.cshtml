@@ -1,0 +1,46 @@
+﻿@model Project.Application.ViewModels.Role.AssignRoleVm
+
+@{
+    ViewData["Title"] = "Remove Role";
+}
+
+<h2>Remove Role</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<form asp-action="RemoveRole" method="post">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="RoleName"></label>
+
+        <select asp-for="RoleName"
+                asp-items="ViewBag.Roles"
+                class="form-control">
+            <option value="">Select Role</option>
+        </select>
+
+        <span asp-validation-for="RoleName" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-danger">
+        Remove Role
+    </button>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
