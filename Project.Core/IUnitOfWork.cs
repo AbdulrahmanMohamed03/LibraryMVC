@@ -8,6 +8,9 @@ namespace Project.Core
     public interface IUnitOfWork : IDisposable
     {
         ICategoryRepository Categories { get; }
+
+        IAuthorRepository Authors { get; }
         int Save();
+
     }
 }

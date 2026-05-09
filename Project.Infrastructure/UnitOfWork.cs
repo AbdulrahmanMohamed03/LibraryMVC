@@ -16,8 +16,11 @@ namespace Project.Infrastructure
         {
             this._context = _context;
             Categories = new CategoryRepository(_context);
+            Authors = new AuthorRepository(_context);
+
         }
         public ICategoryRepository Categories { get; private set; }
+        public IAuthorRepository Authors { get; private set; }
 
         public void Dispose()
         {

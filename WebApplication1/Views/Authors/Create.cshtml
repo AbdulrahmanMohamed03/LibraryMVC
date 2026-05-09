@@ -1,0 +1,25 @@
+﻿@model Project.Application.DTOs.Author.CreateAuthorDto
+
+<h2>Create Author</h2>
+
+<form asp-action="Create" method="post">
+
+    <div>
+        <label>Full Name</label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName"></span>
+    </div>
+
+    <div>
+        <label>Bio</label>
+        <input asp-for="Bio" class="form-control" />
+    </div>
+
+    <div>
+        <label>Nationality</label>
+        <input asp-for="Nationality" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+
+</form>
