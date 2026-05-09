@@ -124,56 +124,39 @@ namespace Project.Application.Services.Implementaion
             return roles.Select(r => new RoleVM { Id = r.Id, Name = r.Name }).ToList();
         }
 
-        //public async Task<List<AssignRoleVm>> GetUserRolesAsync(string email)
-        //{
-        //    var user = await _userManager.FindByEmailAsync(email);
-        //    if (user == null)
-        //    {
-        //        return new List<AssignRoleVm>();
-        //    }
+        public async Task<List<UserRoleVm>> GetUserRolesAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
 
-        //    var userRoles = await _userManager.GetRolesAsync(user);
-        //    return userRoles.Select(role => new AssignRoleVm
-        //    {
-        //        Email = email,
-        //        RoleName = role
-        //    }).ToList();
-        //}
+            if (user == null)
+                return new List<UserRoleVm>();
 
-        //public async Task<AssignRoleVm> RemoveUserFromRoleAsync(AssignRoleVm vm)
-        //{
-        //    vm.IsSuccess = false;
-        //    var user = await _userManager.FindByEmailAsync(vm.Email);
-        //    if (user == null)
-        //    {
-        //        vm.Message = "User not found.";
-        //        return vm;
-        //    }
+            var roles = await _userManager.GetRolesAsync(user);
 
-        //    var roleExists = await _roleManager.RoleExistsAsync(vm.RoleName);
-        //    if (!roleExists)
-        //    {
-        //        vm.Message = "Role not found.";
-        //        return vm;
-        //    }
+            return roles.Select(r => new UserRoleVm
+            {
+                RoleName = r
+            }).ToList();
+        }
 
-        //    var isInRole = await _userManager.IsInRoleAsync(user, vm.RoleName);
-        //    if (!isInRole)
-        //    {
-        //        vm.Message = "User does not have this role.";
-        //        return vm;
-        //    }
-
-        //    var result = await _userManager.RemoveFromRoleAsync(user, vm.RoleName);
-        //    if (!result.Succeeded)
-        //    {
-        //        vm.Message = string.Join(", ", result.Errors.Select(e => e.Description));
-        //        return vm;
-        //    }
-
-        //    vm.IsSuccess = true;
-        //    vm.Message = "Role removed successfully.";
-        //    return vm;
-        //}
+        public async Task<AssignRoleVm> RemoveUserFromRoleAsync(AssignRoleVm vm)
+        {
+            vm.IsSuccess = false;
+            var user = await _userManager.FindByEmailAsync(vm.Email);
+            if (user == null)
+            {
+                vm.Message = "User not found.";
+                return vm;
+            }
+            var result = await _userManager.RemoveFromRoleAsync(user, vm.RoleName);
+            if (!result.Succeeded)
+            {
+                vm.Message = string.Join(", ", result.Errors.Select(e => e.Description));
+                return vm;
+            }
+            vm.IsSuccess = true;
+            vm.Message = "Role removed successfully.";
+            return vm;
+        }
     }
 }
