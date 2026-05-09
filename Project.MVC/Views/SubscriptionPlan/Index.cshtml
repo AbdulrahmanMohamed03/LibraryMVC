@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Project.Application.ViewModels.SubscriptionPlan.SubscriptionPlanDTO>
+
+@{
+    ViewData["Title"] = "Subscription Plans";
+}
+
+<h2 class="mb-4">Subscription Plans</h2>
+<a asp-action="Create" class="btn btn-primary">Add Plan</a>
+
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No subscription plans found.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var plan in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold text-primary">
+                            @plan.Name
+                        </h5>
+                        <hr />
+                        <p class="card-text mb-1">
+                            <strong>Fee:</strong> @plan.MonthlyFee.ToString("C")
+                        </p>
+                        <p class="card-text mb-1">
+                            <strong>Limit:</strong> @plan.MonthlyBorrowLimit Books
+                        </p>
+                        <p class="card-text mb-0">
+                            <strong>Duration:</strong> @plan.LoanDurationDays Days
+                        </p>
+                    </div>
+                    <div class="card-footer bg-light border-0 d-flex justify-content-around py-3">
+                        <a asp-action="Edit" asp-route-id="@plan.Id" class="btn btn-outline-primary btn-sm rounded-pill px-3">Edit</a>
+
+                        <a asp-action="Delete" asp-route-id="@plan.Id"
+                           class="btn btn-outline-danger btn-sm rounded-pill px-3">Delete</a>
+                    </div>
+                </div>
+
+            </div>
+
+        }
+    </div>
+}

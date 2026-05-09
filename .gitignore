@@ -1,0 +1,58 @@
+############################
+# Build output (IMPORTANT)
+############################
+bin/
+obj/
+
+############################
+# Visual Studio
+############################
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+############################
+# Logs
+############################
+*.log
+logs/
+
+############################
+# NuGet / Build artifacts
+############################
+**/project.assets.json
+**/project.nuget.cache
+*.nupkg
+
+############################
+# Test results
+############################
+TestResults/
+*.trx
+
+############################
+# Publish output
+############################
+publish/
+wwwroot/dist/
+
+############################
+# Local config (optional)
+############################
+appsettings.Development.json
+appsettings.Local.json
+
+############################
+# OS files
+############################
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+############################
+# IDEs (optional)
+############################
+.vscode/
+.idea/

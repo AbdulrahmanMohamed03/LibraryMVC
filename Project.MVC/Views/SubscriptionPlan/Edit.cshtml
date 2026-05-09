@@ -1,0 +1,43 @@
+﻿@model Project.Application.ViewModels.SubscriptionPlan.UpdateSupscriptionPlanDTO
+@{
+    ViewData["Title"] = "Edit Subscription Plan";
+}
+
+<h2 class="mb-4">Edit Subscription Plan</h2>
+
+<form asp-action="Edit" method="post">
+    <input asp-for="Id" type="hidden" />
+
+    <div class="mb-3">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MonthlyBorrowLimit"></label>
+        <input asp-for="MonthlyBorrowLimit" class="form-control" />
+        <span asp-validation-for="MonthlyBorrowLimit" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LoanDurationDays"></label>
+        <input asp-for="LoanDurationDays" class="form-control" />
+        <span asp-validation-for="LoanDurationDays" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MonthlyFee"></label>
+        <input asp-for="MonthlyFee" class="form-control" />
+        <span asp-validation-for="MonthlyFee" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

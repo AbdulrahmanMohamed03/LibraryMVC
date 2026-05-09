@@ -1,0 +1,43 @@
+﻿@model Project.Application.ViewModels.Category.CategoryFormViewModel
+@{
+    ViewData["Title"] = "Edit Category";
+}
+
+<div class="container" style="max-width:560px">
+    <div class="mt-4 mb-3">
+        <a asp-action="Index" class="text-decoration-none text-muted small">
+            <i class="bi bi-arrow-left me-1"></i>Back to Categories
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom py-3">
+            <h4 class="mb-0 fw-bold text-dark">
+                <i class="bi bi-pencil-square text-warning me-2"></i>@Model.FormTitle
+            </h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Edit" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label fw-semibold">Category Name</label>
+                    <input asp-for="Name" class="form-control form-control-lg" autofocus />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-warning px-4 text-white">
+                        <i class="bi bi-save me-1"></i>Update Changes
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

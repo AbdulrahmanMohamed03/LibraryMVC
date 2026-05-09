@@ -1,0 +1,39 @@
+﻿@model Project.Application.ViewModels.SubscriptionPlan.CreateSubscriptionPlanDTO
+
+<h2>Create Subscription Plan</h2>
+<form asp-action="Create" method="post">
+
+    <div class="mb-3">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MonthlyBorrowLimit"></label>
+        <input asp-for="MonthlyBorrowLimit" class="form-control" />
+        <span asp-validation-for="MonthlyBorrowLimit" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LoanDurationDays"></label>
+        <input asp-for="LoanDurationDays" class="form-control" />
+        <span asp-validation-for="LoanDurationDays" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MonthlyFee"></label>
+        <input asp-for="MonthlyFee" class="form-control" />
+        <span asp-validation-for="MonthlyFee" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Save
+    </button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
