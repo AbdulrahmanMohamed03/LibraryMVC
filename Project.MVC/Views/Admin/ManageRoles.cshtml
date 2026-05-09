@@ -1,0 +1,63 @@
+﻿@model Project.Application.ViewModels.Role.ManageUserRolesVm
+
+<h2>Manage User Roles</h2>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+<form method="post" asp-action="ManageRoles">
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" placeholder="Enter user email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary"> Search </button>
+</form>
+<hr />
+@if (Model.Roles != null && Model.Roles.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Role Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in Model.Roles)
+            {
+                <tr>
+                    <td>@role.RoleName</td>
+                    <td>
+                        <form method="post" asp-action="DeleteRole">
+                            <input type="hidden" name="email" value="@Model.Email" />
+                            <input type="hidden" name="roleName" value="@role.RoleName" />
+                            <button type="submit" class="btn btn-danger btn-sm"> Delete </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (!string.IsNullOrEmpty(Model.Email))
+{
+    <div class="alert alert-warning">
+        No roles assigned
+    </div>
+}
+<hr />
+<h4>Add Role</h4>
+<form method="post" asp-action="AddRole">
+    <input type="hidden" asp-for="Email" />
+    <div class="mb-3">
+        <select asp-for="SelectedRole" asp-items="Model.AllRoles" class="form-select">
+            <option value=""> Select Role </option>
+        </select>
+        <span asp-validation-for="SelectedRole" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success"> Add Role </button>
+</form>
