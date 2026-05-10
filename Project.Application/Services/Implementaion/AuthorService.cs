@@ -1,5 +1,6 @@
 ﻿using Project.Application.Services.Interfaces;
 using Project.Application.ViewModels.Author;
+using Project.Application.ViewModels.Book;
 using Project.Core;
 using Project.Core.Models;
 using System;
@@ -40,26 +41,26 @@ namespace Project.Application.Services.Implementaion
             return author is null ? null : ToDto(author);
         }
         // will exist in the future when we implement the GetWithBooks method in the repository
-        //public AuthorWithBooksDto? GetWithBooks(int id)
-        //{
-        //    var author = _uow.Authors.GetWithBooks(id);
-        //    if (author is null) return null;
+        public AuthorWithBooksDto? GetWithBooks(int id)
+        {
+            var author = _uow.Authors.GetWithBooks(id);
+            if (author is null) return null;
 
-        //    return new AuthorWithBooksDto
-        //    {
-        //        Id = author.Id,
-        //        FullName = author.FullName,
-        //        Bio = author.Bio,
-        //        Nationality = author.Nationality,
-        //        CreatedAt = author.CreatedAt,
-        //        Books = author.Books?.Select(b => new BookDto
-        //        {
-        //            Id = b.Id,
-        //            Title = b.Title
-        //            // map other Book fields
-        //        }) ?? Enumerable.Empty<BookDto>()
-        //    };
-        //}
+            return new AuthorWithBooksDto
+            {
+                Id = author.Id,
+                FullName = author.FullName,
+                Bio = author.Bio,
+                Nationality = author.Nationality,
+                CreatedAt = author.CreatedAt,
+                Books = author.Books?.Select(b => new BookViewModel
+                {
+                    Id = b.Id,
+                    Title = b.Title
+                    // map other Book fields
+                }) ?? Enumerable.Empty<BookViewModel>()
+            };
+        }
 
         // ── Commands ─────────────────────────────────────
         public AuthorDto Create(CreateAuthorDto dto)
@@ -98,5 +99,7 @@ namespace Project.Application.Services.Implementaion
             _uow.Save();
             return true;
         }
+
+       
     }
 }

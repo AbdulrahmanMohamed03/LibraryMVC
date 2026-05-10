@@ -13,12 +13,12 @@ namespace Project.MVC.Controllers
         public IActionResult Index()
             => View(_service.GetAll());
 
-        // GET /Authors/Details/5
-        //public IActionResult Details(int id)
-        //{
-        //    var dto = _service.GetWithBooks(id);
-        //    return dto is null ? NotFound() : View(dto);
-        //}
+       // GET /Authors/Details/5
+        public IActionResult Details(int id)
+        {
+            var dto = _service.GetWithBooks(id);
+            return dto is null ? NotFound() : View(dto);
+        }
 
         // GET /Authors/Create
         public IActionResult Create() => View();
