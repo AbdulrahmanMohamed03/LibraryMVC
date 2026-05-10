@@ -1,0 +1,132 @@
+﻿@model Project.Application.ViewModels.Book.BookFormViewModel
+
+@{
+    ViewData["Title"] = Model.FormTitle;
+}
+
+<style>
+    .form-wrap { max-width: 560px; }
+    h2 { margin-bottom: 16px; }
+    hr { border: none; border-top: 1px solid #ddd; margin-bottom: 24px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+        display: block; font-weight: 600;
+        margin-bottom: 6px; font-size: 14px; color: #333;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%; padding: 8px 10px;
+        border: 1px solid #ccc; border-radius: 4px;
+        font-size: 14px; box-sizing: border-box;
+    }
+    .form-group input[type="file"] { padding: 4px; }
+    .form-group textarea { resize: vertical; }
+    .text-danger { color: #e25555; font-size: 12px; margin-top: 4px; display: block; }
+    .form-actions { display: flex; gap: 10px; margin-top: 24px; }
+    .btn { padding: 8px 20px; border: none; border-radius: 4px;
+           cursor: pointer; text-decoration: none; font-size: 14px; }
+    .btn-primary   { background: #4a90e2; color: #fff; }
+    .btn-secondary { background: #9e9e9e; color: #fff; }
+    .img-preview {
+        max-height: 150px; margin-top: 10px;
+        border: 1px solid #ddd; border-radius: 4px;
+        display: none;
+    }
+</style>
+
+<div class="form-wrap">
+    <h2>@Model.FormTitle</h2>
+    <hr />
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ISBN"></label>
+            <input asp-for="ISBN" />
+            <span asp-validation-for="ISBN" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="AuthorId"></label>
+            <select asp-for="AuthorId" asp-items="Model.Authors">
+                <option value="">-- Select Author --</option>
+            </select>
+            <span asp-validation-for="AuthorId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CategoryId"></label>
+            <select asp-for="CategoryId" asp-items="Model.Categories">
+                <option value="">-- Select Category --</option>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PublishedYear"></label>
+            <input asp-for="PublishedYear" type="number" />
+            <span asp-validation-for="PublishedYear" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="BorrowFee"></label>
+            <input asp-for="BorrowFee" type="number" step="0.01" />
+            <span asp-validation-for="BorrowFee" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DailyFineRate"></label>
+            <input asp-for="DailyFineRate" type="number" step="0.01" />
+            <span asp-validation-for="DailyFineRate" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="TotalCopies"></label>
+            <input asp-for="TotalCopies" type="number" />
+            <span asp-validation-for="TotalCopies" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CoverImage"></label>
+            <input asp-for="CoverImage" type="file" accept="image/*"
+                   onchange="previewImage(this)" />
+            <span asp-validation-for="CoverImage" class="text-danger"></span>
+            <img id="imgPreview" class="img-preview" alt="Preview" />
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function previewImage(input) {
+        const preview = document.getElementById('imgPreview');
+        if (input.files && input.files[0]) {
+            preview.src = URL.createObjectURL(input.files[0]);
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+</script>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

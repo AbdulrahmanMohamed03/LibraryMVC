@@ -13,5 +13,6 @@ namespace Project.Application.Services.Interfaces
         AuthorDto Create(CreateAuthorDto dto);
         AuthorDto? Update(UpdateAuthorDto dto);
         bool Delete(int id);
+        AuthorWithBooksDto? GetWithBooks(int id);
     }
 }
