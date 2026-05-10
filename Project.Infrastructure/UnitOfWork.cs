@@ -18,11 +18,15 @@ namespace Project.Infrastructure
             Categories = new CategoryRepository(_context);
             Authors = new AuthorRepository(_context);
             SubscriptionPlans = new SubscriptionPlanRepository(_context);
+            Account = new AccountRepository(_context);
 
         }
         public ICategoryRepository Categories { get; private set; }
         public IAuthorRepository Authors { get; private set; }
         public ISubscriptionPlanRepository SubscriptionPlans { get; private set; }
+
+        public IAccountRepository Account { get; private set; }
+
 
         public void Dispose()
         {

@@ -11,6 +11,8 @@ namespace Project.Core
 
         IAuthorRepository Authors { get; }
         ISubscriptionPlanRepository SubscriptionPlans { get; }
+
+        IAccountRepository Account { get; }
         int Save();
     }
 }
