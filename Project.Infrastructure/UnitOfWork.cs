@@ -20,12 +20,13 @@ namespace Project.Infrastructure
             SubscriptionPlans = new SubscriptionPlanRepository(_context);
             Account = new AccountRepository(_context);
             Books = new BookRepository(_context);
-
+            Reservations = new ReservationRepository(_context);
         }
         public ICategoryRepository Categories { get; private set; }
         public IAuthorRepository Authors { get; private set; }
         public IBookRepository Books { get; private set; }
         public ISubscriptionPlanRepository SubscriptionPlans { get; private set; }
+        public IReservationRepository Reservations { get; private set; }
 
         public IAccountRepository Account { get; private set; }
 

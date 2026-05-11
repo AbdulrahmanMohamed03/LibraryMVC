@@ -1,4 +1,4 @@
-﻿@model Project.Application.ViewModels.Book.BookViewModel
+﻿@* @model Project.Application.ViewModels.Book.BookViewModel
 
 @{
     ViewData["Title"] = "Book Details";
@@ -109,5 +109,223 @@
 
 <div class="form-actions">
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div> *@
+
+@model Project.Application.ViewModels.Book.BookViewModel
+
+@{
+    ViewData["Title"] = "Book Details";
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    var isLibrarianOrAdmin = User.IsInRole("Admin") || User.IsInRole("Librarian");
+}
+
+<style>
+    h2 {
+        margin-bottom: 16px;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #ddd;
+        margin-bottom: 24px;
+    }
+
+    .details-layout {
+        display: flex;
+        gap: 40px;
+        align-items: flex-start;
+    }
+
+    .cover-box img {
+        width: 160px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+
+    .no-cover-box {
+        width: 160px;
+        height: 220px;
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: 13px;
+    }
+
+    dl {
+        font-size: 14px;
+        flex: 1;
+    }
+
+    dt {
+        font-weight: 600;
+        color: #333;
+        margin-top: 12px;
+    }
+
+    dd {
+        color: #555;
+        margin: 2px 0 0 0;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        color: #fff;
+    }
+
+    .badge-success {
+        background: #4caf50;
+    }
+
+    .badge-danger {
+        background: #e25555;
+    }
+
+
+    .reservation-box {
+        margin-top: 24px;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 450px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 28px;
+    }
+
+    .btn {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-block;
+    }
+
+    .btn-warning {
+        background: #f0a500;
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background: #9e9e9e;
+        color: #fff;
+    }
+
+    .btn-primary {
+        background: #1565c0;
+        color: #fff;
+    }
+</style>
+
+<h2>Book Details</h2>
+<hr />
+
+<div class="details-layout">
+
+    <div class="cover-box">
+        @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
+        {
+            <img src="@Model.CoverImageUrl" alt="@Model.Title cover" />
+        }
+        else
+        {
+            <div class="no-cover-box">No Image</div>
+        }
+    </div>
+
+ 
+    <div style="flex: 1;">
+        <dl>
+            <dt>Title</dt>
+            <dd>@Model.Title</dd>
+
+            <dt>Author</dt>
+            <dd>@Model.AuthorName</dd>
+
+            <dt>Category</dt>
+            <dd>@Model.CategoryName</dd>
+
+            <dt>Description</dt>
+            <dd>@(Model.Description ?? "—")</dd>
+
+            <dt>Availability</dt>
+            <dd>
+                @if (Model.IsAvailable)
+                {
+                    <span class="badge badge-success">@Model.AvailableCopies Available</span>
+                }
+                else
+                {
+                    <span class="badge badge-danger">All Copies Checked Out</span>
+                }
+            </dd>
+
+         
+            <dt>Borrow Fee / Daily Fine</dt>
+            <dd>@Model.BorrowFee.ToString("C") / @Model.DailyFineRate.ToString("C")</dd>
+        </dl>
+
+     
+        @if (!Model.IsAvailable)
+        {
+            @if (isAuthenticated && !isLibrarianOrAdmin)
+            {
+                <div class="reservation-box" style="background:#fff8e1; border:1px solid #ffd54f;">
+                    <div style="font-size:15px; font-weight:600; color:#e65100; margin-bottom:6px;">
+                        📭 Join the Waiting List
+                    </div>
+                    <div style="font-size:13px; color:#5d4037; margin-bottom:14px;">
+                        Reserve your place in the queue and get notified when a copy becomes available.
+                    </div>
+                    <a asp-controller="Reservations"
+                       asp-action="Confirm"
+                       asp-route-id="@Model.Id"
+                       class="btn btn-primary">
+                        📋 Reserve This Book
+                    </a>
+                </div>
+            }
+            else if (!isAuthenticated)
+            {
+                <div class="reservation-box" style="background:#f5f5f5; border:1px solid #ddd; color:#555; font-size:14px;">
+                    📭 All copies are checked out.
+                    <a asp-controller="Account" asp-action="Login" style="color:#1565c0; font-weight:600;">Sign in</a> to join the reservation queue.
+                </div>
+            }
+            else if (isLibrarianOrAdmin)
+            {
+                <div class="reservation-box" style="background:#fce4ec; border:1px solid #f48fb1; color:#880e4f; font-size:13px;">
+                    📭 <strong>Librarian Note:</strong> All copies are currently out. The system will automatically notify the next person in the queue upon return.
+                </div>
+            }
+        }
+
+        @* <div class="reservation-box" style="background:#fff8e1; border:1px solid #ffd54f;">
+            <a asp-controller="Reservations"
+               asp-action="Confirm"
+               asp-route-id="@Model.Id"
+               class="btn btn-primary">
+                📋 Reserve This Book
+            </a>
+        </div> *@
+    </div>
+</div>
+
+<div class="form-actions">
+    @if (isLibrarianOrAdmin)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    }
     <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>

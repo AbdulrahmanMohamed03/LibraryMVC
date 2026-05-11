@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Project.Core.Enums
 {
-    public enum ReservationStatus
+    public enum ReservationStatus :  byte
     {
         Pending = 1,
         Ready = 2,
