@@ -29,6 +29,8 @@ namespace Project.MVC
             builder.Services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IReservationService, ReservationService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

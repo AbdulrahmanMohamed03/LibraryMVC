@@ -14,6 +14,8 @@ namespace Project.Core
         ISubscriptionPlanRepository SubscriptionPlans { get; }
         IReservationRepository Reservations { get; }
 
+
+        IAccountRepository Account { get; }
         int Save();
     }
 }
