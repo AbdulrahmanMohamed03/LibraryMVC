@@ -19,13 +19,13 @@ namespace Project.Infrastructure
             Authors = new AuthorRepository(_context);
             SubscriptionPlans = new SubscriptionPlanRepository(_context);
             Books = new BookRepository(_context);
-
+            Reservations = new ReservationRepository(_context);
         }
         public ICategoryRepository Categories { get; private set; }
         public IAuthorRepository Authors { get; private set; }
         public IBookRepository Books { get; private set; }
         public ISubscriptionPlanRepository SubscriptionPlans { get; private set; }
-
+        public IReservationRepository Reservations { get; private set; }
         public void Dispose()
         {
             _context.Dispose();

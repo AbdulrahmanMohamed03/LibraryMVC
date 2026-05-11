@@ -39,7 +39,7 @@ namespace Project.Application.ViewModels.Book
         public decimal DailyFineRate { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Total copies must be at least 1.")]
+        //[Range(1, int.MaxValue, ErrorMessage = "Total copies must be at least 1.")]
         public int TotalCopies { get; set; }
 
         public string? CoverImageUrl { get; set; }

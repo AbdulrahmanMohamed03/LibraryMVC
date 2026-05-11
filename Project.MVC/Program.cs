@@ -28,7 +28,7 @@ namespace Project.MVC
             builder.Services.AddScoped<IBookService, BookService>();
             builder.Services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
             builder.Services.AddScoped<IAdminService, AdminService>();
-
+            builder.Services.AddScoped<IReservationService, ReservationService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -42,6 +42,7 @@ namespace Project.MVC
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
             using (var scope = app.Services.CreateScope())
             {

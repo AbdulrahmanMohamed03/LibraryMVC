@@ -12,6 +12,8 @@ namespace Project.Core
         IAuthorRepository Authors { get; }
         IBookRepository Books { get; }
         ISubscriptionPlanRepository SubscriptionPlans { get; }
+        IReservationRepository Reservations { get; }
+
         int Save();
     }
 }
