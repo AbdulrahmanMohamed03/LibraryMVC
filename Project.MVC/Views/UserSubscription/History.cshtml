@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Project.Application.ViewModels.UserSubscription.UserSubscriptionVM>
+
+@{
+    ViewData["Title"] = "Subscription History";
+}
+
+<h2 class="mb-4">Subscription History</h2>
+<a asp-action="Index" class="btn btn-secondary mb-3">Back to My Subscription</a>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No subscription history found.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var sub in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold @(sub.IsActive ? "text-success" : "text-secondary")">
+                            @sub.PlanName
+                        </h5>
+                        <hr />
+                        <p class="card-text mb-1">
+                            <strong>Fee:</strong> @sub.MonthlyFee.ToString("C")
+                        </p>
+                        <p class="card-text mb-1">
+                            <strong>Start:</strong> @sub.StartDate.ToString("MMM dd, yyyy")
+                        </p>
+                        <p class="card-text mb-1">
+                            <strong>End:</strong> @sub.EndDate.ToString("MMM dd, yyyy")
+                        </p>
+                        <p class="card-text mb-0">
+                            <strong>Status:</strong>
+                            @if (sub.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Cancelled / Expired</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

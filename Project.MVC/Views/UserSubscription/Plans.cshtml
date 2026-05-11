@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Project.Application.ViewModels.SubscriptionPlan.SubscriptionPlanDTO>
+
+@{
+    ViewData["Title"] = "Available Plans";
+}
+
+<h2 class="mb-4">Available Plans</h2>
+<a asp-action="Index" class="btn btn-secondary mb-3">Back to My Subscription</a>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No plans available at the moment.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var plan in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold text-primary">@plan.Name</h5>
+                        <hr />
+                        <p class="card-text mb-1">
+                            <strong>Fee:</strong> @plan.MonthlyFee.ToString("C")
+                        </p>
+                        <p class="card-text mb-1">
+                            <strong>Borrow Limit:</strong> @plan.MonthlyBorrowLimit Books
+                        </p>
+                        <p class="card-text mb-0">
+                            <strong>Loan Duration:</strong> @plan.LoanDurationDays Days
+                        </p>
+                    </div>
+                    <div class="card-footer bg-light border-0 text-center py-3">
+                        <form asp-action="Subscribe" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="planId" value="@plan.Id" />
+                            <button type="submit"
+                                    class="btn btn-primary btn-sm rounded-pill px-4"
+                                    onclick="return confirm('Subscribe to @plan.Name?')">
+                                Subscribe
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

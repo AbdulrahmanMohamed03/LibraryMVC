@@ -12,10 +12,14 @@ namespace Project.Core
         IAuthorRepository Authors { get; }
         IBookRepository Books { get; }
         ISubscriptionPlanRepository SubscriptionPlans { get; }
+<<<<<<< usersubscription
+        IUserSubscriptionRepository UserSubscriptions { get; }
+=======
         IReservationRepository Reservations { get; }
 
 
         IAccountRepository Account { get; }
+>>>>>>> main
         int Save();
     }
 }

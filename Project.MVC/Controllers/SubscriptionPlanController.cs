@@ -29,7 +29,7 @@ namespace Project.MVC.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("CreateSubscriptionPlanView", planDTO);
+                return View(planDTO);
             }
 
             var isCreated = _planService.CreateSubscriptionPlan(planDTO);
@@ -37,7 +37,7 @@ namespace Project.MVC.Controllers
             {
                 ModelState.AddModelError("Name", "Subscription Plan already exists");
 
-                return View("CreateSubscriptionPlanView", planDTO);
+                return View(planDTO);
             }
 
             return RedirectToAction("Index");

@@ -1,0 +1,68 @@
+﻿@model Project.Application.ViewModels.UserSubscription.CreateUserSubscriptionVM
+
+@{
+    ViewData["Title"] = "Choose Your Plan";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Choose Your Plan</h1>
+    <p class="text-muted text-center">Select the best subscription plan that suits your needs.</p>
+
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        @* حقل مخفي للـ PlanId سيتم تحديثه عند الضغط على كارت *@
+        <input type="hidden" asp-for="PlanId" id="selectedPlanId" />
+
+        <div class="row mt-5">
+            @if (ViewBag.Plans != null)
+            {
+                foreach (var plan in ViewBag.Plans)
+                {
+                    <div class="col-md-4">
+                        @* الكارت ده هيتغير لونه لما نضغط عليه *@
+                        <div class="card h-100 shadow-sm plan-card" data-id="@plan.Id" style="cursor: pointer; transition: 0.3s;">
+                            <div class="card-body text-center">
+                                <h3 class="card-title text-primary">@plan.Name</h3>
+                                <hr />
+                                <h2 class="display-6">@plan.MonthlyFee <small class="text-muted" style="font-size: 0.5em;">EGP / Month</small></h2>
+                                <p class="card-text mt-3">
+                                    <strong>Duration:</strong> @plan.LoanDurationDays Days
+                                </p>
+                            </div>
+                            <div class="card-footer bg-white border-0 pb-4">
+                                <button type="button" class="btn btn-outline-primary w-100 select-btn">Select This Plan</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="text-center mt-5">
+            <span asp-validation-for="PlanId" class="text-danger d-block mb-2"></span>
+            <button type="submit" class="btn btn-success btn-lg px-5 shadow">Confirm Subscription</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // لما نضغط على أي كارت
+            $('.plan-card').click(function () {
+                // نشيل التحديد من الكل
+                $('.plan-card').removeClass('border-primary shadow-lg').css('transform', 'scale(1)');
+                $('.select-btn').text('Select This Plan').removeClass('btn-primary').addClass('btn-outline-primary');
+
+                // نضيف التحديد للكارت اللي ضغطنا عليه
+                $(this).addClass('border-primary shadow-lg').css('transform', 'scale(1.05)');
+                $(this).find('.select-btn').text('Selected').removeClass('btn-outline-primary').addClass('btn-primary');
+
+                // نحدث قيمة الـ Input المخفي بـ ID الخطة
+                $('#selectedPlanId').val($(this).data('id'));
+            });
+        });
+    </script>
+}

@@ -1,0 +1,84 @@
+﻿@model Project.Application.ViewModels.UserSubscription.UserSubscriptionVM
+
+@{
+    ViewData["Title"] = "My Subscription";
+}
+
+<h2 class="mb-4">My Subscription</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model == null || !Model.IsActive)
+{
+    <div class="alert alert-info">
+        You have no active subscription.
+    </div>
+    <a asp-action="Plans" class="btn btn-primary">Browse Plans</a>
+}
+else
+{
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <h5 class="card-title fw-bold text-primary">@Model.PlanName</h5>
+                    <hr />
+                    <p class="card-text mb-1">
+                        <strong>Fee:</strong> @Model.MonthlyFee.ToString("C")
+                    </p>
+                    <p class="card-text mb-1">
+                        <strong>Start:</strong> @Model.StartDate.ToString("MMM dd, yyyy")
+                    </p>
+                    <p class="card-text mb-1">
+                        <strong>Expires:</strong> @Model.EndDate.ToString("MMM dd, yyyy")
+                    </p>
+                    <p class="card-text mb-0">
+                        <strong>Status:</strong>
+                        <span class="badge bg-success">Active</span>
+                    </p>
+                </div>
+                <div class="card-footer bg-light border-0 d-flex justify-content-around py-3">
+
+                    <form asp-action="Renew" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit"
+                                class="btn btn-outline-success btn-sm rounded-pill px-3"
+                                onclick="return confirm('Renew your subscription?')">
+                            Renew
+                        </button>
+                    </form>
+
+                    <form asp-action="Cancel" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit"
+                                class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                onclick="return confirm('Are you sure you want to cancel?')">
+                            Cancel
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <a asp-action="History"
+                   class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    View History
+                </a>
+            </div>
+        </div>
+    </div>
+}
