@@ -1,0 +1,188 @@
+﻿@model Project.Application.ViewModels.Reservation.UserReservationsViewModel
+@{
+    ViewData["Title"] = "My Reservations";
+}
+
+<style>
+    /* ── Layout ── */
+    .reservations-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+    h2 { margin-bottom:4px; }
+    hr { border:none; border-top:1px solid #ddd; margin-bottom:24px; }
+
+    /* ── Stat cards ── */
+    .stats-row { display:flex; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
+    .stat-card  { background:#f9f9f9; border:1px solid #e0e0e0; border-radius:8px;
+                  padding:16px 24px; text-align:center; min-width:120px; }
+    .stat-card .stat-number { font-size:28px; font-weight:700; color:#1565c0; }
+    .stat-card .stat-label  { font-size:12px; color:#777; margin-top:2px; }
+
+    /* ── Alerts ── */
+    .alert       { padding:12px 16px; border-radius:6px; margin-bottom:16px; font-size:14px; }
+    .alert-error { background:#fdecea; border:1px solid #f5c6cb; color:#721c24; }
+    .alert-success { background:#d4edda; border:1px solid #c3e6cb; color:#155724; }
+    .alert-urgent  { background:#fff3cd; border:1px solid #ffc107; color:#856404;
+                     display:flex; align-items:center; gap:8px; }
+
+    /* ── Table ── */
+    .table-wrapper { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th    { background:#f5f5f5; padding:10px 14px; text-align:left;
+            font-weight:600; color:#333; border-bottom:2px solid #ddd; }
+    td    { padding:10px 14px; border-bottom:1px solid #eee; vertical-align:middle; }
+    tr:hover td { background:#fafafa; }
+
+    /* ── Badges ── */
+    .badge { display:inline-block; padding:3px 10px; border-radius:12px;
+             font-size:11px; font-weight:600; color:#fff; }
+    .badge-warning   { background:#f0a500; }
+    .badge-success   { background:#4caf50; }
+    .badge-secondary { background:#9e9e9e; }
+    .badge-danger    { background:#e25555; }
+
+    /* ── Book thumb ── */
+    .book-thumb { display:flex; align-items:center; gap:10px; }
+    .book-thumb img { width:36px; height:50px; object-fit:cover;
+                      border-radius:3px; border:1px solid #ddd; }
+    .book-thumb .no-img { width:36px; height:50px; background:#eee;
+                           border-radius:3px; display:flex; align-items:center;
+                           justify-content:center; font-size:10px; color:#aaa; }
+
+    /* ── Actions ── */
+    .btn { padding:6px 16px; border:none; border-radius:4px; cursor:pointer;
+           text-decoration:none; font-size:13px; display:inline-block; }
+    .btn-danger    { background:#e25555; color:#fff; }
+    .btn-secondary { background:#9e9e9e; color:#fff; }
+    .btn:hover     { opacity:.88; }
+
+    .empty-state { text-align:center; padding:60px 0; color:#999; }
+    .empty-state p { font-size:16px; margin-top:8px; }
+</style>
+
+<div class="reservations-header">
+    <div>
+        <h2>My Reservations</h2>
+        <p style="color:#777;font-size:14px;margin:0">
+            Track your place in the queue and pickup notifications.
+        </p>
+    </div>
+    <a asp-controller="Books" asp-action="Index" class="btn btn-secondary">Browse Books</a>
+</div>
+<hr />
+
+@* ── Notifications ── *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-error">@TempData["ErrorMessage"]</div>
+}
+
+@* ── Urgent expiry alerts ── *@
+@foreach (var urgent in Model.UrgentAlerts)
+{
+    <div class="alert alert-urgent">
+        ⚠ <strong>Expiring Soon:</strong>
+        Your reservation for <strong>@urgent.BookTitle</strong> is ready for pickup
+        and expires on <strong>@urgent.ExpiresAtDisplay</strong>. Pick it up at the desk!
+    </div>
+}
+
+@* ── Stat cards ── *@
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-number">@Model.TotalCount</div>
+        <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" style="color:#f0a500">@Model.PendingCount</div>
+        <div class="stat-label">In Queue</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" style="color:#4caf50">@Model.ReadyCount</div>
+        <div class="stat-label">Ready for Pickup</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" style="color:#9e9e9e">@Model.FulfilledCount</div>
+        <div class="stat-label">Fulfilled</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" style="color:#e25555">@Model.CancelledCount</div>
+        <div class="stat-label">Cancelled</div>
+    </div>
+</div>
+
+@* ── Reservations table ── *@
+@if (!Model.Reservations.Any())
+{
+    <div class="empty-state">
+        <div style="font-size:48px">📚</div>
+        <p>You have no reservations yet.</p>
+        <a asp-controller="Books" asp-action="Index" class="btn btn-secondary">Find a Book</a>
+    </div>
+}
+else
+{
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Book</th>
+                    <th>Author</th>
+                    <th>Reserved On</th>
+                    <th>Expires / Pick-Up By</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model.Reservations)
+                {
+                    <tr>
+                        <td>
+                            <div class="book-thumb">
+                                @if (!string.IsNullOrEmpty(r.BookCoverUrl))
+                                {
+                                    <img src="@r.BookCoverUrl" alt="@r.BookTitle" />
+                                }
+                                else
+                                {
+                                    <div class="no-img">N/A</div>
+                                }
+                                <span>@r.BookTitle</span>
+                            </div>
+                        </td>
+                        <td>@r.BookAuthor</td>
+                        <td>@r.ReservedAtDisplay</td>
+                        <td>
+                            @r.ExpiresAtDisplay
+                            @if (r.IsExpiringSoon)
+                            {
+                                <span style="color:#e25555;font-size:11px;display:block">
+                                    ⚠ Expires soon!
+                                </span>
+                            }
+                        </td>
+                        <td><span class="badge @r.StatusBadgeClass">@r.StatusLabel</span></td>
+                        <td>
+                            @if (r.IsCancellable)
+                            {
+                                <form asp-action="Cancel" asp-route-id="@r.Id"
+                                      method="post" style="display:inline"
+                                      onsubmit="return confirm('Cancel reservation for \'@r.BookTitle\'?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger">Cancel</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span style="color:#bbb;font-size:13px">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
