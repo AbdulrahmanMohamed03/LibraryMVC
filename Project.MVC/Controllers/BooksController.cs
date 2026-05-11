@@ -84,20 +84,46 @@ namespace Project.Web.Controllers
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            // delete image file from disk before deleting the book
             var book = _service.GetById(id);
-            if (book is not null && !string.IsNullOrEmpty(book.CoverImageUrl))
+
+            if (book is null)
+                return NotFound();
+
+            // ❌ BLOCK DELETE if copies are still available
+            if (book.AvailableCopies > 0)
+            {
+                ModelState.AddModelError("", "Cannot delete book while available copies exist.");
+                return View("Delete", book);
+            }
+
+            // delete image file if exists
+            if (!string.IsNullOrEmpty(book.CoverImageUrl))
             {
                 var filePath = Path.Combine(
                     _env.WebRootPath,
                     book.CoverImageUrl.TrimStart('/')
                 );
+
                 if (System.IO.File.Exists(filePath))
                     System.IO.File.Delete(filePath);
             }
 
             var deleted = _service.Delete(id);
-            return deleted ? RedirectToAction(nameof(Index)) : NotFound();
+
+            if (!deleted)
+                return NotFound();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+     
+      
+        // add this action to BooksController
+        [HttpGet]
+        public IActionResult IsISBNAvailable(string isbn, int id = 0)
+        {
+            var exists = _service.ISBNExists(isbn, excludeId: id);
+            return Json(!exists); 
         }
     }
 }

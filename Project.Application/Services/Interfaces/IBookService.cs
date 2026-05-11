@@ -14,5 +14,7 @@ namespace Project.Application.Services.Interfaces
         BookViewModel Create(BookFormViewModel vm, string wwwRootPath);
         BookViewModel? Update(BookFormViewModel vm, string wwwRootPath);
         bool Delete(int id);
+        bool ISBNExists(string isbn, int excludeId = 0);
+        
     }
 }

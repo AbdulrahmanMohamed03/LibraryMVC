@@ -11,5 +11,7 @@ namespace Project.Core.RepositoriesAbstraction
         Book? GetWithDetails(int id);                 
         IEnumerable<Book> GetByAuthor(int authorId);
         IEnumerable<Book> GetByCategory(int categoryId);
+        bool ISBNExists(string isbn, int excludeId = 0);
+       
     }
 }
