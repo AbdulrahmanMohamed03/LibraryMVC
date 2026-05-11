@@ -5,12 +5,9 @@ namespace Project.Infrastructure.DataSeeding
 {
     public static class IdentitySeeder
     {
-        public static async Task SeedAsync(
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             string roleName = "Admin";
-
             if (!await roleManager.RoleExistsAsync(roleName))
             {
                 await roleManager.CreateAsync(new IdentityRole(roleName));
