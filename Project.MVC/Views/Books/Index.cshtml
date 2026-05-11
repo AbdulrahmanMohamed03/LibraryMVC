@@ -1,0 +1,160 @@
+﻿@model Project.Application.ViewModels.Book.BookIndexViewModel
+
+@{
+    ViewData["Title"] = "Books";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 14px;
+    }
+    .btn-primary   { background: #4a90e2; color: #fff; }
+    .btn-warning   { background: #f0a500; color: #fff; }
+    .btn-danger    { background: #e25555; color: #fff; }
+    .btn-info      { background: #5bc0de; color: #fff; }
+    .btn-secondary { background: #9e9e9e; color: #fff; }
+    .btn-sm        { padding: 4px 10px; font-size: 12px; }
+
+    .search-bar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        max-width: 420px;
+    }
+    .search-bar input {
+        flex: 1;
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .stats { color: #666; margin-bottom: 16px; font-size: 14px; }
+    .stats strong { color: #333; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    thead { background: #333; color: #fff; }
+    th, td { padding: 10px 12px; border: 1px solid #ddd; text-align: left; }
+    tbody tr:nth-child(even) { background: #f9f9f9; }
+    tbody tr:hover { background: #f1f1f1; }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        color: #fff;
+    }
+    .badge-success { background: #4caf50; }
+    .badge-danger  { background: #e25555; }
+
+    .actions { display: flex; gap: 6px; }
+    .no-data { text-align: center; color: #999; padding: 20px; }
+
+    /* 👇 cover thumbnail in table */
+    .cover-thumb {
+        width: 40px;
+        height: 55px;
+        object-fit: cover;
+        border-radius: 3px;
+        border: 1px solid #ddd;
+    }
+    .no-cover {
+        width: 40px;
+        height: 55px;
+        background: #eee;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #999;
+    }
+</style>
+
+<div class="page-header">
+    <h2>Books</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Add Book</a>
+</div>
+
+<form method="get" class="search-bar">
+    <input type="text" name="searchTerm" value="@Model.SearchTerm"
+           placeholder="Search by title, author, ISBN..." />
+    <button type="submit" class="btn btn-secondary">Search</button>
+</form>
+
+<p class="stats">
+    Total: <strong>@Model.TotalBooks</strong> |
+    Available: <strong>@Model.AvailableBooks</strong>
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Cover</th>
+            <th>Title</th>
+            <th>ISBN</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Copies</th>
+            <th>Available</th>
+            <th>Borrow Fee</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model.FilteredBooks)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                    {
+                        <img src="@book.CoverImageUrl" alt="Cover" class="cover-thumb" />
+                    }
+                    else
+                    {
+                        <div class="no-cover">N/A</div>
+                    }
+                </td>
+                <td>@book.Title</td>
+                <td>@book.ISBN</td>
+                <td>@book.AuthorName</td>
+                <td>@book.CategoryName</td>
+                <td>@book.TotalCopies</td>
+                <td>
+                    @if (book.IsAvailable)
+                    {
+                        <span class="badge badge-success">@book.AvailableCopies</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-danger">0</span>
+                    }
+                </td>
+                <td>@book.BorrowFee.ToString("C")</td>
+                <td class="actions">
+                    <a asp-action="Details" asp-route-id="@book.Id" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Edit"    asp-route-id="@book.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete"  asp-route-id="@book.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+        @if (!Model.FilteredBooks.Any())
+        {
+            <tr>
+                <td colspan="9" class="no-data">No books found.</td>
+            </tr>
+        }
+    </tbody>
+</table>

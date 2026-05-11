@@ -45,72 +45,80 @@ namespace Project.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AssignRole()
+        public async Task<IActionResult> ManageRoles()
         {
-            ViewBag.Roles = new SelectList(
-                await _adminService.GetAllRolesAsync(),"Name", "Name");
-            return View(new AssignRoleVm());
+            var vm = new ManageUserRolesVm
+            {
+                AllRoles = (await _adminService.GetAllRolesAsync())
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Name,
+                    Text = r.Name
+                }).ToList()
+            };
+
+            return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignRole(AssignRoleVm vm)
+        public async Task<IActionResult> ManageRoles(ManageUserRolesVm vm)
         {
+            vm.AllRoles = (await _adminService.GetAllRolesAsync())
+            .Select(r => new SelectListItem
+            {
+                Value = r.Name,
+                Text = r.Name
+            }).ToList();
+            ModelState.Remove("SelectedRole");
             if (!ModelState.IsValid)
-            {
-                ViewBag.Roles = new SelectList(await _adminService.GetAllRolesAsync(), "Name","Name");
                 return View(vm);
-            }
-
-            var result = await _adminService.AssignRoleToUserAsync(vm);
-            if (!result.IsSuccess)
-            {
-                ViewBag.Roles = new SelectList(await _adminService.GetAllRolesAsync(),"Name","Name");
-                ModelState.AddModelError("", result.Message);
-                return View(vm);
-            }
-
-            TempData["Success"] = result.Message;
-            return RedirectToAction(nameof(AssignRole));
+            vm.Roles = await _adminService.GetUserRolesAsync(vm.Email);
+            return View(vm);
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> RemoveRole(string email)
-        //{
-        //    var roles = await _adminService.GetUserRolesAsync(email);
-        //    ViewBag.Roles = new SelectList(roles,"RoleName","RoleName");
-        //    var vm = new AssignRoleVm
-        //    {
-        //        Email = email
-        //    };
-        //    return View(vm);
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddRole(ManageUserRolesVm vm)
+        {
+            vm.AllRoles = (await _adminService.GetAllRolesAsync())
+            .Select(r => new SelectListItem
+            {
+                Value = r.Name,
+                Text = r.Name
+            }).ToList();
+            ModelState.Remove("Roles");
+            if (!ModelState.IsValid)
+            {
+                vm.Roles = await _adminService.GetUserRolesAsync(vm.Email);
+                return View("ManageRoles", vm);
+            }
+            var result = await _adminService.AssignRoleToUserAsync(new AssignRoleVm
+            {
+                Email = vm.Email,
+                RoleName = vm.SelectedRole
+            });
+            vm.Roles = await _adminService.GetUserRolesAsync(vm.Email);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError("", result.Message);
+                return View("ManageRoles", vm);
+            }
+            TempData["Success"] = result.Message;
+            return View("ManageRoles", vm);
+        }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> RemoveRole(AssignRoleVm vm)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        ViewBag.Roles = new SelectList(
-        //            await _adminService.GetAllRolesAsync(),
-        //            "Name",
-        //            "Name");
-
-        //        return View(vm);
-        //    }
-
-        //    var result = await _adminService.RemoveUserFromRoleAsync(vm);
-        //    if (!result.IsSuccess)
-        //    {
-        //        ViewBag.Roles = new SelectList(await _adminService.GetAllRolesAsync(), "Name", "Name");
-        //        ModelState.AddModelError("", result.Message);
-        //        return View(vm);
-        //    }
-
-        //    TempData["Success"] = result.Message;
-        //    return RedirectToAction(nameof(RemoveRole));
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteRole(string email, string roleName)
+        {
+            await _adminService.RemoveUserFromRoleAsync(new AssignRoleVm
+            {
+                Email = email,
+                RoleName = roleName
+            });
+            return RedirectToAction(nameof(ManageRoles), new { email });
+        }
     }
 
 }

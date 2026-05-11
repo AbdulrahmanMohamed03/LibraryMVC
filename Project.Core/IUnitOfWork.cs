@@ -10,6 +10,7 @@ namespace Project.Core
         ICategoryRepository Categories { get; }
 
         IAuthorRepository Authors { get; }
+        IBookRepository Books { get; }
         ISubscriptionPlanRepository SubscriptionPlans { get; }
 
         IAccountRepository Account { get; }

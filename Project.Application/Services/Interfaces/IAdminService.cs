@@ -12,7 +12,7 @@ namespace Project.Application.Services.Interfaces
         Task<List<RoleVM>> GetAllRolesAsync();
         Task<CreateLibrarianVM> CreateLibrarianAsync(CreateLibrarianVM vm);
         Task<AssignRoleVm> AssignRoleToUserAsync(AssignRoleVm vm);
-        //Task<AssignRoleVm> RemoveUserFromRoleAsync(AssignRoleVm vm);
-        //Task<List<AssignRoleVm>> GetUserRolesAsync(string email);
+        Task<AssignRoleVm> RemoveUserFromRoleAsync(AssignRoleVm vm);
+        Task<List<UserRoleVm>> GetUserRolesAsync(string email);
     }
 }
