@@ -2,6 +2,7 @@
 using Microsoft.VisualBasic;
 using Project.Application.Services.Interfaces;
 using Project.Application.ViewModels.Account;
+using Project.Core;
 using Project.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,13 @@ namespace Project.Application.Services.Implementaion
     {
         protected readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AccountService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             this.signInManager = signInManager;
+            this._unitOfWork = unitOfWork;
         }
 
         public async Task<SignInResult> Login(LoginVM model)
@@ -61,6 +64,7 @@ namespace Project.Application.Services.Implementaion
                     };
                 }
                 await signInManager.SignInAsync(user, false);
+
 
                 return new ServiceResult
                 {

@@ -197,5 +197,8 @@ namespace Project.Application.Services.Implementaion
             _uow.Save();
             return true;
         }
+        public bool ISBNExists(string isbn, int excludeId = 0)
+    => _uow.Books.ISBNExists(isbn, excludeId);
+
     }
 }

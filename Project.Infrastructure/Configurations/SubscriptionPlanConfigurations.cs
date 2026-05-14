@@ -13,6 +13,16 @@ namespace Project.Infrastructure.Configurations
         {
             builder.Property(x => x.MonthlyFee)
                    .HasPrecision(18, 2);
+            builder.HasData(
+                new SubscriptionPlan
+                {
+                    Id = 1,
+                    Name = "Free",
+                    MonthlyFee = 0m,
+                    LoanDurationDays = 2,
+                    MonthlyBorrowLimit = 1
+                }
+            );
         }
     }
 }

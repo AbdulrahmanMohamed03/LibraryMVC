@@ -47,42 +47,56 @@
 <h2>Delete Book</h2>
 <hr />
 
-<div class="alert-danger">
-    Are you sure you want to delete this book? This action cannot be undone.
-    @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
-    {
-        <br /><strong>The cover image will also be permanently deleted from the server.</strong>
-    }
-</div>
-
-<div class="details-layout">
-
-    <div class="cover-box">
-        @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
-        {
-            <img src="@Model.CoverImageUrl" alt="@Model.Title cover" />
-        }
-        else
-        {
-            <div class="no-cover-box">No Image</div>
-        }
+@if (Model.AvailableCopies > 0)
+{
+    
+    <div class="alert-danger">
+        ⚠ You cannot delete this book because there are still available copies (@Model.AvailableCopies).
     </div>
 
-    <dl>
-        <dt>Title</dt>        <dd>@Model.Title</dd>
-        <dt>ISBN</dt>         <dd>@Model.ISBN</dd>
-        <dt>Author</dt>       <dd>@Model.AuthorName</dd>
-        <dt>Category</dt>     <dd>@Model.CategoryName</dd>
-        <dt>Total Copies</dt> <dd>@Model.TotalCopies</dd>
-        <dt>Available</dt>    <dd>@Model.AvailableCopies</dd>
-    </dl>
-</div>
-
-<form asp-action="Delete" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="id" value="@Model.Id" />
     <div class="form-actions">
-        <button type="submit" class="btn btn-danger">Yes, Delete</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </div>
-</form>
+}
+else
+{
+    <div class="alert-danger">
+        Are you sure you want to delete this book? This action cannot be undone.
+    </div>
+
+    <div class="details-layout">
+
+        <div class="cover-box">
+            @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
+            {
+                <img src="@Model.CoverImageUrl" alt="@Model.Title cover" />
+            }
+            else
+            {
+                <div class="no-cover-box">No Image</div>
+            }
+        </div>
+
+        <dl>
+            <dt>Title</dt> <dd>@Model.Title</dd>
+            <dt>ISBN</dt> <dd>@Model.ISBN</dd>
+            <dt>Author</dt> <dd>@Model.AuthorName</dd>
+            <dt>Category</dt> <dd>@Model.CategoryName</dd>
+            <dt>Total Copies</dt> <dd>@Model.TotalCopies</dd>
+            <dt>Available</dt> <dd>@Model.AvailableCopies</dd>
+        </dl>
+    </div>
+
+    <form asp-action="Delete" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">
+                Yes, Delete
+            </button>
+
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+}

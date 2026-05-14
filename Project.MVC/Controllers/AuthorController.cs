@@ -72,5 +72,23 @@ namespace Project.MVC.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateModal(CreateAuthorDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var author = _service.Create(dto);
+
+            return Json(new
+            {
+                id = author.Id,
+                text = author.FullName
+            });
+        }
+
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using Project.Infrastructure.Data;
 namespace Project.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260514170005_edit foriegn key in Borrowing")]
+    partial class editforiegnkeyinBorrowing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -402,6 +405,7 @@ namespace Project.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProcessedByLibrarianId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("RequestedAt")
@@ -526,7 +530,7 @@ namespace Project.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            LoanDurationDays = 2,
+                            LoanDurationDays = 0,
                             MonthlyBorrowLimit = 1,
                             MonthlyFee = 0m,
                             Name = "Free"
@@ -713,7 +717,8 @@ namespace Project.Infrastructure.Migrations
                     b.HasOne("Project.Core.Models.ApplicationUser", "ProcessedByLibrarian")
                         .WithMany()
                         .HasForeignKey("ProcessedByLibrarianId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Project.Core.Models.ApplicationUser", "User")
                         .WithMany("BorrowingRecords")

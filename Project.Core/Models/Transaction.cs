@@ -18,6 +18,8 @@ namespace Project.Core.Models
         public decimal Amount { get; set; }
         public TransactionType Type { get; set; }
         public DateTime RecordedAt { get; set; } = DateTime.UtcNow;
+        public bool IsPaid { get; set; }
+        public DateTime? PaidAt { get; set; }
         public string? Notes { get; set; }
     }
 }

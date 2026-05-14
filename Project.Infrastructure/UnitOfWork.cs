@@ -24,6 +24,8 @@ namespace Project.Infrastructure
             Account = new AccountRepository(_context);
             Books = new BookRepository(_context);
             Reservations = new ReservationRepository(_context);
+            BorrowingRecords = new BorrowingRepository(_context);
+            Transactions = new TransactionRepository(_context);
         }
         public ICategoryRepository Categories { get; private set; }
         public IAuthorRepository Authors { get; private set; }
@@ -33,7 +35,8 @@ namespace Project.Infrastructure
         public IReservationRepository Reservations { get; private set; }
 
         public IAccountRepository Account { get; private set; }
-
+        public IBorrowingRepository BorrowingRecords { get; private set; }
+        public ITransactionRepository Transactions { get; private set; }
 
         public void Dispose()
         {
