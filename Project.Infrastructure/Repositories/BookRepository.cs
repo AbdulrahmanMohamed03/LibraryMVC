@@ -36,6 +36,9 @@ namespace Project.Infrastructure.Repositories
                        .Include(b => b.Author)
                        .Where(b => b.CategoryId == categoryId)
                        .ToList();
+        public bool ISBNExists(string isbn, int excludeId = 0)
+                => _context.Books.Any(b => b.ISBN == isbn && b.Id != excludeId);
+
     }
 }
 

@@ -12,6 +12,12 @@ namespace Project.Application.ViewModels.Book
 
         [Required(ErrorMessage = "ISBN is required.")]
         [StringLength(20, ErrorMessage = "ISBN must not exceed 20 characters.")]
+        [Remote(
+    action: "IsISBNAvailable",
+    controller: "Books",
+    AdditionalFields = nameof(Id),
+    ErrorMessage = "A book with this ISBN already exists."
+)]
         public string ISBN { get; set; }
 
         [Required(ErrorMessage = "Title is required.")]

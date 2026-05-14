@@ -33,13 +33,57 @@
         border: 1px solid #ddd; border-radius: 4px;
         display: none;
     }
+
+    /* ── Modal ─────────────────────────────────────────────── */
+    .modal-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.5); z-index: 1000;
+        align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+        background: #fff; border-radius: 8px;
+        width: 460px; max-width: 95vw;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        padding: 24px;
+    }
+    .modal-header {
+        display: flex; justify-content: space-between;
+        align-items: center; margin-bottom: 20px;
+    }
+    .modal-header h3 { margin: 0; font-size: 18px; }
+    .modal-close {
+        background: none; border: none;
+        font-size: 20px; cursor: pointer; color: #666;
+    }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+    /* ── Select2 style fix ──────────────────────────────────── */
+    .select2-container { flex: 1; min-width: 0; }
+    .select2-container .select2-selection--single {
+        height: 38px !important;
+        border: 1px solid #ccc !important;
+        border-radius: 4px !important;
+    }
+    .select2-container .select2-selection--single .select2-selection__rendered {
+        line-height: 38px !important;
+        padding-left: 10px !important;
+        color: #333;
+    }
+    .select2-container .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+    }
+    .select2-container .select2-selection--single .select2-selection__clear {
+        margin-top: 8px;
+    }
 </style>
 
 <div class="form-wrap">
     <h2>@Model.FormTitle</h2>
     <hr />
 
-    <form asp-action="Create" method="post" enctype="multipart/form-data">
+    <form asp-action="Create" method="post"
+          enctype="multipart/form-data" id="bookForm">
         @Html.AntiForgeryToken()
 
         <div class="form-group">
@@ -60,11 +104,33 @@
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
+        {{!-- ── Author: searchable dropdown + add new ────────── --}}
         <div class="form-group">
             <label asp-for="AuthorId"></label>
-            <select asp-for="AuthorId" asp-items="Model.Authors">
-                <option value="">-- Select Author --</option>
-            </select>
+            <div style="display:flex; gap:8px; align-items:center;">
+
+                <select name="AuthorId" id="authorSelect" style="flex:1;">
+                    <option value="">-- Search Author --</option>
+                    @foreach (var author in Model.Authors)
+                    {
+                        if (author.Value == Model.AuthorId.ToString())
+                        {
+                            <option value="@author.Value" selected="selected">@author.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@author.Value">@author.Text</option>
+                        }
+                    }
+                </select>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        onclick="openAuthorModal()"
+                        style="white-space:nowrap; height:38px;">
+                    + New Author
+                </button>
+            </div>
             <span asp-validation-for="AuthorId" class="text-danger"></span>
         </div>
 
@@ -115,18 +181,188 @@
     </form>
 </div>
 
-<script>
-    function previewImage(input) {
-        const preview = document.getElementById('imgPreview');
-        if (input.files && input.files[0]) {
-            preview.src = URL.createObjectURL(input.files[0]);
-            preview.style.display = 'block';
-        } else {
-            preview.style.display = 'none';
-        }
-    }
-</script>
+{{!-- ── Author Modal ──────────────────────────────────────────── --}}
+<div id="authorModalOverlay" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>Add New Author</h3>
+            <button type="button" class="modal-close"
+                    onclick="closeAuthorModal()">✕</button>
+        </div>
+
+        <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="modalAuthorName"
+                   placeholder="Enter full name" />
+            <span class="text-danger" id="modalNameError"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Nationality</label>
+            <input type="text" id="modalAuthorNationality"
+                   placeholder="e.g. Egyptian" />
+        </div>
+
+        <div class="form-group">
+            <label>Bio</label>
+            <textarea id="modalAuthorBio" rows="3"
+                      placeholder="Short biography..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="btn btn-primary"
+                    onclick="submitAuthorModal()">
+                Save Author
+            </button>
+            <button type="button" class="btn btn-secondary"
+                    onclick="closeAuthorModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css"
+          rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js">
+    </script>
+
+    <script>
+        const FORM_KEY = 'bookFormData_create';
+
+        $(document).ready(function () {
+
+            // ── Select2 init — filters existing options as you type ───
+            $('#authorSelect').select2({
+                placeholder: '-- Search Author --',
+                allowClear: true
+            });
+
+            // restore form if coming back after opening modal
+            restoreFormData();
+        });
+
+        // ── Image preview ─────────────────────────────────────────────
+        function previewImage(input) {
+            const preview = document.getElementById('imgPreview');
+            if (input.files && input.files[0]) {
+                preview.src = URL.createObjectURL(input.files[0]);
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // ── Modal open / close ────────────────────────────────────────
+        function openAuthorModal() {
+            saveFormData();
+            document.getElementById('modalAuthorName').value        = '';
+            document.getElementById('modalAuthorNationality').value = '';
+            document.getElementById('modalAuthorBio').value         = '';
+            document.getElementById('modalNameError').textContent   = '';
+            document.getElementById('authorModalOverlay').classList.add('active');
+        }
+
+        function closeAuthorModal() {
+            document.getElementById('authorModalOverlay')
+                    .classList.remove('active');
+        }
+
+        // close when clicking outside the modal box
+        document.getElementById('authorModalOverlay')
+                .addEventListener('click', function (e) {
+                    if (e.target === this) closeAuthorModal();
+                });
+
+        // ── Submit new author via AJAX ────────────────────────────────
+        function submitAuthorModal() {
+            const name        = document.getElementById('modalAuthorName').value.trim();
+            const nationality = document.getElementById('modalAuthorNationality').value.trim();
+            const bio         = document.getElementById('modalAuthorBio').value.trim();
+            const token       = document.querySelector(
+                                    '[name="__RequestVerificationToken"]').value;
+
+            if (!name) {
+                document.getElementById('modalNameError').textContent =
+                    'Full name is required.';
+                return;
+            }
+            document.getElementById('modalNameError').textContent = '';
+
+            fetch('/Author/CreateModal', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': token
+                },
+                body: `FullName=${encodeURIComponent(name)}`
+                    + `&Nationality=${encodeURIComponent(nationality)}`
+                    + `&Bio=${encodeURIComponent(bio)}`
+            })
+            .then(r => {
+                if (!r.ok) throw new Error('Server error');
+                return r.json();
+            })
+            .then(author => {
+                // append new author as real <option> so it's searchable
+                const option = new Option(author.text, author.id, true, true);
+                $('#authorSelect').append(option).trigger('change');
+                closeAuthorModal();
+            })
+            .catch(() => {
+                document.getElementById('modalNameError').textContent =
+                    'Something went wrong. Please try again.';
+            });
+        }
+
+        // ── Form persistence ──────────────────────────────────────────
+        function saveFormData() {
+            const form = document.getElementById('bookForm');
+            const data = {};
+
+            new FormData(form).forEach((val, key) => {
+                if (key !== '__RequestVerificationToken' && key !== 'CoverImage')
+                    data[key] = val;
+            });
+
+            // save author label so we can restore Select2 display text
+            const selected = $('#authorSelect').find(':selected');
+            if (selected.val()) {
+                data['_authorText'] = selected.text();
+            }
+
+            sessionStorage.setItem(FORM_KEY, JSON.stringify(data));
+        }
+
+        function restoreFormData() {
+            const saved = sessionStorage.getItem(FORM_KEY);
+            if (!saved) return;
+
+            const data = JSON.parse(saved);
+
+            // restore plain inputs and textareas
+            Object.entries(data).forEach(([key, val]) => {
+                if (key.startsWith('_')) return;
+                const el = document.querySelector(`[name="${key}"]`);
+                if (el && el.tagName !== 'SELECT' && el.type !== 'file')
+                    el.value = val;
+            });
+
+            // restore category dropdown
+            if (data['CategoryId']) {
+                const cat = document.querySelector('[name="CategoryId"]');
+                if (cat) cat.value = data['CategoryId'];
+            }
+
+            // restore Select2 author — option already in list, just select it
+            if (data['AuthorId']) {
+                $('#authorSelect').val(data['AuthorId']).trigger('change');
+            }
+
+            sessionStorage.removeItem(FORM_KEY);
+        }
+    </script>
 }
