@@ -188,7 +188,6 @@
         background: #e25555;
     }
 
-
     .reservation-box {
         margin-top: 24px;
         padding: 20px;
@@ -230,6 +229,33 @@
 
 <h2>Book Details</h2>
 <hr />
+@if (TempData["ErrorMessage"] != null)
+{
+    <div style="
+        background:#ffebee;
+        border:1px solid #ef9a9a;
+        color:#c62828;
+        padding:12px;
+        border-radius:6px;
+        margin-bottom:20px;">
+
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div style="
+        background:#e8f5e9;
+        border:1px solid #81c784;
+        color:#2e7d32;
+        padding:12px;
+        border-radius:6px;
+        margin-bottom:20px;">
+
+        @TempData["SuccessMessage"]
+    </div>
+}
 
 <div class="details-layout">
 
@@ -244,7 +270,6 @@
         }
     </div>
 
- 
     <div style="flex: 1;">
         <dl>
             <dt>Title</dt>
@@ -271,54 +296,56 @@
                 }
             </dd>
 
-         
             <dt>Borrow Fee / Daily Fine</dt>
             <dd>@Model.BorrowFee.ToString("C") / @Model.DailyFineRate.ToString("C")</dd>
         </dl>
 
-     
-        @if (!Model.IsAvailable)
+        @if (Model.IsAvailable)
         {
             @if (isAuthenticated && !isLibrarianOrAdmin)
             {
-                <div class="reservation-box" style="background:#fff8e1; border:1px solid #ffd54f;">
-                    <div style="font-size:15px; font-weight:600; color:#e65100; margin-bottom:6px;">
-                        📭 Join the Waiting List
+                <div class="reservation-box" style="background:#e3f2fd; border:1px solid #90caf9;">
+
+                    <div style="font-size:15px; font-weight:600; color:#0d47a1; margin-bottom:6px;">
+                        📚 Borrow This Book
                     </div>
-                    <div style="font-size:13px; color:#5d4037; margin-bottom:14px;">
-                        Reserve your place in the queue and get notified when a copy becomes available.
+
+                    <div style="font-size:13px; color:#455a64; margin-bottom:14px;">
+                        Submit a borrowing request. It will be reviewed by a librarian.
                     </div>
-                    <a asp-controller="Reservations"
-                       asp-action="Confirm"
-                       asp-route-id="@Model.Id"
-                       class="btn btn-primary">
-                        📋 Reserve This Book
-                    </a>
+
+                    <form asp-controller="BorrowingRecords"
+                          asp-action="BorrowBook"
+                          method="post">
+
+                        <input type="hidden" name="bookId" value="@Model.Id" />
+
+                        <button type="submit" class="btn btn-primary">
+                            📩 Request Borrow
+                        </button>
+
+                    </form>
+
                 </div>
             }
             else if (!isAuthenticated)
             {
-                <div class="reservation-box" style="background:#f5f5f5; border:1px solid #ddd; color:#555; font-size:14px;">
-                    📭 All copies are checked out.
-                    <a asp-controller="Account" asp-action="Login" style="color:#1565c0; font-weight:600;">Sign in</a> to join the reservation queue.
+                <div class="reservation-box" style="background:#f5f5f5; border:1px solid #ddd;">
+                    📚
+                    <a asp-controller="Account" asp-action="Login" style="color:#1565c0; font-weight:600;">
+                        Login
+                    </a>
+                    to request borrowing this book.
                 </div>
             }
             else if (isLibrarianOrAdmin)
             {
-                <div class="reservation-box" style="background:#fce4ec; border:1px solid #f48fb1; color:#880e4f; font-size:13px;">
-                    📭 <strong>Librarian Note:</strong> All copies are currently out. The system will automatically notify the next person in the queue upon return.
+                <div class="reservation-box" style="background:#fce4ec; border:1px solid #f48fb1;">
+                    📚 Librarian/Admin cannot request borrow.
                 </div>
             }
         }
 
-        @* <div class="reservation-box" style="background:#fff8e1; border:1px solid #ffd54f;">
-            <a asp-controller="Reservations"
-               asp-action="Confirm"
-               asp-route-id="@Model.Id"
-               class="btn btn-primary">
-                📋 Reserve This Book
-            </a>
-        </div> *@
     </div>
 </div>
 

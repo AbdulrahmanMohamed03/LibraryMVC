@@ -31,6 +31,7 @@ namespace Project.MVC
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IReservationService, ReservationService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IBorrowingService, BorrowingService>();
 
             var app = builder.Build();
 

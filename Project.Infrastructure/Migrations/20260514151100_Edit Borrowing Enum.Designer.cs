@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using Project.Infrastructure.Data;
 namespace Project.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260514151100_Edit Borrowing Enum")]
+    partial class EditBorrowingEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -386,7 +389,7 @@ namespace Project.Infrastructure.Migrations
                     b.Property<int>("BookId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BorrowingFeeTransactionId")
+                    b.Property<int>("BorrowingFeeTransactionId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CheckedOutAt")
@@ -402,6 +405,7 @@ namespace Project.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProcessedByLibrarianId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("RequestedAt")
@@ -521,16 +525,6 @@ namespace Project.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SubscriptionPlans");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LoanDurationDays = 2,
-                            MonthlyBorrowLimit = 1,
-                            MonthlyFee = 0m,
-                            Name = "Free"
-                        });
                 });
 
             modelBuilder.Entity("Project.Core.Models.Transaction", b =>
@@ -703,7 +697,8 @@ namespace Project.Infrastructure.Migrations
                     b.HasOne("Project.Core.Models.Transaction", "BorrowingFeeTransaction")
                         .WithMany()
                         .HasForeignKey("BorrowingFeeTransactionId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Project.Core.Models.Transaction", "FineTransaction")
                         .WithMany()
@@ -713,7 +708,8 @@ namespace Project.Infrastructure.Migrations
                     b.HasOne("Project.Core.Models.ApplicationUser", "ProcessedByLibrarian")
                         .WithMany()
                         .HasForeignKey("ProcessedByLibrarianId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Project.Core.Models.ApplicationUser", "User")
                         .WithMany("BorrowingRecords")
