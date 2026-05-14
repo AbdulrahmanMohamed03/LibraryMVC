@@ -4,10 +4,11 @@ using System.Text;
 
 namespace Project.Core.Enums
 {
-    public enum TransactionType
+    public enum TransactionType : byte
     {
         BorrowFee = 1,
         Fine = 2,
-        Subscription = 3
+        Subscription = 3,
+        Damaged = 4
     }
 }

@@ -4,10 +4,12 @@ using System.Text;
 
 namespace Project.Core.Enums
 {
-    public enum BorrowingStatus
+    public enum BorrowingStatus : byte
     {
+        Pending = 0,
         Active = 1,
-        Overdue = 2,
-        Returned = 3
+        ReturnedOverdue = 2,
+        Returned = 3,
+        ReturnedDamaged = 4,
     }
 }

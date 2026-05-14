@@ -1,0 +1,69 @@
+﻿@model Project.Application.ViewModels.BorrowingRecord.ReturnBorrowVM
+
+@{
+    ViewData["Title"] = "Return Book";
+}
+
+<h2>Return Book</h2>
+
+<hr />
+
+<div class="card p-4">
+
+    <h4>@Model.BookTitle</h4>
+
+    <p>
+        <strong>Borrower:</strong>
+        @Model.BorrowerName
+    </p>
+
+    <p>
+        <strong>Due Date:</strong>
+        @Model.DueDate?.ToString("yyyy-MM-dd")
+    </p>
+
+    <p>
+        <strong>Returned At:</strong>
+        @Model.ReturnedAt?.ToString("yyyy-MM-dd HH:mm")
+    </p>
+
+    <p>
+        <strong>Borrow Fee:</strong>
+        @Model.BorrowFee.ToString("C")
+    </p>
+
+    <p>
+        <strong>Late Days:</strong>
+        @Model.LateDays
+    </p>
+
+    <p>
+        <strong>Fine:</strong>
+        @Model.FineAmount.ToString("C")
+    </p>
+
+    <hr />
+
+    <h4>
+        Total:
+        @Model.TotalAmount.ToString("C")
+    </h4>
+
+    <form asp-action="ConfirmReturn" method="post">
+
+        <input type="hidden"
+               name="id"
+               value="@Model.BorrowingRecordId" />
+
+        <button type="submit"
+                class="btn btn-success">
+            Confirm Return
+        </button>
+
+        <a asp-action="Index"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+
+    </form>
+</div>

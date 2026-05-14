@@ -16,18 +16,20 @@ namespace Project.Core.Models
         public int BookId { get; set; }
         public Book Book { get; set; }
         [ForeignKey("BorrowingFeeTransaction")]
-        public int BorrowingFeeTransactionId { get; set; }
-        public Transaction BorrowingFeeTransaction { get; set; }
+        public int? BorrowingFeeTransactionId { get; set; }
+        public Transaction? BorrowingFeeTransaction { get; set; }
         [ForeignKey("FineTransaction")]
         public int? FineTransactionId { get; set; }
         public Transaction? FineTransaction { get; set; }
-        public DateTime CheckedOutAt { get; set; }
-        public DateTime DueDate { get; set; }
+        public DateTime RequestedAt { get; set; }
+        public DateTime? CheckedOutAt { get; set; }
+        public DateTime? DueDate { get; set; }
         public DateTime? ReturnedAt { get; set; }
         public BorrowingStatus Status { get; set; }
         public decimal AccruedFine { get; set; }
         [ForeignKey("ProcessedByLibrarian")]
-        public string ProcessedByLibrarianId { get; set; }
-        public ApplicationUser ProcessedByLibrarian { get; set; }
+        public string? ProcessedByLibrarianId { get; set; }
+        public ApplicationUser? ProcessedByLibrarian { get; set; }
+        public string? Notes { get; set; }
     }
 }

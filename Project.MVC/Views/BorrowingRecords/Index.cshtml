@@ -1,0 +1,112 @@
+﻿@using Project.Application.ViewModels.BorrowingRecord
+@using Project.Core.Enums
+@model IEnumerable<BorrowingRecordVM>
+
+@{
+    ViewData["Title"] = "Borrowing Records";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold">Borrowing Records</h2>
+    </div>
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body p-0">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Borrower</th>
+                        <th>Book</th>
+                        <th>Status</th>
+                        <th>Requested At</th>
+                        <th>Due Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4"> No borrowing records found </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        int index = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@index</td>
+                                <td class="fw-semibold"> @item.BorrowerName </td>
+                                <td> @item.BookTitle </td>
+                                <td>
+                                    @switch (item.Status)
+                                    {
+                                        case BorrowingStatus.Pending:
+                                            <span class="badge bg-warning text-dark"> @item.StatusLabel </span>
+                                            break;
+
+                                        case BorrowingStatus.Active:
+                                            <span class="badge bg-primary"> @item.StatusLabel </span>
+                                            break;
+
+                                        case BorrowingStatus.Returned:
+                                            <span class="badge bg-success"> @item.StatusLabel </span>
+                                            break;
+
+                                        case BorrowingStatus.ReturnedOverdue:
+                                            <span class="badge bg-danger"> @item.StatusLabel </span>
+                                            break;
+
+                                        case BorrowingStatus.ReturnedDamaged:
+                                            <span class="badge bg-dark"> @item.StatusLabel </span>
+                                            break;
+
+                                        default:
+                                            <span class="badge bg-secondary"> @item.StatusLabel </span>
+                                            break;
+                                    }
+                                </td>
+                                <td> @item.RequestedAt.ToString("yyyy-MM-dd") </td>
+
+                                <td>
+                                    @if (item.DueDate.HasValue &&
+                                         item.DueDate.Value < DateTime.UtcNow &&
+                                         item.Status == Project.Core.Enums.BorrowingStatus.Active)
+                                    {
+                                        <span class="text-danger fw-bold"> @item.DueDate.Value.ToString("yyyy-MM-dd") ⚠ Overdue </span>
+                                    }
+                                    else
+                                    {
+                                        @(item.DueDate?.ToString("yyyy-MM-dd") ?? "N/A")
+                                    }
+                                </td>
+
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary"> Details </a>
+                                    @if (item.Status == BorrowingStatus.Active)
+                                    {
+                                        <a asp-action="Return"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-warning btn-sm">
+                                            Return
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
