@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.Services.Interfaces;
 using Project.Core.Models;
+using System.Security.Claims;
 
 namespace Project.Web.Controllers
 {
@@ -33,7 +34,8 @@ namespace Project.Web.Controllers
                 // return _userManager.GetUserId(User) ?? throw new InvalidOperationException("...");
 
                 
-                return "fb82915b-4ae3-44d7-bdab-8aa6f7f60462"; 
+                //return "fb82915b-4ae3-44d7-bdab-8aa6f7f60462"; 
+                return User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
         }
 
@@ -117,7 +119,7 @@ namespace Project.Web.Controllers
             try
             {
              
-                var userId = "37c85c86-de37-422e-adbf-35285e5b3c85";
+                var userId = CurrentUserId;
 
                 var result = _reservationService.PlaceReservation(bookId, userId);
 

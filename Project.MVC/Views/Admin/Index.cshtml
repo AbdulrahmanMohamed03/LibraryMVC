@@ -1,0 +1,60 @@
+﻿@using Project.Application.ViewModels.Admin
+@model AdminDashboardVM
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">Library Dashboard</h2>
+
+    <div class="row">
+
+        <div class="col-md-3">
+            <a href="@Url.Action("Index", "Category")" class="text-decoration-none">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-body">
+                        <h5>Categories</h5>
+                        <h2>@Model.CategoriesCount</h2>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a href="@Url.Action("Index", "Books")" class="text-decoration-none">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-body">
+                        <h5>Books</h5>
+                        <h2>@Model.BooksCount</h2>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a href="@Url.Action("ManageLibrarians", "Admin")" class="text-decoration-none">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-body">
+                        <h5>Librarians</h5>
+                        <h2>@Model.LibrariansCount</h2>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a href="@Url.Action("Index", "Reservations")" class="text-decoration-none">
+                <div class="card text-white bg-danger mb-3">
+                    <div class="card-body">
+                        <h5>Reservations</h5>
+                        <h2>@Model.ReservationsCount</h2>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</div>

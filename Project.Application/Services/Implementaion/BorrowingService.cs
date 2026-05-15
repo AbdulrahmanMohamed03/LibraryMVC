@@ -242,7 +242,8 @@ namespace Project.Application.Services.Implementaion
                 Amount = record.Book.BorrowFee,
                 Type = TransactionType.BorrowFee,
                 RecordedAt = DateTime.UtcNow,
-                IsPaid = false,
+                IsPaid = true,
+                PaidAt = DateTime.UtcNow,
                 Notes = $"Borrow fee for book: {record.Book.Title}"
             };
             _unitOfWork.Transactions.Add(borrowTransaction);
@@ -256,7 +257,8 @@ namespace Project.Application.Services.Implementaion
                     Amount = fineAmount,
                     Type = TransactionType.Fine,
                     RecordedAt = DateTime.UtcNow,
-                    IsPaid = false,
+                    IsPaid = true,
+                    PaidAt = DateTime.UtcNow,
                     Notes = $"Late return fine for book: {record.Book.Title}"
                 };
                 _unitOfWork.Transactions.Add(fineTransaction);

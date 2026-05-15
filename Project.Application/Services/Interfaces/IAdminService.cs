@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Project.Application.ViewModels.Admin;
 using Project.Application.ViewModels.Role;
 using Project.Application.ViewModels.User;
 using System;
@@ -14,5 +15,16 @@ namespace Project.Application.Services.Interfaces
         Task<AssignRoleVm> AssignRoleToUserAsync(AssignRoleVm vm);
         Task<AssignRoleVm> RemoveUserFromRoleAsync(AssignRoleVm vm);
         Task<List<UserRoleVm>> GetUserRolesAsync(string email);
+        Task<List<LibrariansDataVM>> GetAllLibrariansAsync();
+
+        Task<LibrariansDataVM> GetLibrarianDetailsAsync(string id);
+        Task<bool> FireLibrarianAsync(string id);
+        Task<EditLibrarianVM> GetLibrarianForEditAsync(string id);
+
+        Task<bool> EditLibrarianAsync(EditLibrarianVM vm);
+
+        Task<bool> ReHireLibrarianAsync(string id);
+        Task<AdminDashboardVM> GetDashboardDataAsync();
+        Task<List<LibrariansDataVM>> GetFiredLibrariansAsync();
     }
 }
