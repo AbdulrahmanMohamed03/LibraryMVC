@@ -2,11 +2,15 @@
 using Microsoft.VisualBasic;
 using Project.Application.Services.Interfaces;
 using Project.Application.ViewModels.Account;
+using Project.Application.ViewModels.SubscriptionPlan;
+using Project.Application.ViewModels.UserSubscription;
 using Project.Core;
 using Project.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Project.Application.Services.Implementaion
 {
@@ -14,13 +18,16 @@ namespace Project.Application.Services.Implementaion
     {
         protected readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IUserSubscriptionService userSub;
         private readonly IUnitOfWork _unitOfWork;
 
-        public AccountService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IUnitOfWork unitOfWork)
+        public AccountService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IUnitOfWork unitOfWork, IUserSubscriptionService userSub)
         {
             _userManager = userManager;
             this.signInManager = signInManager;
             this._unitOfWork = unitOfWork;
+            this.userSub = userSub;
+            //this.subscriptionPlan = subscriptionPlan;
         }
 
         public async Task<SignInResult> Login(LoginVM model)
@@ -63,7 +70,18 @@ namespace Project.Application.Services.Implementaion
                                        .ToList()
                     };
                 }
+                await _userManager.AddToRoleAsync(user, "User");
                 await signInManager.SignInAsync(user, false);
+
+
+                var plane = _unitOfWork.SubscriptionPlans.GetByName("Free");
+
+                var registerUser = new CreateUserSubscriptionVM
+                {
+                    PlanId= plane.Id,
+                    UserId = user.Id,
+                };
+                await userSub.SubscribeAsync(registerUser);
 
 
                 return new ServiceResult
@@ -82,7 +100,7 @@ namespace Project.Application.Services.Implementaion
                         ex.Message
                     }
                 };
-            } 
+            }
         }
 
         public async Task Logout()

@@ -8,9 +8,19 @@ namespace Project.Infrastructure.DataSeeding
         public static async Task SeedAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             string roleName = "Admin";
+            string roleUser = "User";
+            string roleLibrarian = "Librarian";
             if (!await roleManager.RoleExistsAsync(roleName))
             {
                 await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+            if (!await roleManager.RoleExistsAsync(roleUser))
+            {
+                await roleManager.CreateAsync(new IdentityRole(roleUser));
+            }
+            if (!await roleManager.RoleExistsAsync(roleLibrarian))
+            {
+                await roleManager.CreateAsync(new IdentityRole(roleLibrarian));
             }
             string adminEmail = "admin123@gmail.com";
             string fullName = "System Admin";
