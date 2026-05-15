@@ -1,0 +1,69 @@
+﻿@using Project.Application.ViewModels.User
+@model List<LibrariansDataVM>
+
+@{
+    ViewData["Title"] = "Manage Librarians";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Librarians</h2>
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Full Name</th>
+                <th>National ID</th>
+                <th>Email</th>
+                <th>Hired At</th>
+                <th>Status</th>
+                <th width="250">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var librarian in Model)
+                {
+                    <tr>
+                        <td>@librarian.FullName</td>
+                        <td>@librarian.NationalId</td>
+                        <td>@librarian.Email</td>
+                        <td>@librarian.HiredAt.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            @if (librarian.IsStillWorking)
+                            {
+                                <span class="badge bg-success"> Active </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger"> Fired </span>
+                            }
+                        </td>
+
+                        <td>
+                            <a href="@Url.Action("LibrarianDetails", "Admin", new { id = librarian.UserId })" class="btn btn-info btn-sm"> Details </a>
+                            <a href="@Url.Action("EditLibrarian", "Admin", new { id = librarian.UserId })" class="btn btn-warning btn-sm"> Edit </a>
+                            @if (librarian.IsStillWorking)
+                            {
+                                <form asp-action="FireLibrarian" asp-route-id="@librarian.UserId" method="post" style="display:inline;">
+                                    <button class="btn btn-danger btn-sm"> Fire </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="ReHireLibrarian" asp-route-id="@librarian.UserId" method="post" style="display:inline;">
+                                    <button class="btn btn-success btn-sm">ReHire</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center"> No librarians found </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,54 @@
+﻿@using Project.Application.ViewModels.User
+@model LibrariansDataVM
+
+@{
+    ViewData["Title"] = "Librarian Details";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-dark text-white">
+            <h3>Librarian Details</h3>
+        </div>
+
+        <div class="card-body">
+
+            <p><strong>Full Name:</strong> @Model.FullName</p>
+
+            <p><strong>National ID:</strong> @Model.NationalId</p>
+
+            <p><strong>Email:</strong> @Model.Email</p>
+
+            <p><strong>Hired At:</strong> @Model.HiredAt.ToString("yyyy-MM-dd")</p>
+
+            <p>
+                <strong>Status:</strong>
+
+                @if (Model.IsStillWorking)
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Fired</span>
+                }
+            </p>
+
+        </div>
+
+        <div class="card-footer">
+
+            <a asp-action="ManageLibrarians"
+               class="btn btn-secondary">
+
+                Back
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

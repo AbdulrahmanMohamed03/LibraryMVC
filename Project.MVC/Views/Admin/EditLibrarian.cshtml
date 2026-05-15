@@ -1,0 +1,32 @@
+﻿@using Project.Application.ViewModels.User
+@model EditLibrarianVM
+
+<h2>Edit Librarian</h2>
+
+<form asp-action="EditLibrarian" method="post">
+
+    <input type="hidden" asp-for="UserId" />
+
+    <div>
+        <label>Full Name</label>
+        <input asp-for="FullName" class="form-control" />
+    </div>
+
+    <div>
+        <label>NationalId</label>
+        <input asp-for="NationalId" class="form-control" readonly />
+    </div>
+
+    <div>
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+
+    <div>
+        <label>UserName</label>
+        <input asp-for="UserName" class="form-control" />
+    </div>
+
+    <button class="btn btn-primary mt-2">Save</button>
+
+</form>
