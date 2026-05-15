@@ -1,0 +1,68 @@
+﻿@model List<TransactionVM>
+
+@{
+    ViewData["Title"] = "Transactions";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Transactions</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>User Name</th>
+                    <th>Librarian</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>recorded At</th>
+                    <th>Paid At</th>
+                    <th>Type</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.UserName</td>
+                        <td>@item.LibrarianName</td>
+                        <td>@item.Amount</td>
+
+                        <td>
+                            @if (item.IsPaid)
+                            {
+                                <span class="badge bg-success">Paid</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Unpaid</span>
+                            }
+                        </td>
+
+                        <td>
+                            @(item.RecordedAt.ToString("yyyy-MM-dd HH:mm") ?? "N/A")
+                        </td>
+                        <td>
+                            @(item.PaidAt?.ToString("yyyy-MM-dd HH:mm") ?? "N/A")
+                        </td>
+
+                        <td>@item.Type.ToString()</td>
+
+                        <td>@item.Notes</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            There are no transactions yet.
+        </div>
+    }
+</div>

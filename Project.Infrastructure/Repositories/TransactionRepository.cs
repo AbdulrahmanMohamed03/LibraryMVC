@@ -1,4 +1,5 @@
-﻿using Project.Core.Enums;
+﻿using Microsoft.EntityFrameworkCore;
+using Project.Core.Enums;
 using Project.Core.Models;
 using Project.Core.RepositoriesAbstraction;
 using Project.Infrastructure.Data;
@@ -12,6 +13,15 @@ namespace Project.Infrastructure.Repositories
     {
         public TransactionRepository(AppDbContext _context) : base(_context)
         {
+        }
+
+        public List<Transaction> getAllWithInclude()
+        {
+
+            return _context.Transactions
+                .Include(x => x.Librarian)
+                .Include(x => x.User)
+                .ToList();
         }
 
         public bool UnPaidFinesForUser(string userId)
