@@ -37,12 +37,19 @@ namespace Project.Application.Services.Implementaion
             if (user == null)
                 return SignInResult.Failed;
 
-            return await signInManager.PasswordSignInAsync(
+            var result = await signInManager.PasswordSignInAsync(
                 user,
                 model.Password,
                 model.rememberMe,
                 lockoutOnFailure: false
             );
+
+            if (result.Succeeded)
+            {
+                await userSub.CheckAndDowngradeIfExpiredAsync(user.Id);
+            }
+
+            return result;
         }
 
         public async Task<ServiceResult> register(RegisterVM model)

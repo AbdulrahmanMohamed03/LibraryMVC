@@ -15,6 +15,7 @@ namespace Project.Application.Services.Interfaces
         Task<bool> CancelSubscriptionAsync(int id, string userId);
         Task<bool> CanUserSubscribeAsync(string userId);
         Task<bool> RenewSubscriptionAsync(string userId);
+        Task CheckAndDowngradeIfExpiredAsync(string userId);
 
     }
 }
