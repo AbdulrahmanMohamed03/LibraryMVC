@@ -10,5 +10,6 @@ namespace Project.Application.ViewModels.Admin
         public int BooksCount { get; set; }
         public int LibrariansCount { get; set; }
         public int ReservationsCount { get; set; }
+        public decimal TotalIncome { get; set; }
     }
 }
