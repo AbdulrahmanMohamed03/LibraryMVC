@@ -5,56 +5,147 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="container mt-4">
+<!-- Add FontAwesome if you don't already have it in your _Layout.cshtml -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <h2 class="mb-4">Library Dashboard</h2>
+<style>
+    /* Custom CSS for Dashboard Cards - You can move this to your site.css */
+    .dashboard-card {
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        border: none;
+    }
 
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Gradients */
+    .bg-gradient-primary { background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); }
+    .bg-gradient-success { background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); }
+    .bg-gradient-warning { background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%); }
+    .bg-gradient-danger  { background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%); }
+    .bg-gradient-info    { background: linear-gradient(135deg, #36b9cc 0%, #258391 100%); }
+</style>
+
+<div class="container-fluid mt-4 px-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-gray-800 fw-bold">Library Dashboard</h2>
+        <span class="text-muted"><i class="fas fa-calendar-alt me-2"></i>@DateTime.Now.ToString("MMMM dd, yyyy")</span>
+    </div>
+
+    <!-- We use justify-content-center or standard row/cols depending on how you want the 5 cards to wrap -->
     <div class="row">
 
-        <div class="col-md-3">
+        <!-- Categories -->
+        <div class="col-xl-3 col-md-6 mb-4">
             <a href="@Url.Action("Index", "Category")" class="text-decoration-none">
-                <div class="card text-white bg-primary mb-3">
-                    <div class="card-body">
-                        <h5>Categories</h5>
-                        <h2>@Model.CategoriesCount</h2>
+                <div class="card dashboard-card shadow-sm text-white bg-gradient-primary">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Categories</p>
+                                <h2 class="mb-0 fw-bold">@Model.CategoriesCount</h2>
+                            </div>
+                            <div class="icon-wrapper">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </a>
         </div>
 
-        <div class="col-md-3">
+        <!-- Books -->
+        <div class="col-xl-3 col-md-6 mb-4">
             <a href="@Url.Action("Index", "Books")" class="text-decoration-none">
-                <div class="card text-white bg-success mb-3">
-                    <div class="card-body">
-                        <h5>Books</h5>
-                        <h2>@Model.BooksCount</h2>
+                <div class="card dashboard-card shadow-sm text-white bg-gradient-success">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Books</p>
+                                <h2 class="mb-0 fw-bold">@Model.BooksCount</h2>
+                            </div>
+                            <div class="icon-wrapper">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </a>
         </div>
 
-        <div class="col-md-3">
+        <!-- Librarians -->
+        <div class="col-xl-3 col-md-6 mb-4">
             <a href="@Url.Action("ManageLibrarians", "Admin")" class="text-decoration-none">
-                <div class="card text-white bg-warning mb-3">
-                    <div class="card-body">
-                        <h5>Librarians</h5>
-                        <h2>@Model.LibrariansCount</h2>
+                <div class="card dashboard-card shadow-sm text-white bg-gradient-warning">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Librarians</p>
+                                <h2 class="mb-0 fw-bold">@Model.LibrariansCount</h2>
+                            </div>
+                            <div class="icon-wrapper">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </a>
         </div>
 
-        <div class="col-md-3">
+        <!-- Reservations -->
+        <div class="col-xl-3 col-md-6 mb-4">
             <a href="@Url.Action("Index", "Reservations")" class="text-decoration-none">
-                <div class="card text-white bg-danger mb-3">
-                    <div class="card-body">
-                        <h5>Reservations</h5>
-                        <h2>@Model.ReservationsCount</h2>
+                <div class="card dashboard-card shadow-sm text-white bg-gradient-danger">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Reservations</p>
+                                <h2 class="mb-0 fw-bold">@Model.ReservationsCount</h2>
+                            </div>
+                            <div class="icon-wrapper">
+                                <i class="fas fa-bookmark"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Total Income -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="@Url.Action("Index", "Transaction" )" class="text-decoration-none">
+                <!-- Replace "#" with your Income/Finance Controller if it exists -->
+                <div class="card dashboard-card shadow-sm text-white bg-gradient-info">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Total Income</p>
+                                <h2 class="mb-0 fw-bold">$@Model.TotalIncome</h2>
+                            </div>
+                            <div class="icon-wrapper">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </a>
         </div>
 
     </div>
-
 </div>
