@@ -1,6 +1,7 @@
 ﻿using Project.Application.Services.Interfaces;
 using Project.Application.ViewModels.UserSubscription;
 using Project.Core;
+using Project.Core.Enums;
 using Project.Core.Models;
 using Project.Core.RepositoriesAbstraction;
 using System;
@@ -21,27 +22,49 @@ namespace Project.Application.Services.Implementaion
 
         // ─── Subscribe ───────────────────────────────────────────
         public async Task<UserSubscriptionVM> SubscribeAsync(CreateUserSubscriptionVM vm)
-        {
-            // Block if user already has an active subscription
-            var canSubscribe = await CanUserSubscribeAsync(vm.UserId);
-            if (!canSubscribe) return null;
-
+        {  
             var plan = _unitOfWork.SubscriptionPlans.GetById(vm.PlanId);
             if (plan == null) return null;
+
+            
+            var existingSubscription = await _unitOfWork.UserSubscriptions
+                                                        .GetActiveSubscriptionByUserAsync(vm.UserId);
+            if (existingSubscription != null)
+            {
+                existingSubscription.IsActive = false;
+                _unitOfWork.UserSubscriptions.Update(existingSubscription);
+            }
 
             var subscription = new UserSubscription
             {
                 UserId = vm.UserId,
                 PlanId = vm.PlanId,
                 StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(plan.LoanDurationDays),
+                EndDate = DateTime.Now.AddDays(30),
                 IsActive = true
             };
 
             _unitOfWork.UserSubscriptions.Add(subscription);
+
+            if (plan.MonthlyFee > 0)
+            {
+                var transaction = new Transaction
+                {
+                    UserId = vm.UserId,
+                    LibrarianId = vm.UserId,
+                    Amount = plan.MonthlyFee,
+                    Type = TransactionType.Subscription,
+                    RecordedAt = DateTime.UtcNow,
+                    IsPaid = true,
+                    PaidAt = DateTime.UtcNow,
+                    Notes = $"Subscription to {plan.Name} plan"
+                };
+                _unitOfWork.Transactions.Add(transaction);
+            }
             _unitOfWork.Save();
 
-            // Return full details after creation
+
+            
             var created = await _unitOfWork.UserSubscriptions.GetByIdWithDetailsAsync(subscription.Id);
                                            
             return MapToVM(created);
@@ -100,7 +123,6 @@ namespace Project.Application.Services.Implementaion
         {
             var activeSubscription = await _unitOfWork.UserSubscriptions
                                                       .GetActiveSubscriptionByUserAsync(userId);
-            // Can subscribe only if no active subscription exists
             return activeSubscription == null;
         }
 
@@ -115,12 +137,62 @@ namespace Project.Application.Services.Implementaion
             if (plan == null) return false;
 
             subscription.StartDate = DateTime.Now;
-            subscription.EndDate = DateTime.Now.AddDays(plan.LoanDurationDays);
+            subscription.EndDate = DateTime.Now.AddDays(30);
             subscription.IsActive = true;
 
             _unitOfWork.UserSubscriptions.Update(subscription);
+            if (plan.MonthlyFee > 0)
+            {
+                var transaction = new Transaction
+                {
+                    UserId = userId,
+                    LibrarianId = userId,
+                    Amount = plan.MonthlyFee,
+                    Type = TransactionType.Subscription,
+                    RecordedAt = DateTime.UtcNow,
+                    IsPaid = true,
+                    PaidAt = DateTime.UtcNow,
+                    Notes = $"Renewal of {plan.Name} plan"
+                };
+                _unitOfWork.Transactions.Add(transaction);
+            }
             _unitOfWork.Save();
             return true;
+        }
+        // ─── Check and Auto-Downgrade if Expired ─────────────────
+        public async Task CheckAndDowngradeIfExpiredAsync(string userId)
+        {
+            
+            var activeSubscription = await _unitOfWork.UserSubscriptions
+                                                      .GetActiveSubscriptionByUserAsync(userId);
+
+            if (activeSubscription != null) return;
+
+            
+            var expiredSubscription = await _unitOfWork.UserSubscriptions
+                                                       .GetExpiredSubscriptionByUserAsync(userId);
+
+            if (expiredSubscription == null) return; 
+
+            
+            expiredSubscription.IsActive = false;
+            _unitOfWork.UserSubscriptions.Update(expiredSubscription);
+
+            
+            var freePlan = _unitOfWork.SubscriptionPlans.GetByName("Free");
+            if (freePlan == null) return;
+
+            var freeSubscription = new UserSubscription
+            {
+                UserId = userId,
+                PlanId = freePlan.Id,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(30),
+                IsActive = true
+            };
+
+            _unitOfWork.UserSubscriptions.Add(freeSubscription);
+            _unitOfWork.Save();
         }
 
         // ─── Private Mapper ──────────────────────────────────────
