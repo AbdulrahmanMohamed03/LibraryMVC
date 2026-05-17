@@ -1,451 +1,178 @@
-﻿@* @model Project.Application.ViewModels.Book.BookViewModel
+﻿@model Project.Application.ViewModels.Book.BookViewModel
 
 @{
-    ViewData["Title"] = "Book Details";
-}
-
-<style>
-    h2 { margin-bottom: 16px; }
-    hr { border: none; border-top: 1px solid #ddd; margin-bottom: 24px; }
-
-    .details-layout {
-        display: flex;
-        gap: 40px;
-        align-items: flex-start;
-    }
-    .cover-box img {
-        width: 160px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-    }
-    .no-cover-box {
-        width: 160px; height: 220px;
-        background: #f0f0f0; border: 1px solid #ddd;
-        border-radius: 6px; display: flex;
-        align-items: center; justify-content: center;
-        color: #999; font-size: 13px;
-    }
-
-    dl { font-size: 14px; flex: 1; }
-    dt { font-weight: 600; color: #333; margin-top: 12px; }
-    dd { color: #555; margin: 2px 0 0 0; }
-
-    .badge {
-        display: inline-block; padding: 3px 10px;
-        border-radius: 12px; font-size: 12px; color: #fff;
-    }
-    .badge-success { background: #4caf50; }
-    .badge-danger  { background: #e25555; }
-
-    .form-actions { display: flex; gap: 10px; margin-top: 28px; }
-    .btn { padding: 8px 20px; border: none; border-radius: 4px;
-           cursor: pointer; text-decoration: none; font-size: 14px; }
-    .btn-warning   { background: #f0a500; color: #fff; }
-    .btn-secondary { background: #9e9e9e; color: #fff; }
-</style>
-
-<h2>Book Details</h2>
-<hr />
-
-<div class="details-layout">
-
-    {{!-- Cover image on the left --}}
-    <div class="cover-box">
-        @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
-        {
-            <img src="@Model.CoverImageUrl" alt="@Model.Title cover" />
-        }
-        else
-        {
-            <div class="no-cover-box">No Image</div>
-        }
-    </div>
-
-    {{!-- Details on the right --}}
-    <dl>
-        <dt>Title</dt>
-        <dd>@Model.Title</dd>
-
-        <dt>ISBN</dt>
-        <dd>@Model.ISBN</dd>
-
-        <dt>Description</dt>
-        <dd>@(Model.Description ?? "—")</dd>
-
-        <dt>Author</dt>
-        <dd>@Model.AuthorName</dd>
-
-        <dt>Category</dt>
-        <dd>@Model.CategoryName</dd>
-
-        <dt>Published Year</dt>
-        <dd>@(Model.PublishedYear?.ToString() ?? "—")</dd>
-
-        <dt>Borrow Fee</dt>
-        <dd>@Model.BorrowFee.ToString("C")</dd>
-
-        <dt>Daily Fine Rate</dt>
-        <dd>@Model.DailyFineRate.ToString("C")</dd>
-
-        <dt>Total Copies</dt>
-        <dd>@Model.TotalCopies</dd>
-
-        <dt>Available Copies</dt>
-        <dd>
-            @if (Model.IsAvailable)
-            {
-                <span class="badge badge-success">@Model.AvailableCopies Available</span>
-            }
-            else
-            {
-                <span class="badge badge-danger">Not Available</span>
-            }
-        </dd>
-
-        <dt>Created At</dt>
-        <dd>@Model.CreatedAtDisplay</dd>
-    </dl>
-</div>
-
-<div class="form-actions">
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-</div> *@
-
-@model Project.Application.ViewModels.Book.BookViewModel
-
-@{
-    ViewData["Title"] = "Book Details";
+    ViewData["Title"] = "Book Details - " + Model.Title;
     var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
     var isLibrarianOrAdmin = User.IsInRole("Admin") || User.IsInRole("Librarian");
 }
 
-<style>
-    h2 {
-        margin-bottom: 16px;
-    }
-
-    hr {
-        border: none;
-        border-top: 1px solid #ddd;
-        margin-bottom: 24px;
-    }
-
-    .details-layout {
-        display: flex;
-        gap: 40px;
-        align-items: flex-start;
-    }
-
-    .cover-box img {
-        width: 160px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-    }
-
-    .no-cover-box {
-        width: 160px;
-        height: 220px;
-        background: #f0f0f0;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #999;
-        font-size: 13px;
-    }
-
-    dl {
-        font-size: 14px;
-        flex: 1;
-    }
-
-    dt {
-        font-weight: 600;
-        color: #333;
-        margin-top: 12px;
-    }
-
-    dd {
-        color: #555;
-        margin: 2px 0 0 0;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 12px;
-        font-size: 12px;
-        color: #fff;
-    }
-
-    .badge-success {
-        background: #4caf50;
-    }
-
-    .badge-danger {
-        background: #e25555;
-    }
-
-    .reservation-box {
-        margin-top: 24px;
-        padding: 20px;
-        border-radius: 8px;
-        max-width: 450px;
-    }
-
-    .form-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 28px;
-    }
-
-    .btn {
-        padding: 8px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        text-decoration: none;
-        font-size: 14px;
-        display: inline-block;
-    }
-
-    .btn-warning {
-        background: #f0a500;
-        color: #fff;
-    }
-
-    .btn-secondary {
-        background: #9e9e9e;
-        color: #fff;
-    }
-
-    .btn-primary {
-        background: #1565c0;
-        color: #fff;
-    }
-</style>
-
-<h2>Book Details</h2>
-<hr />
-
-@if (TempData["ErrorMessage"] != null)
-{
-    <div style="
-        background:#ffebee;
-        border:1px solid #ef9a9a;
-        color:#c62828;
-        padding:12px;
-        border-radius:6px;
-        margin-bottom:20px;">
-
-        @TempData["ErrorMessage"]
-    </div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/vendor.css" />
+    <link rel="stylesheet" href="~/icomoon/style.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <style>
+        .meta-label { font-weight: bold; text-transform: uppercase; font-size: 0.8rem; color: #747474; letter-spacing: 1px; }
+        .meta-value { font-size: 1.05rem; color: #111; margin-bottom: 15px; }
+        .booksaw-alert { border-radius: 0; border-width: 1px 1px 1px 4px; font-family: sans-serif; font-size: 0.95rem; }
+        .reservation-card { background: #fff; border: 1px solid #e1e1e1; padding: 25px; margin-top: 25px; }
+        .btn-booksaw { background: #111; color: #fff; border: 1px solid #111; border-radius: 0; padding: 12px 25px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; transition: all 0.3s ease; text-decoration: none; display: inline-block; }
+        .btn-booksaw:hover { background: #c5a880; border-color: #c5a880; color: #fff; }
+        .btn-reserve-accent { background: #c5a880; color: #fff; border: 1px solid #c5a880; border-radius: 0; padding: 12px 25px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; transition: all 0.3s ease; text-decoration: none; display: inline-block; }
+        .btn-reserve-accent:hover { background: #111; border-color: #111; color: #fff; }
+    </style>
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div style="
-        background:#e8f5e9;
-        border:1px solid #81c784;
-        color:#2e7d32;
-        padding:12px;
-        border-radius:6px;
-        margin-bottom:20px;">
-
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-<div class="details-layout">
-
-    <div class="cover-box">
-        @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
+<div class="py-5" style="background-color: #f3f2ec; min-height: 85vh;">
+    <div class="container bg-white p-5 border shadow-sm">
+        
+        @if (TempData["ErrorMessage"] != null)
         {
-            <img src="@Model.CoverImageUrl" alt="@Model.Title cover" />
+            <div class="alert alert-danger booksaw-alert border-start border-danger mb-4 text-danger bg-light">
+                <i class="fa-solid fa-circle-exclamation me-2"></i> @TempData["ErrorMessage"]
+            </div>
         }
-        else
+        @if (TempData["SuccessMessage"] != null)
         {
-            <div class="no-cover-box">No Image</div>
+            <div class="alert alert-success booksaw-alert border-start border-success mb-4 text-success bg-light">
+                <i class="fa-solid fa-circle-check me-2"></i> @TempData["SuccessMessage"]
+            </div>
         }
-    </div>
 
-    <div style="flex: 1;">
-
-        <dl>
-            <dt>Title</dt>
-            <dd>@Model.Title</dd>
-
-            <dt>Author</dt>
-            <dd>@Model.AuthorName</dd>
-
-            <dt>Category</dt>
-            <dd>@Model.CategoryName</dd>
-
-            <dt>Description</dt>
-            <dd>@(Model.Description ?? "—")</dd>
-
-            <dt>Availability</dt>
-            <dd>
-                @if (Model.IsAvailable)
+        <div class="row">
+            <div class="col-md-4 text-center mb-4 mb-md-0">
+                @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
                 {
-                    <span class="badge badge-success">
-                        @Model.AvailableCopies Available
-                    </span>
+                    <img src="@Model.CoverImageUrl" alt="@Model.Title cover" class="img-fluid border p-2 shadow-sm" style="max-height: 450px; background: #fff;" />
                 }
                 else
                 {
-                    <span class="badge badge-danger">
-                        All Copies Checked Out
-                    </span>
+                    <div class="d-flex align-items-center justify-content-center border text-muted bg-light mx-auto" style="height: 380px; max-width: 280px;">
+                        <span class="text-uppercase tracking-wider small">No Cover Graphic Available</span>
+                    </div>
                 }
-            </dd>
+            </div>
+            
+            <div class="col-md-8 ps-md-5 d-flex flex-column justify-content-between">
+                <div>
+                    <span class="text-uppercase tracking-widest text-muted small mb-1 d-block">@Model.CategoryName</span>
+                    <h1 class="display-6 fw-bold text-dark m-0" style="font-family: 'Cormorant Garamond', serif;">@Model.Title</h1>
+                    <p class="lead font-italic mt-1 mb-4" style="color: #c5a880 !important; font-size: 1.15rem;">By @Model.AuthorName</p>
 
-            <dt>Borrow Fee / Daily Fine</dt>
-            <dd>
-                @Model.BorrowFee.ToString("C")
-                /
-                @Model.DailyFineRate.ToString("C")
-            </dd>
-        </dl>
+                    <div class="row border-top border-bottom py-4 my-4 bg-light px-3">
+                        <div class="col-sm-6">
+                            <div class="meta-label">International ISBN</div>
+                            <div class="meta-value">@Model.ISBN</div>
 
-        @if (Model.IsAvailable)
-        {
-            @if (isAuthenticated && !isLibrarianOrAdmin)
-            {
-                <div class="reservation-box"
-                     style="background:#e3f2fd; border:1px solid #90caf9;">
+                            <div class="meta-label">Borrow Fee / Fine Rate</div>
+                            <div class="meta-value">@Model.BorrowFee.ToString("C") / @Model.DailyFineRate.ToString("C")</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="meta-label">Stock Metrics</div>
+                            <div class="meta-value">@Model.TotalCopies Total Physical Units</div>
 
-                    <div style="font-size:15px; font-weight:600; color:#0d47a1; margin-bottom:6px;">
-                        📚 Borrow This Book
+                            <div class="meta-label">Availability Status</div>
+                            <div class="meta-value">
+                                @if (Model.IsAvailable)
+                                {
+                                    <span class="text-success fw-bold"><i class="fa-solid fa-square-check me-1"></i> @Model.AvailableCopies Copies Left</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i> All Copies Checked Out</span>
+                                }
+                            </div>
+                        </div>
                     </div>
 
-                    <div style="font-size:13px; color:#455a64; margin-bottom:14px;">
-                        Submit a borrowing request. It will be reviewed by a librarian.
+                    <div class="book-synopsis my-4">
+                        <h6 class="text-uppercase tracking-wider fw-bold text-dark mb-2" style="font-size: 0.85rem;">Synopsis</h6>
+                        <p class="text-secondary" style="line-height: 1.7; font-size: 1rem;">
+                            @(string.IsNullOrEmpty(Model.Description) ? "No summary overview is currently available for this volume entry." : Model.Description)
+                        </p>
                     </div>
-
-                    <form asp-controller="BorrowingRecords"
-                          asp-action="BorrowBook"
-                          method="post">
-
-                        @Html.AntiForgeryToken()
-
-                        <input type="hidden"
-                               name="bookId"
-                               value="@Model.Id" />
-
-                        <button type="submit" class="btn btn-primary">
-                            📩 Request Borrow
-                        </button>
-
-                    </form>
-
                 </div>
-            }
-            else if (!isAuthenticated)
-            {
-                <div class="reservation-box"
-                     style="background:#f5f5f5; border:1px solid #ddd;">
 
-                    📚
-                    <a asp-controller="Account"
-                       asp-action="Login"
-                       style="color:#1565c0; font-weight:600;">
+                <div class="mt-2 mb-4">
+                    @if (Model.IsAvailable)
+                    {
+                        @if (isAuthenticated && !isLibrarianOrAdmin)
+                        {
+                            <div class="reservation-card border-start border-primary" style="background:#f4f9ff;">
+                                <h5 class="fw-bold text-primary mb-1" style="font-size: 1.1rem;">📚 Request to Borrow</h5>
+                                <p class="text-muted small mb-3">Submit an entry checkout order request. This selection will undergo manual approval verification loops by an active clerk.</p>
+                                
+                                <form asp-controller="BorrowingRecords" asp-action="BorrowBook" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookId" value="@Model.Id" />
+                                    <button type="submit" class="btn-booksaw btn-sm">📩 Send Borrow Request</button>
+                                </form>
+                            </div>
+                        }
+                        else if (!isAuthenticated)
+                        {
+                            <div class="reservation-card bg-light">
+                                <p class="m-0 text-secondary small">
+                                    📚 Want to read this? <a asp-controller="Account" asp-action="Login" class="fw-bold text-dark text-decoration-underline">Sign inside your account</a> to prompt a distribution dispatch loan request.
+                                </p>
+                            </div>
+                        }
+                        else if (isLibrarianOrAdmin)
+                        {
+                            <div class="reservation-card border-start border-warning" style="background: #fffdf5;">
+                                <p class="m-0 text-warning-emphasis small fw-bold">
+                                    <i class="fa-solid fa-user-shield me-1"></i> Administrative View Override: Library administrators and desk staff members cannot execute personal loan orders.
+                                </p>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        @if (isAuthenticated && !isLibrarianOrAdmin)
+                        {
+                            <div class="reservation-card border-start border-warning" style="background:#fffdf5;">
+                                <h5 class="fw-bold text-warning-emphasis mb-1" style="font-size: 1.1rem; color: #b26a00 !important;">📭 Active Queue Lineup</h5>
+                                <p class="text-muted small mb-3">All inventory elements are safely locked out. Reserve your sequence ranking to secure processing priorities immediately upon system return check-ins.</p>
+                                
+                                <a asp-controller="Reservations" asp-action="Confirm" asp-route-id="@Model.Id" class="btn-reserve-accent btn-sm">📋 Reserve Placement</a>
+                            </div>
+                        }
+                        else if (!isAuthenticated)
+                        {
+                            <div class="reservation-card bg-light">
+                                <p class="m-0 text-secondary small">
+                                    📭 Currently checked out. <a asp-controller="Account" asp-action="Login" class="fw-bold text-dark text-decoration-underline">Login</a> to join the priority backup reservation waiting list.
+                                </p>
+                            </div>
+                        }
+                        else if (isLibrarianOrAdmin)
+                        {
+                            <div class="reservation-card border-start border-danger" style="background: #fffbfb;">
+                                <p class="m-0 text-danger small">
+                                    <strong><i class="fa-solid fa-circle-info me-1"></i> Inventory Notice:</strong> Zero operational copies in shelf alignment. The indexing service automatically redirects updates to waitlisted accounts upon checking in.
+                                </p>
+                            </div>
+                        }
+                    }
+                </div>
 
-                        Login
+                <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                    <a asp-action="Index" class="text-decoration-none text-muted tracking-wide small text-uppercase fw-bold">
+                        <i class="fa-solid fa-arrow-left me-2"></i> Catalog Grid
                     </a>
-
-                    to request borrowing this book.
+                    
+                    @if (isLibrarianOrAdmin)
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-booksaw">
+                            <i class="fa-solid fa-pen-to-square me-2"></i> Edit Record
+                        </a>
+                    }
                 </div>
-            }
-            else if (isLibrarianOrAdmin)
-            {
-                <div class="reservation-box"
-                     style="background:#fce4ec; border:1px solid #f48fb1;">
-
-                    📚 Librarian/Admin cannot request borrow.
-                </div>
-            }
-        }
-
-        @if (!Model.IsAvailable)
-        {
-            @if (isAuthenticated && !isLibrarianOrAdmin)
-            {
-                <div class="reservation-box"
-                     style="background:#fff8e1; border:1px solid #ffd54f;">
-
-                    <div style="font-size:15px; font-weight:600; color:#e65100; margin-bottom:6px;">
-                        📭 Join the Waiting List
-                    </div>
-
-                    <div style="font-size:13px; color:#5d4037; margin-bottom:14px;">
-                        Reserve your place in the queue and get notified
-                        when a copy becomes available.
-                    </div>
-
-                    <a asp-controller="Reservations"
-                       asp-action="Confirm"
-                       asp-route-id="@Model.Id"
-                       class="btn btn-primary">
-
-                        📋 Reserve This Book
-                    </a>
-
-                </div>
-            }
-            else if (!isAuthenticated)
-            {
-                <div class="reservation-box"
-                     style="background:#f5f5f5; border:1px solid #ddd; color:#555; font-size:14px;">
-
-                    📭 All copies are checked out.
-
-                    <a asp-controller="Account"
-                       asp-action="Login"
-                       style="color:#1565c0; font-weight:600;">
-
-                        Sign in
-                    </a>
-
-                    to join the reservation queue.
-                </div>
-            }
-            else if (isLibrarianOrAdmin)
-            {
-                <div class="reservation-box"
-                     style="background:#fce4ec; border:1px solid #f48fb1; color:#880e4f; font-size:13px;">
-
-                    📭
-                    <strong>Librarian Note:</strong>
-
-                    All copies are currently out.
-                    The system will automatically notify
-                    the next person in the queue upon return.
-                </div>
-            }
-        }
-
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="form-actions">
-
-    @if (isLibrarianOrAdmin)
-    {
-        <a asp-action="Edit"
-           asp-route-id="@Model.Id"
-           class="btn btn-warning">
-
-            Edit
-        </a>
-    }
-
-    <a asp-action="Index"
-       class="btn btn-secondary">
-
-        Back to List
-    </a>
-
-</div>
+@section Scripts {
+    <script src="~/js/plugins.js"></script>
+    <script src="~/js/script.js"></script>
+}

@@ -137,5 +137,25 @@ namespace Project.MVC.Controllers
 
             return Json(!exists);
         }
+        //for form category  in add newbook modal
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult CreateModal(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest("Category name is required.");
+
+            try
+            {
+                var model = new CategoryFormViewModel { Name = name };
+                var result = _categoryService.Create(model, ActorId);
+                return Json(new { id = result.Id, text = result.Name });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating category from modal.");
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
