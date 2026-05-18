@@ -1,0 +1,116 @@
+﻿@model Project.Application.ViewModels.Book.BookIndexViewModel
+
+<style>
+    /* Clean Flat Admin Layout Styles (No Flex Matrix Used) */
+    .admin-panel-card { background: #ffffff; padding: 30px; border: 1px solid #e1e1e1; margin-top: 20px; }
+    
+    .search-wrapper { position: relative; max-width: 400px; display: inline-block; width: 100%; }
+    .search-control { width: 100%; border: 1px solid #ccc; padding: 10px 15px; font-size: 0.9rem; }
+    .search-control:focus { border-color: #c5a880; outline: none; }
+
+    .booksaw-flat-table { width: 100%; border-collapse: collapse; margin-top: 25px; background: #fff; }
+    .booksaw-flat-table th { background: #111; color: #fff; text-transform: uppercase; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; padding: 14px 12px; text-align: left; }
+    .booksaw-flat-table td { padding: 14px 12px; vertical-align: middle; border-bottom: 1px solid #eee; color: #333; font-size: 0.9rem; }
+    .booksaw-flat-table tr:hover td { background-color: #faf9f6; }
+
+    .table-book-cover { width: 45px; height: 65px; object-fit: cover; border: 1px solid #e1e1e1; }
+    .broken-cover-fallback { width: 45px; height: 65px; background: #eaeaea; display: inline-block; text-align: center; font-size: 0.7rem; color: #999; padding-top: 15px; border: 1px solid #ddd; }
+    
+    .badge-count { font-size: 0.8rem; font-weight: 600; color: #fff; padding: 3px 8px; display: inline-block; min-width: 30px; text-align: center; }
+    .badge-available { background-color: #48bb78; }
+    .badge-empty { background-color: #f56565; }
+
+    /* Action Links Layout */
+    .action-link-group { display: inline-block; }
+    .btn-row-control { padding: 5px 12px; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; text-decoration: none; display: inline-block; margin-right: 2px; }
+    .btn-row-details { background: #edf2f7; color: #4a5568; }
+    .btn-row-details:hover { background: #e2e8f0; }
+    .btn-row-edit { background: #feebc8; color: #c05621; }
+    .btn-row-edit:hover { background: #fbd38d; }
+    .btn-row-delete { background: #fed7d7; color: #9b2c2c; }
+    .btn-row-delete:hover { background: #feb2b2; }
+</style>
+
+<div class="admin-panel-card shadow-sm">
+    <div style="margin-bottom: 20px;">
+        <span class="text-muted text-uppercase tracking-widest small">Management Console</span>
+        <p style="font-size: 0.85rem; color: #666; margin: 5px 0 0 0;">
+            Total Registered Books: <strong>@Model.Books.Count()</strong>
+        </p>
+    </div>
+
+    <form asp-action="Index" method="get" style="margin-bottom: 20px;">
+        <div class="search-wrapper">
+            <input type="text" name="searchString" class="search-control" placeholder="Search title, author, ISBN..." value="@Context.Request.Query["searchString"]" />
+        </div>
+    </form>
+
+    <div style="overflow-x: auto;">
+        <table class="booksaw-flat-table">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">Cover</th>
+                    <th>Title</th>
+                    <th style="width: 120px;">ISBN</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th style="width: 90px; text-align: center;">Copies</th>
+                    <th style="width: 90px; text-align: center;">Available</th>
+                    <th style="width: 100px;">Borrow Fee</th>
+                    <th style="width: 220px; text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Books != null && Model.Books.Any())
+                {
+                    @foreach (var book in Model.Books)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                                {
+                                    <img src="@book.CoverImageUrl" class="table-book-cover" alt="Cover" />
+                                }
+                                else
+                                {
+                                    <div class="broken-cover-fallback">No Cover</div>
+                                }
+                            </td>
+                            <td style="font-weight: bold;">@book.Title</td>
+                            <td style="color: #666; font-family: monospace;">@book.ISBN</td>
+                            <td>@book.AuthorName</td>
+                            <td><span style="text-transform: uppercase; font-size: 0.75rem; color: #777;">@book.CategoryName</span></td>
+                            <td style="text-align: center;">@book.TotalCopies</td>
+                            <td style="text-align: center;">
+                                @if (book.AvailableCopies > 0)
+                                {
+                                    <span class="badge-count badge-available">@book.AvailableCopies</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-count badge-empty">0</span>
+                                }
+                            </td>
+                            <td style="font-weight: bold;">@book.BorrowFee.ToString("C")</td>
+                            <td style="text-align: right;">
+                                <div class="action-link-group">
+                                    <a asp-action="Details" asp-route-id="@book.Id" class="btn-row-control btn-row-details">Details</a>
+                                    <a asp-action="Edit" asp-route-id="@book.Id" class="btn-row-control btn-row-edit">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@book.Id" class="btn-row-control btn-row-delete">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 40px; color: #999;">
+                            No matching catalog files found in system records.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

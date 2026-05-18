@@ -2,93 +2,169 @@
 
 @{
     ViewData["Title"] = "Our Books Collection";
+    bool isAdminMode = User.IsInRole("Admin") || User.IsInRole("Librarian");
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/vendor.css" />
     <link rel="stylesheet" href="~/icomoon/style.css" />
     <link rel="stylesheet" href="~/css/style.css" />
+    
+    <style>
+        /* Modern, minimal search bar container */
+        .header-search-form {
+            display: inline-block;
+            border-bottom: 2px solid #111;
+            width: 280px;
+            margin-right: 15px;
+        }
+
+        .header-search-input {
+            border: none !important;
+            background: transparent;
+            padding: 6px 0;
+            font-size: 0.9rem;
+            color: #111;
+            width: 100%;
+        }
+
+            .header-search-input:focus {
+                outline: none !important;
+                box-shadow: none !important;
+            }
+
+        /* Clean action button completely free of baseline borders */
+        .header-search-button {
+            background: none;
+            border: none;
+            padding: 6px 15px;
+            color: #111;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: color 0.2s ease;
+        }
+
+            .header-search-button:hover {
+                color: #c5a880;
+            }
+
+        .search-clear-link {
+            font-size: 0.8rem;
+            color: #999;
+            text-decoration: underline;
+            margin-left: 5px;
+        }
+        
+            .search-clear-link:hover {
+                color: #111;
+            }
+    </style>
 }
 
 <section id="popular-books" class="bookshelf py-5" style="background-color: #f3f2ec;">
     <div class="container">
+        
         <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-5">
+            
             <div class="section-header">
                 <span class="text-muted text-uppercase tracking-widest small">Our Catalog</span>
                 <h2 class="section-title text-uppercase m-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 700;">Books Collection</h2>
             </div>
-            @if (User.IsInRole("Admin") || User.IsInRole("Librarian"))
-            {
-                <a asp-action="Create" class="btn btn-outline-dark rounded-0 px-4 text-uppercase fw-bold">+ Add New Book</a>
-            }
+            
+            <div class="d-flex align-items-center">
+                @if (isAdminMode)
+                {
+                    <a asp-action="Create" class="btn btn-outline-dark rounded-0 px-4 text-uppercase fw-bold">+ Add New Book</a>
+                }
+                else
+                {
+                    <form asp-action="Index" method="get" class="d-flex align-items-center m-0">
+                        
+                        <div class="header-search-form">
+                            <input type="text" name="searchString" class="header-search-input" placeholder="Search title, author, ISBN..." value="@Context.Request.Query["searchString"]" />
+                        </div>
+                        
+                        <button type="submit" class="header-search-button">Search</button>
+
+                        @if (!string.IsNullOrEmpty(Context.Request.Query["searchString"]))
+                        {
+                            <a asp-action="Index" class="search-clear-link">Clear</a>
+                        }
+                    </form>
+                }
+            </div>
+            
         </div>
 
-        <div class="row">
-            @if (Model.Books != null && Model.Books.Any())
-            {
-                @foreach (var book in Model.Books)
+        @if (isAdminMode)
+        {
+            @await Html.PartialAsync("_AdminBookTable", Model)
+        }
+        else
+        {
+            <div class="row">
+                @if (Model.Books != null && Model.Books.Any())
                 {
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <div class="product-item bg-white p-3 border text-center h-100 d-flex flex-column justify-content-between" style="transition: all 0.3s ease;">
-                            <div class="image-holder mb-3" style="height: 300px; overflow: hidden; background: #faf9f5;">
-                                @if (!string.IsNullOrEmpty(book.CoverImageUrl))
-                                {
-                                    <img src="@book.CoverImageUrl" alt="@book.Title" class="img-fluid h-100 w-100" style="object-fit: contain;" />
-                                }
-                                else
-                                {
-                                    <div class="d-flex align-items-center justify-content-center h-100 text-muted bg-light border">
-                                        <span>No Cover</span>
-                                    </div>
-                                }
-                            </div>
-                            
-                            <div class="product-detail">
-                                <h3 class="product-title h6 text-uppercase fw-bold m-0" style="letter-spacing: 0.5px;">
-                                    <a asp-action="Details" asp-route-id="@book.Id" class="text-decoration-none text-dark">@book.Title</a>
-                                </h3>
-                                <span class="item-author text-muted small font-italic d-block mb-2">By @book.AuthorName</span>
-
-                                <div class="mb-3">
-                                    @if (book.AvailableCopies > 0)
+                    @foreach (var book in Model.Books)
+                    {
+                        <div class="col-md-3 col-sm-6 mb-4">
+                            <div class="product-item bg-white p-3 border text-center h-100 d-flex flex-column justify-content-between" style="transition: all 0.3s ease;">
+                                <div class="image-holder mb-3" style="height: 300px; overflow: hidden; background: #faf9f5;">
+                                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
                                     {
-                                        <span class="badge bg-success rounded-0 text-uppercase small">@book.AvailableCopies Available</span>
+                                        <img src="@book.CoverImageUrl" alt="@book.Title" class="img-fluid h-100 w-100" style="object-fit: contain;" />
                                     }
                                     else
                                     {
-                                        <span class="badge bg-danger rounded-0 text-uppercase small">Out of Stock</span>
+                                        <div class="d-flex align-items-center justify-content-center h-100 text-muted bg-light border">
+                                            <span>No Cover</span>
+                                        </div>
                                     }
                                 </div>
+                                
+                                <div class="product-detail">
+                                    <h3 class="product-title h6 text-uppercase fw-bold m-0" style="letter-spacing: 0.5px;">
+                                        <a asp-action="Details" asp-route-id="@book.Id" class="text-decoration-none text-dark">@book.Title</a>
+                                    </h3>
+                                    <span class="item-author text-muted small font-italic d-block mb-2">By @book.AuthorName</span>
 
-                                <div class="d-grid gap-2">
-                                    <a asp-action="Details" asp-route-id="@book.Id" class="btn btn-dark rounded-0 text-uppercase tracking-wider btn-sm">View Details</a>
-                                    
-                                    @if (book.AvailableCopies == 0)
-                                    {
-                                        <button type="button" class="btn btn-accent rounded-0 text-uppercase btn-sm" style="background-color: #c5a880; color: white;" onclick="alert('Reservation request submitted!')">Reserve Book</button>
-                                    }
+                                    <div class="mb-3">
+                                        @if (book.AvailableCopies > 0)
+                                        {
+                                            <span class="badge bg-success rounded-0 text-uppercase small">@book.AvailableCopies Available</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger rounded-0 text-uppercase small">Out of Stock</span>
+                                        }
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <a asp-action="Details" asp-route-id="@book.Id" class="btn btn-dark rounded-0 text-uppercase tracking-wider btn-sm">View Details</a>
+                                        
+                                        @if (book.AvailableCopies == 0)
+                                        {
+                                            <a asp-controller="Reservations" asp-action="Confirm" asp-route-id="@book.Id" class="btn btn-accent rounded-0 text-uppercase btn-sm" style="background-color: #c5a880; color: white;">
+                                                Reserve Book
+                                            </a>
+                                        }
+                                    </div>
                                 </div>
                             </div>
-
-                            @if (User.IsInRole("Admin") || User.IsInRole("Librarian"))
-                            {
-                                <div class="admin-controls mt-3 pt-2 border-top bg-light d-flex justify-content-around small">
-                                    <a asp-action="Edit" asp-route-id="@book.Id" class="text-dark text-decoration-none"><i class="icon icon-edit"></i> Edit</a>
-                                    <span class="text-muted">|</span>
-                                    <a asp-action="Delete" asp-route-id="@book.Id" class="text-danger text-decoration-none"><i class="icon icon-trash"></i> Delete</a>
-                                </div>
-                            }
                         </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted fs-5">No books match your search criteria.</p>
                     </div>
                 }
-            }
-            else
-            {
-                <div class="col-12 text-center py-5">
-                    <p class="text-muted fs-5">No literary works found in the database.</p>
-                </div>
-            }
-        </div>
+            </div>
+        }
     </div>
 </section>
 
