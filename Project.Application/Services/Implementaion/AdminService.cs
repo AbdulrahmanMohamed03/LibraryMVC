@@ -207,12 +207,14 @@ namespace Project.Application.Services.Implementaion
             int booksCount = _unitOfWork.Books.GetAll().Count();
             int reservationsCount = _unitOfWork.Reservations.GetAll().Count();
             int librariansCount = (await _userManager.GetUsersInRoleAsync("Librarian")).Count(u => u.IsActive);
+            var totalIncome= _unitOfWork.Transactions.GetAll().Sum(x => x.Amount);
             var dashboardData = new AdminDashboardVM
             {
                 CategoriesCount = categoriesCount,
                 BooksCount = booksCount,
                 LibrariansCount = librariansCount,
-                ReservationsCount = reservationsCount
+                ReservationsCount = reservationsCount,
+                TotalIncome = totalIncome,
             };
 
             return dashboardData;

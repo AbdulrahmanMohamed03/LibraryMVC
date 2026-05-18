@@ -24,11 +24,13 @@ namespace Project.MVC.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            //if (string.IsNullOrEmpty(userId)) return Challenge();
-            userId ??= "7f642de8-4e41-4127-954d-f4401ab4811e";
+            if (string.IsNullOrEmpty(userId)) return Challenge();
+
+            //userId ??= "7f642de8-4e41-4127-954d-f4401ab4811e";
+            await _subscriptionService.CheckAndDowngradeIfExpiredAsync(userId);
             var subscription = await _subscriptionService
                                      .GetActiveSubscriptionByUserAsync(userId);
-            return View(subscription); // null if no active plan
+            return View(subscription); 
         }
 
         // GET: /MySubscription/Plans
@@ -49,19 +51,14 @@ namespace Project.MVC.Controllers
 
             if (string.IsNullOrEmpty(userId))
             {
-                userId = "7f642de8-4e41-4127-954d-f4401ab4811e"; 
-            }
-            var canSubscribe = await _subscriptionService.CanUserSubscribeAsync(userId);
-            if (!canSubscribe)
-            {
-                TempData["Error"] = "You already have an active subscription.";
-                return RedirectToAction("Index");
+                return Challenge();
+                //userId = "7f642de8-4e41-4127-954d-f4401ab4811e"; 
             }
 
             var dto = new CreateUserSubscriptionVM
             {
                 UserId = userId,
-                PlanId = planId
+                PlanId = planId,
             };
 
             var result = await _subscriptionService.SubscribeAsync(dto);
@@ -81,9 +78,9 @@ namespace Project.MVC.Controllers
         public async Task<IActionResult> Cancel(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //if (string.IsNullOrEmpty(userId)) return Challenge();
+            if (string.IsNullOrEmpty(userId)) return Challenge();
 
-            userId ??= "7f642de8-4e41-4127-954d-f4401ab4811e";
+            //userId ??= "7f642de8-4e41-4127-954d-f4401ab4811e";
             var isCancelled = await _subscriptionService.CancelSubscriptionAsync(id, userId);
             if (!isCancelled) return NotFound();
 
@@ -97,7 +94,8 @@ namespace Project.MVC.Controllers
         public async Task<IActionResult> Renew()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId)) userId = "7f642de8-4e41-4127-954d-f4401ab4811e";
+            if (string.IsNullOrEmpty(userId)) return Challenge();
+            //if (string.IsNullOrEmpty(userId)) userId = "7f642de8-4e41-4127-954d-f4401ab4811e";
             var isRenewed = await _subscriptionService.RenewSubscriptionAsync(userId);
             if (!isRenewed)
             {

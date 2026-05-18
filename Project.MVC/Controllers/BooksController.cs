@@ -1,4 +1,5 @@
 ﻿// Project.Web/Controllers/BooksController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.Services.Interfaces;
 using Project.Application.ViewModels.Book;
@@ -15,19 +16,19 @@ namespace Project.Web.Controllers
             _service = service;
             _env = env;                           
         }
-
+        [AllowAnonymous]
         public IActionResult Index()
             => View(new BookIndexViewModel { Books = _service.GetAll() });
-
+        [AllowAnonymous]
         public IActionResult Details(int id)
         {
             var vm = _service.GetById(id);
             return vm is null ? NotFound() : View(vm);
         }
-
+       [Authorize(Roles = "Admin,Librarian")]
         public IActionResult Create()
             => View(_service.GetCreateForm());
-
+        [Authorize(Roles = "Admin,Librarian")]
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Create(BookFormViewModel vm)
         {
@@ -42,13 +43,13 @@ namespace Project.Web.Controllers
             _service.Create(vm, _env.WebRootPath);         
             return RedirectToAction(nameof(Index));
         }
-
+        [Authorize(Roles = "Admin,Librarian")]
         public IActionResult Edit(int id)
         {
             var vm = _service.GetEditForm(id);
             return vm is null ? NotFound() : View(vm);
         }
-
+        [Authorize(Roles = "Admin,Librarian")]
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Edit(BookFormViewModel vm)
         {
@@ -74,13 +75,13 @@ namespace Project.Web.Controllers
                 return View(vm);
             }
         }
-
+        [Authorize(Roles = "Admin,Librarian")]
         public IActionResult Delete(int id)
         {
             var vm = _service.GetById(id);
             return vm is null ? NotFound() : View(vm);
         }
-
+        [Authorize(Roles = "Admin,Librarian")]
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
@@ -117,8 +118,7 @@ namespace Project.Web.Controllers
         }
 
      
-      
-        // add this action to BooksController
+    
         [HttpGet]
         public IActionResult IsISBNAvailable(string isbn, int id = 0)
         {

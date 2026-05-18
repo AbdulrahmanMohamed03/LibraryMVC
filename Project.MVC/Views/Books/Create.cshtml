@@ -4,248 +4,248 @@
     ViewData["Title"] = Model.FormTitle;
 }
 
-<style>
-    .form-wrap { max-width: 560px; }
-    h2 { margin-bottom: 16px; }
-    hr { border: none; border-top: 1px solid #ddd; margin-bottom: 24px; }
-    .form-group { margin-bottom: 18px; }
-    .form-group label {
-        display: block; font-weight: 600;
-        margin-bottom: 6px; font-size: 14px; color: #333;
-    }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%; padding: 8px 10px;
-        border: 1px solid #ccc; border-radius: 4px;
-        font-size: 14px; box-sizing: border-box;
-    }
-    .form-group input[type="file"] { padding: 4px; }
-    .form-group textarea { resize: vertical; }
-    .text-danger { color: #e25555; font-size: 12px; margin-top: 4px; display: block; }
-    .form-actions { display: flex; gap: 10px; margin-top: 24px; }
-    .btn { padding: 8px 20px; border: none; border-radius: 4px;
-           cursor: pointer; text-decoration: none; font-size: 14px; }
-    .btn-primary   { background: #4a90e2; color: #fff; }
-    .btn-secondary { background: #9e9e9e; color: #fff; }
-    .img-preview {
-        max-height: 150px; margin-top: 10px;
-        border: 1px solid #ddd; border-radius: 4px;
-        display: none;
-    }
+@section Styles {
+    <link rel="stylesheet" href="~/css/vendor.css" />
+    <link rel="stylesheet" href="~/icomoon/style.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
+    
+    <style>
+        .booksaw-form-card { background: #fff; padding: 40px; border: 1px solid #e1e1e1; }
+        .form-control, .form-select { border-radius: 0 !important; border: 1px solid #ccc !important; padding: 12px !important; font-family: sans-serif; font-size: 0.95rem; }
+        .form-control:focus, .form-select:focus { border-color: #c5a880 !important; box-shadow: none !important; }
+        .control-label { font-weight: bold; text-transform: uppercase; font-size: 0.8rem; color: #444; letter-spacing: 1px; margin-bottom: 6px; display: block; }
+        
+        /* Buttons matching the template style guide */
+        .btn-booksaw-submit { background: #111; color: #fff; border: 1px solid #111; border-radius: 0; padding: 12px 30px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; transition: all 0.3s ease; display: inline-block; text-decoration: none; text-align: center; }
+        .btn-booksaw-submit:hover { background: #c5a880; border-color: #c5a880; color: #fff; }
+        .btn-booksaw-inline { background: #c5a880; color: #fff; border: 1px solid #c5a880; border-radius: 0; padding: 0 20px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; transition: all 0.3s ease; height: 45px; display: flex; align-items: center; white-space: nowrap; text-decoration: none; }
+        .btn-booksaw-inline:hover { background: #111; border-color: #111; color: #fff; }
+        
+        .img-preview { max-height: 180px; margin-top: 15px; border: 1px solid #e1e1e1; padding: 5px; background: #fff; display: none; }
+        
+        /* BookSaw Custom Flat Overlay Modal UI */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(17,17,17,0.6); z-index: 1050; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: #fff; border: 1px solid #111; width: 500px; max-width: 95vw; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #e1e1e1; padding-bottom: 10px; }
+        .modal-header h3 { margin: 0; font-family: 'Cormorant Garamond', serif; font-weight: 700; text-transform: uppercase; font-size: 1.5rem; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #111; transition: color 0.2s ease; }
+        .modal-close:hover { color: #c5a880; }
+        .modal-actions { display: flex; gap: 15px; margin-top: 25px; pt-3; border-top: 1px solid #e1e1e1; }
 
-    /* ── Modal ─────────────────────────────────────────────── */
-    .modal-overlay {
-        display: none; position: fixed; inset: 0;
-        background: rgba(0,0,0,0.5); z-index: 1000;
-        align-items: center; justify-content: center;
-    }
-    .modal-overlay.active { display: flex; }
-    .modal-box {
-        background: #fff; border-radius: 8px;
-        width: 460px; max-width: 95vw;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        padding: 24px;
-    }
-    .modal-header {
-        display: flex; justify-content: space-between;
-        align-items: center; margin-bottom: 20px;
-    }
-    .modal-header h3 { margin: 0; font-size: 18px; }
-    .modal-close {
-        background: none; border: none;
-        font-size: 20px; cursor: pointer; color: #666;
-    }
-    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        /* Select2 Flat Border Styling Integration override */
+        .select2-container { flex: 1; min-width: 0; }
+        .select2-container .select2-selection--single { height: 45px !important; border: 1px solid #ccc !important; border-radius: 0 !important; }
+        .select2-container .select2-selection--single .select2-selection__rendered { line-height: 43px !important; padding-left: 12px !important; color: #111; }
+        .select2-container .select2-selection--single .select2-selection__arrow { height: 43px !important; }
+        .select2-container .select2-selection--single .select2-selection__clear { margin-top: 11px; }
+        .select2-dropdown { border: 1px solid #111 !important; border-radius: 0 !important; }
+    </style>
+}
 
-    /* ── Select2 style fix ──────────────────────────────────── */
-    .select2-container { flex: 1; min-width: 0; }
-    .select2-container .select2-selection--single {
-        height: 38px !important;
-        border: 1px solid #ccc !important;
-        border-radius: 4px !important;
-    }
-    .select2-container .select2-selection--single .select2-selection__rendered {
-        line-height: 38px !important;
-        padding-left: 10px !important;
-        color: #333;
-    }
-    .select2-container .select2-selection--single .select2-selection__arrow {
-        height: 36px !important;
-    }
-    .select2-container .select2-selection--single .select2-selection__clear {
-        margin-top: 8px;
-    }
-</style>
+<div class="py-5" style="background-color: #f3f2ec; min-height: 85vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="booksaw-form-card shadow-sm">
+                    <h2 class="mb-4 text-uppercase fw-bold" style="font-family: 'Cormorant Garamond', serif; border-bottom: 2px solid #111; padding-bottom: 10px;">@Model.FormTitle</h2>
+                    
+                    <form asp-action="Create" method="post" enctype="multipart/form-data" id="bookForm">
+                        @Html.AntiForgeryToken()
 
-<div class="form-wrap">
-    <h2>@Model.FormTitle</h2>
-    <hr />
+                        <div class="mb-3">
+                            <label asp-for="Title" class="control-label"></label>
+                            <input asp-for="Title" class="form-control" placeholder="Book Title" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
 
-    <form asp-action="Create" method="post"
-          enctype="multipart/form-data" id="bookForm">
-        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label asp-for="ISBN" class="control-label"></label>
+                            <input asp-for="ISBN" class="form-control" placeholder="13-digit sequence" />
+                            <span asp-validation-for="ISBN" class="text-danger small"></span>
+                        </div>
 
-        <div class="form-group">
-            <label asp-for="Title"></label>
-            <input asp-for="Title" />
-            <span asp-validation-for="Title" class="text-danger"></span>
-        </div>
+                        <div class="mb-3">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Provide summary overview annotations..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
 
-        <div class="form-group">
-            <label asp-for="ISBN"></label>
-            <input asp-for="ISBN" />
-            <span asp-validation-for="ISBN" class="text-danger"></span>
-        </div>
+                        <!-- AUTHOR FIELD SETUP -->
+                        <div class="mb-3">
+                            <label asp-for="AuthorId" class="control-label"></label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <select name="AuthorId" id="authorSelect">
+                                    <option value="">-- Search Author --</option>
+                                    @foreach (var author in Model.Authors)
+                                    {
+                                        if (author.Value == Model.AuthorId.ToString())
+                                        {
+                                            <option value="@author.Value" selected="selected">@author.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@author.Value">@author.Text</option>
+                                        }
+                                    }
+                                </select>
 
-        <div class="form-group">
-            <label asp-for="Description"></label>
-            <textarea asp-for="Description" rows="3"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
+                                <button type="button" class="btn-booksaw-inline" onclick="openAuthorModal()">
+                                    <i class="fa-solid fa-plus me-1"></i> New Author
+                                </button>
+                            </div>
+                            <span asp-validation-for="AuthorId" class="text-danger small d-block mt-1"></span>
+                        </div>
 
-        {{!-- ── Author: searchable dropdown + add new ────────── --}}
-        <div class="form-group">
-            <label asp-for="AuthorId"></label>
-            <div style="display:flex; gap:8px; align-items:center;">
+                        <!-- CATEGORY FIELD SETUP (FIXED TO MATCH AUTHOR LOGIC) -->
+                        <div class="mb-3">
+                            <label asp-for="CategoryId" class="control-label"></label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <select name="CategoryId" id="categorySelect">
+                                    <option value="">-- Search Category --</option>
+                                    @foreach (var category in Model.Categories)
+                                    {
+                                        if (category.Value == Model.CategoryId.ToString())
+                                        {
+                                            <option value="@category.Value" selected="selected">@category.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@category.Value">@category.Text</option>
+                                        }
+                                    }
+                                </select>
 
-                <select name="AuthorId" id="authorSelect" style="flex:1;">
-                    <option value="">-- Search Author --</option>
-                    @foreach (var author in Model.Authors)
-                    {
-                        if (author.Value == Model.AuthorId.ToString())
-                        {
-                            <option value="@author.Value" selected="selected">@author.Text</option>
-                        }
-                        else
-                        {
-                            <option value="@author.Value">@author.Text</option>
-                        }
-                    }
-                </select>
+                                <button type="button" class="btn-booksaw-inline" onclick="openCategoryModal()">
+                                    <i class="fa-solid fa-plus me-1"></i> New Category
+                                </button>
+                            </div>
+                            <span asp-validation-for="CategoryId" class="text-danger small d-block mt-1"></span>
+                        </div>
 
-                <button type="button"
-                        class="btn btn-secondary"
-                        onclick="openAuthorModal()"
-                        style="white-space:nowrap; height:38px;">
-                    + New Author
-                </button>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PublishedYear" class="control-label"></label>
+                                <input asp-for="PublishedYear" class="form-control" type="number" placeholder="YYYY" />
+                                <span asp-validation-for="PublishedYear" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TotalCopies" class="control-label"></label>
+                                <input asp-for="TotalCopies" class="form-control" type="number" placeholder="0" />
+                                <span asp-validation-for="TotalCopies" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BorrowFee" class="control-label"></label>
+                                <input asp-for="BorrowFee" class="form-control" type="number" step="0.01" placeholder="0.00" />
+                                <span asp-validation-for="BorrowFee" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DailyFineRate" class="control-label"></label>
+                                <input asp-for="DailyFineRate" class="form-control" type="number" step="0.01" placeholder="0.00" />
+                                <span asp-validation-for="DailyFineRate" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="CoverImage" class="control-label"></label>
+                            <input asp-for="CoverImage" class="form-control" type="file" accept="image/*" onchange="previewImage(this)" />
+                            <span asp-validation-for="CoverImage" class="text-danger small"></span>
+                            <img id="imgPreview" class="img-preview img-fluid" alt="Preview Layout Image Asset" />
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a asp-action="Index" class="text-decoration-none text-muted small text-uppercase fw-bold">
+                                <i class="fa-solid fa-arrow-left-long me-2"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-booksaw-submit">Create Listing</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <span asp-validation-for="AuthorId" class="text-danger"></span>
         </div>
-
-        <div class="form-group">
-            <label asp-for="CategoryId"></label>
-            <select asp-for="CategoryId" asp-items="Model.Categories">
-                <option value="">-- Select Category --</option>
-            </select>
-            <span asp-validation-for="CategoryId" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="PublishedYear"></label>
-            <input asp-for="PublishedYear" type="number" />
-            <span asp-validation-for="PublishedYear" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="BorrowFee"></label>
-            <input asp-for="BorrowFee" type="number" step="0.01" />
-            <span asp-validation-for="BorrowFee" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="DailyFineRate"></label>
-            <input asp-for="DailyFineRate" type="number" step="0.01" />
-            <span asp-validation-for="DailyFineRate" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="TotalCopies"></label>
-            <input asp-for="TotalCopies" type="number" />
-            <span asp-validation-for="TotalCopies" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="CoverImage"></label>
-            <input asp-for="CoverImage" type="file" accept="image/*"
-                   onchange="previewImage(this)" />
-            <span asp-validation-for="CoverImage" class="text-danger"></span>
-            <img id="imgPreview" class="img-preview" alt="Preview" />
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Create</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </div>
-    </form>
+    </div>
 </div>
 
-{{!-- ── Author Modal ──────────────────────────────────────────── --}}
+<!-- Author Modal Overlay -->
 <div id="authorModalOverlay" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-header">
             <h3>Add New Author</h3>
-            <button type="button" class="modal-close"
-                    onclick="closeAuthorModal()">✕</button>
+            <button type="button" class="modal-close" onclick="closeAuthorModal()">✕</button>
         </div>
 
-        <div class="form-group">
-            <label>Full Name *</label>
-            <input type="text" id="modalAuthorName"
-                   placeholder="Enter full name" />
-            <span class="text-danger" id="modalNameError"></span>
+        <div class="mb-3">
+            <label class="control-label">Full Name *</label>
+            <input type="text" id="modalAuthorName" class="form-control" placeholder="e.g. Ernest Hemingway" />
+            <span class="text-danger small" id="modalNameError"></span>
         </div>
 
-        <div class="form-group">
-            <label>Nationality</label>
-            <input type="text" id="modalAuthorNationality"
-                   placeholder="e.g. Egyptian" />
+        <div class="mb-3">
+            <label class="control-label">Nationality</label>
+            <input type="text" id="modalAuthorNationality" class="form-control" placeholder="e.g. American" />
         </div>
 
-        <div class="form-group">
-            <label>Bio</label>
-            <textarea id="modalAuthorBio" rows="3"
-                      placeholder="Short biography..."></textarea>
+        <div class="mb-3">
+            <label class="control-label">Bio Summary</label>
+            <textarea id="modalAuthorBio" class="form-control" rows="3" placeholder="Brief chronicle notes..."></textarea>
         </div>
 
         <div class="modal-actions">
-            <button type="button" class="btn btn-primary"
-                    onclick="submitAuthorModal()">
-                Save Author
-            </button>
-            <button type="button" class="btn btn-secondary"
-                    onclick="closeAuthorModal()">
-                Cancel
-            </button>
+            <button type="button" class="btn btn-booksaw-submit w-50" onclick="submitAuthorModal()">Save Author</button>
+            <button type="button" class="btn btn-booksaw-inline w-50 justify-content-center" onclick="closeAuthorModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Category Modal Overlay -->
+<div id="categoryModalOverlay" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>Add New Category</h3>
+            <button type="button" class="modal-close" onclick="closeCategoryModal()">✕</button>
+        </div>
+
+        <div class="mb-3">
+            <label class="control-label">Category Name *</label>
+            <input type="text" id="modalCategoryName" class="form-control" placeholder="e.g. Science Fiction" />
+            <span class="text-danger small" id="modalCategoryError"></span>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="btn btn-booksaw-submit w-50" onclick="submitCategoryModal()">Save Category</button>
+            <button type="button" class="btn btn-booksaw-inline w-50 justify-content-center" onclick="closeCategoryModal()">Cancel</button>
         </div>
     </div>
 </div>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css"
-          rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
 
     <script>
         const FORM_KEY = 'bookFormData_create';
 
         $(document).ready(function () {
-
-            // ── Select2 init — filters existing options as you type ───
+           
             $('#authorSelect').select2({
                 placeholder: '-- Search Author --',
                 allowClear: true
             });
 
-            // restore form if coming back after opening modal
+         
+            $('#categorySelect').select2({
+                placeholder: '-- Search Category --',
+                allowClear: true
+            });
+
+          
             restoreFormData();
         });
 
-        // ── Image preview ─────────────────────────────────────────────
         function previewImage(input) {
             const preview = document.getElementById('imgPreview');
             if (input.files && input.files[0]) {
@@ -256,38 +256,34 @@
             }
         }
 
-        // ── Modal open / close ────────────────────────────────────────
+        /* =========================================================================
+           AUTHOR MODAL LOGIC
+           ========================================================================= */
         function openAuthorModal() {
             saveFormData();
-            document.getElementById('modalAuthorName').value        = '';
+            document.getElementById('modalAuthorName').value = '';
             document.getElementById('modalAuthorNationality').value = '';
-            document.getElementById('modalAuthorBio').value         = '';
-            document.getElementById('modalNameError').textContent   = '';
+            document.getElementById('modalAuthorBio').value = '';
+            document.getElementById('modalNameError').textContent = '';
             document.getElementById('authorModalOverlay').classList.add('active');
         }
 
         function closeAuthorModal() {
-            document.getElementById('authorModalOverlay')
-                    .classList.remove('active');
+            document.getElementById('authorModalOverlay').classList.remove('active');
         }
 
-        // close when clicking outside the modal box
-        document.getElementById('authorModalOverlay')
-                .addEventListener('click', function (e) {
-                    if (e.target === this) closeAuthorModal();
-                });
+        document.getElementById('authorModalOverlay').addEventListener('click', function (e) {
+            if (e.target === this) closeAuthorModal();
+        });
 
-        // ── Submit new author via AJAX ────────────────────────────────
         function submitAuthorModal() {
-            const name        = document.getElementById('modalAuthorName').value.trim();
+            const name = document.getElementById('modalAuthorName').value.trim();
             const nationality = document.getElementById('modalAuthorNationality').value.trim();
-            const bio         = document.getElementById('modalAuthorBio').value.trim();
-            const token       = document.querySelector(
-                                    '[name="__RequestVerificationToken"]').value;
+            const bio = document.getElementById('modalAuthorBio').value.trim();
+            const token = document.querySelector('[name="__RequestVerificationToken"]').value;
 
             if (!name) {
-                document.getElementById('modalNameError').textContent =
-                    'Full name is required.';
+                document.getElementById('modalNameError').textContent = 'Full name field verification required.';
                 return;
             }
             document.getElementById('modalNameError').textContent = '';
@@ -298,27 +294,72 @@
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'RequestVerificationToken': token
                 },
-                body: `FullName=${encodeURIComponent(name)}`
-                    + `&Nationality=${encodeURIComponent(nationality)}`
-                    + `&Bio=${encodeURIComponent(bio)}`
+                body: `FullName=${encodeURIComponent(name)}&Nationality=${encodeURIComponent(nationality)}&Bio=${encodeURIComponent(bio)}`
             })
             .then(r => {
-                if (!r.ok) throw new Error('Server error');
+                if (!r.ok) throw new Error('Network channel response failure.');
                 return r.json();
             })
             .then(author => {
-                // append new author as real <option> so it's searchable
                 const option = new Option(author.text, author.id, true, true);
                 $('#authorSelect').append(option).trigger('change');
                 closeAuthorModal();
             })
             .catch(() => {
-                document.getElementById('modalNameError').textContent =
-                    'Something went wrong. Please try again.';
+                document.getElementById('modalNameError').textContent = 'An operational error has occurred. Verify entry structures.';
             });
         }
 
-        // ── Form persistence ──────────────────────────────────────────
+        
+        function openCategoryModal() {
+            saveFormData();
+            document.getElementById('modalCategoryName').value = '';
+            document.getElementById('modalCategoryError').textContent = '';
+            document.getElementById('categoryModalOverlay').classList.add('active');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModalOverlay').classList.remove('active');
+        }
+
+        document.getElementById('categoryModalOverlay').addEventListener('click', function (e) {
+            if (e.target === this) closeCategoryModal();
+        });
+
+      function submitCategoryModal() {
+    const name  = document.getElementById('modalCategoryName').value.trim();
+    const token = document.querySelector('[name="__RequestVerificationToken"]').value;
+
+    if (!name) {
+        document.getElementById('modalCategoryError').textContent =
+            'Category name is required.';
+        return;
+    }
+    document.getElementById('modalCategoryError').textContent = '';
+
+    fetch('/Category/CreateModal', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'RequestVerificationToken': token
+        },
+       body: `name=${encodeURIComponent(name)}` 
+    })
+    .then(r => {
+        if (!r.ok) throw new Error('Server error');
+        return r.json();
+    })
+    .then(category => {
+       
+        const option = new Option(category.text, category.id, true, true);
+        $('#categorySelect').append(option).trigger('change');
+        closeCategoryModal();
+    })
+    .catch(() => {
+        document.getElementById('modalCategoryError').textContent =
+            'name aleady exist.';
+    });
+}
         function saveFormData() {
             const form = document.getElementById('bookForm');
             const data = {};
@@ -328,10 +369,14 @@
                     data[key] = val;
             });
 
-            // save author label so we can restore Select2 display text
-            const selected = $('#authorSelect').find(':selected');
-            if (selected.val()) {
-                data['_authorText'] = selected.text();
+            const selectedAuthor = $('#authorSelect').find(':selected');
+            if (selectedAuthor.val()) {
+                data['_authorText'] = selectedAuthor.text();
+            }
+
+            const selectedCategory = $('#categorySelect').find(':selected');
+            if (selectedCategory.val()) {
+                data['_categoryText'] = selectedCategory.text();
             }
 
             sessionStorage.setItem(FORM_KEY, JSON.stringify(data));
@@ -343,7 +388,6 @@
 
             const data = JSON.parse(saved);
 
-            // restore plain inputs and textareas
             Object.entries(data).forEach(([key, val]) => {
                 if (key.startsWith('_')) return;
                 const el = document.querySelector(`[name="${key}"]`);
@@ -351,15 +395,22 @@
                     el.value = val;
             });
 
-            // restore category dropdown
-            if (data['CategoryId']) {
-                const cat = document.querySelector('[name="CategoryId"]');
-                if (cat) cat.value = data['CategoryId'];
+            
+            if (data['AuthorId']) {
+                if (!$('#authorSelect').find(`option[value="${data['AuthorId']}"]`).length && data['_authorText']) {
+                    const option = new Option(data['_authorText'], data['AuthorId'], true, true);
+                    $('#authorSelect').append(option);
+                }
+                $('#authorSelect').val(data['AuthorId']).trigger('change');
             }
 
-            // restore Select2 author — option already in list, just select it
-            if (data['AuthorId']) {
-                $('#authorSelect').val(data['AuthorId']).trigger('change');
+           
+            if (data['CategoryId']) {
+                if (!$('#categorySelect').find(`option[value="${data['CategoryId']}"]`).length && data['_categoryText']) {
+                    const option = new Option(data['_categoryText'], data['CategoryId'], true, true);
+                    $('#categorySelect').append(option);
+                }
+                $('#categorySelect').val(data['CategoryId']).trigger('change');
             }
 
             sessionStorage.removeItem(FORM_KEY);
