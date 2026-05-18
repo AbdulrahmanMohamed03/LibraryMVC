@@ -50,6 +50,31 @@ namespace Project.Web.Controllers
         // ─────────────────────────────────────────────────────────────────────
         // DETAILS: validations for users regarding active borrowings and reservations
         // ─────────────────────────────────────────────────────────────────────
+        [AllowAnonymous]
+        public IActionResult Index(string searchString)
+        {
+            
+            var books = _service.GetAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Trim().ToLower();
+
+                books = books.Where(b => b.Title.ToLower().Contains(searchString)
+                                      || b.AuthorName.ToLower().Contains(searchString)
+                                      || b.ISBN.Contains(searchString))
+                             .ToList(); 
+            }
+
+           
+            var viewModel = new BookIndexViewModel
+            {
+                Books = books
+            };
+
+            return View(viewModel);
+        }
+        [AllowAnonymous]
         public IActionResult Details(int id)
         {
             var vm = _service.GetById(id);
