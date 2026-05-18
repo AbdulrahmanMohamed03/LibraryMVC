@@ -15,5 +15,7 @@ namespace Project.Application.Services.Interfaces
         ReturnBorrowVM GetReturnDetails(int borrowingRecordId);
 
         Task<CreateBorrowVM> ReturnBook(int borrowingRecordId, string librarianId);
+
+        bool UserHasActiveBorrowForBook(string userId, int bookId);
     }
 }

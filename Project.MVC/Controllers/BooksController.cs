@@ -1,21 +1,55 @@
-﻿// Project.Web/Controllers/BooksController.cs
+﻿using Microsoft.AspNetCore.Identity; 
+// Project.Web/Controllers/BooksController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.Services.Interfaces;
 using Project.Application.ViewModels.Book;
+using Project.Core.Models; 
+using System;
+using System.IO;
+using System.Linq;
 
 namespace Project.Web.Controllers
 {
     public class BooksController : Controller
     {
         private readonly IBookService _service;
-        private readonly IWebHostEnvironment _env;         
+        private readonly IWebHostEnvironment _env;
 
-        public BooksController(IBookService service, IWebHostEnvironment env)
+
+        private readonly IReservationService _reservationService;
+        private readonly IBorrowingService _borrowingService;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public BooksController(
+            IBookService service,
+            IWebHostEnvironment env,
+            IReservationService reservationService,
+            IBorrowingService borrowingService,
+            UserManager<ApplicationUser> userManager)
         {
             _service = service;
-            _env = env;                           
+            _env = env;
+            _reservationService = reservationService;
+            _borrowingService = borrowingService;
+            _userManager = userManager;
         }
+
+        public IActionResult Index(int? categoryId)
+        {
+            var books = _service.GetAll();
+
+            if (categoryId.HasValue)
+            {
+                books = books.Where(b => b.CategoryId == categoryId.Value).ToList();
+            }
+
+            return View(new BookIndexViewModel { Books = books });
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // DETAILS: validations for users regarding active borrowings and reservations
+        // ─────────────────────────────────────────────────────────────────────
         [AllowAnonymous]
         public IActionResult Index(string searchString)
         {
@@ -44,7 +78,21 @@ namespace Project.Web.Controllers
         public IActionResult Details(int id)
         {
             var vm = _service.GetById(id);
-            return vm is null ? NotFound() : View(vm);
+            if (vm is null) return NotFound();
+
+    
+            var userId = _userManager.GetUserId(User);
+
+            if (userId != null)
+            {
+             
+                vm.IsCurrentlyBorrowing = _borrowingService.UserHasActiveBorrowForBook(userId, id);
+
+             
+                vm.HasActiveReservation = _reservationService.UserHasActiveReservationForBook(userId, id);
+            }
+
+            return View(vm);
         }
        [Authorize(Roles = "Admin,Librarian")]
         public IActionResult Create()
@@ -61,7 +109,7 @@ namespace Project.Web.Controllers
                 return View(vm);
             }
 
-            _service.Create(vm, _env.WebRootPath);         
+            _service.Create(vm, _env.WebRootPath);
             return RedirectToAction(nameof(Index));
         }
         [Authorize(Roles = "Admin,Librarian")]
@@ -84,7 +132,7 @@ namespace Project.Web.Controllers
 
             try
             {
-                var result = _service.Update(vm, _env.WebRootPath);  
+                var result = _service.Update(vm, _env.WebRootPath);
                 return result is null ? NotFound() : RedirectToAction(nameof(Index));
             }
             catch (InvalidOperationException ex)
@@ -111,14 +159,12 @@ namespace Project.Web.Controllers
             if (book is null)
                 return NotFound();
 
-            // ❌ BLOCK DELETE if copies are still available
             if (book.AvailableCopies > 0)
             {
                 ModelState.AddModelError("", "Cannot delete book while available copies exist.");
                 return View("Delete", book);
             }
 
-            // delete image file if exists
             if (!string.IsNullOrEmpty(book.CoverImageUrl))
             {
                 var filePath = Path.Combine(
@@ -138,13 +184,11 @@ namespace Project.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-     
-    
         [HttpGet]
         public IActionResult IsISBNAvailable(string isbn, int id = 0)
         {
             var exists = _service.ISBNExists(isbn, excludeId: id);
-            return Json(!exists); 
+            return Json(!exists);
         }
     }
 }

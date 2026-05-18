@@ -8,11 +8,16 @@ namespace Project.Application.ViewModels.Reservation
     {
         //user dashboard view.
         public IEnumerable<ReservationViewModel> Reservations { get; set; } = [];
-        public int TotalCount => Reservations.Count();
-        public int PendingCount => Reservations.Count(r => r.Status == Core.Enums.ReservationStatus.Pending);
-        public int ReadyCount => Reservations.Count(r => r.Status == Core.Enums.ReservationStatus.Ready);
-        public int FulfilledCount => Reservations.Count(r => r.Status == Core.Enums.ReservationStatus.Fulfilled);
-        public int CancelledCount => Reservations.Count(r => r.Status == Core.Enums.ReservationStatus.Cancelled);
+        public IEnumerable<ReservationViewModel> AllReservations { get; set; } = [];
+        public bool IsAdminView { get; set; } = false;
+        private IEnumerable<ReservationViewModel> Active =>
+           IsAdminView ? AllReservations : Reservations;
+
+        public int TotalCount => Active.Count();
+        public int PendingCount => Active.Count(r => r.Status == Core.Enums.ReservationStatus.Pending);
+        public int ReadyCount => Active.Count(r => r.Status == Core.Enums.ReservationStatus.Ready);
+        public int FulfilledCount => Active.Count(r => r.Status == Core.Enums.ReservationStatus.Fulfilled);
+        public int CancelledCount => Active.Count(r => r.Status == Core.Enums.ReservationStatus.Cancelled);
 
         public IEnumerable<ReservationViewModel> UrgentAlerts =>
             Reservations.Where(r => r.IsExpiringSoon);
