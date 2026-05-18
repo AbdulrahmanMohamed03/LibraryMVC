@@ -26,5 +26,7 @@ namespace Project.Core.RepositoriesAbstraction
 
         Task<IEnumerable<Reservation>> GetPendingByBookIdAsync(int bookId);
 
+
+        IEnumerable<Reservation> GetAllWithDetails();
     }
 }

@@ -1,5 +1,4 @@
-﻿// Project.Application/Services/Implementation/BookService.cs
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.Services.Interfaces;
 using Project.Application.ViewModels.Book;
@@ -11,10 +10,15 @@ namespace Project.Application.Services.Implementaion
     public class BookService : IBookService
     {
         private readonly IUnitOfWork _uow;
+        private readonly IReservationService _reservationService;
 
-        public BookService(IUnitOfWork uow) => _uow = uow;
+        public BookService(IUnitOfWork uow, IReservationService reservationService)
+        {
+            _uow = uow;
+            _reservationService = reservationService;
+        }
 
-        // ── Helpers ──────────────────────────────────────────────────────────
+        // ── Helpers ───────────────────────────────────────────────────────────
 
         private static BookViewModel ToViewModel(Book b) => new BookViewModel
         {
@@ -54,37 +58,24 @@ namespace Project.Application.Services.Implementaion
                                   Selected = c.Id == selectedId
                               });
 
-        // ── Image Handler
-        private static string? SaveImage(IFormFile? file, string wwwRootPath, string? oldImagePath = null)
+        private static string? SaveImage(IFormFile? file, string wwwRootPath,
+                                          string? oldImagePath = null)
         {
-           
-            if (file == null || file.Length == 0)
-                return oldImagePath;
+            if (file == null || file.Length == 0) return oldImagePath;
 
-          
             var folderPath = Path.Combine(wwwRootPath, "images", "books");
+            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
 
-        
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
-           
             if (!string.IsNullOrEmpty(oldImagePath))
             {
                 var oldFilePath = Path.Combine(wwwRootPath, oldImagePath.TrimStart('/'));
-                if (File.Exists(oldFilePath))
-                    File.Delete(oldFilePath);
+                if (File.Exists(oldFilePath)) File.Delete(oldFilePath);
             }
 
-           
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var fullPath = Path.Combine(folderPath, fileName);
-
-            
-            using (var stream = new FileStream(fullPath, FileMode.Create))
+            using (var stream = new FileStream(Path.Combine(folderPath, fileName), FileMode.Create))
                 file.CopyTo(stream);
 
-          
             return $"/images/books/{fileName}";
         }
 
@@ -123,7 +114,7 @@ namespace Project.Application.Services.Implementaion
                 BorrowFee = book.BorrowFee,
                 DailyFineRate = book.DailyFineRate,
                 TotalCopies = book.TotalCopies,
-                CoverImageUrl = book.CoverImageUrl,   
+                CoverImageUrl = book.CoverImageUrl,
                 Authors = GetAuthorSelectList(book.AuthorId),
                 Categories = GetCategorySelectList(book.CategoryId)
             };
@@ -133,8 +124,6 @@ namespace Project.Application.Services.Implementaion
 
         public BookViewModel Create(BookFormViewModel vm, string wwwRootPath)
         {
-            var imagePath = SaveImage(vm.CoverImage, wwwRootPath);
-
             var book = new Book
             {
                 ISBN = vm.ISBN,
@@ -147,7 +136,7 @@ namespace Project.Application.Services.Implementaion
                 DailyFineRate = vm.DailyFineRate,
                 TotalCopies = vm.TotalCopies,
                 AvailableCopies = vm.TotalCopies,
-                CoverImageUrl = imagePath         
+                CoverImageUrl = SaveImage(vm.CoverImage, wwwRootPath)
             };
 
             _uow.Books.Add(book);
@@ -164,12 +153,12 @@ namespace Project.Application.Services.Implementaion
 
             if (vm.TotalCopies < borrowedCopies)
                 throw new InvalidOperationException(
-                    "Total copies cannot be less than the number of currently borrowed copies."
-                );
+                    "Total copies cannot be less than the number of currently borrowed copies.");
 
-          
+            // Capture the delta BEFORE mutating the entity.
+            int addedCopies = Math.Max(0, vm.TotalCopies - book.TotalCopies);
+
             book.CoverImageUrl = SaveImage(vm.CoverImage, wwwRootPath, book.CoverImageUrl);
-
             book.ISBN = vm.ISBN;
             book.Title = vm.Title;
             book.Description = vm.Description;
@@ -179,10 +168,17 @@ namespace Project.Application.Services.Implementaion
             book.BorrowFee = vm.BorrowFee;
             book.DailyFineRate = vm.DailyFineRate;
             book.TotalCopies = vm.TotalCopies;
+
+        
             book.AvailableCopies = vm.TotalCopies - borrowedCopies;
 
             _uow.Books.Update(book);
-            _uow.Save();
+            _uow.Save(); 
+
+
+            if (addedCopies > 0)
+                _reservationService.ProcessNewCopiesIntoQueue(vm.Id, addedCopies);
+
             return ToViewModel(book);
         }
 
@@ -190,15 +186,12 @@ namespace Project.Application.Services.Implementaion
         {
             var book = _uow.Books.GetById(id);
             if (book is null) return false;
-
-            // delete image file from disk when book is deleted
-            // (wwwRootPath not available here — handled in controller)
             _uow.Books.Delete(id);
             _uow.Save();
             return true;
         }
-        public bool ISBNExists(string isbn, int excludeId = 0)
-    => _uow.Books.ISBNExists(isbn, excludeId);
 
+        public bool ISBNExists(string isbn, int excludeId = 0)
+            => _uow.Books.ISBNExists(isbn, excludeId);
     }
 }

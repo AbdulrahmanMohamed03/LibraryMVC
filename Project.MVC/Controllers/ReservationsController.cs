@@ -3,11 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.Services.Interfaces;
 using Project.Core.Models;
-using System.Security.Claims;
 
 namespace Project.Web.Controllers
 {
-    //[Authorize]   
+    [Authorize]
     public class ReservationsController : Controller
     {
         private readonly IReservationService _reservationService;
@@ -22,150 +21,116 @@ namespace Project.Web.Controllers
         }
 
         // ── Helper ────────────────────────────────────────────────────────────
-        //private string CurrentUserId =>
-        //    _userManager.GetUserId(User)
-        //    ?? throw new InvalidOperationException("User session is invalid.");
-
-        private string CurrentUserId
-        {
-            get
-            {
-                
-                // return _userManager.GetUserId(User) ?? throw new InvalidOperationException("...");
-
-                
-                //return "fb82915b-4ae3-44d7-bdab-8aa6f7f60462"; 
-                return User.FindFirstValue(ClaimTypes.NameIdentifier);
-            }
-        }
+        private string CurrentUserId =>
+            _userManager.GetUserId(User)
+            ?? throw new InvalidOperationException("User session is invalid.");
 
         // ─────────────────────────────────────────────────────────────────────
-        // INDEX: My Reservations dashboard
+        // INDEX: Reservations dashboard filtered by user role
         // ─────────────────────────────────────────────────────────────────────
-        [AllowAnonymous]
         [HttpGet]
         public IActionResult Index()
         {
-            var vm = _reservationService.GetUserReservations(CurrentUserId);
-            return View(vm);
+            if (User.IsInRole("Admin") || User.IsInRole("Librarian"))
+            {
+                var adminVm = _reservationService.GetAllReservationsForAdmin();
+                return View(adminVm);
+            }
+
+            var userVm = _reservationService.GetUserReservations(CurrentUserId);
+            return View(userVm);
         }
 
         // ─────────────────────────────────────────────────────────────────────
         // CONFIRM: Show confirmation page before placing a reservation
         // ─────────────────────────────────────────────────────────────────────
-
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Confirm(int id)
         {
-            try
-            {
+            var validationResult = _reservationService.CheckFormEligibility(id, CurrentUserId);
 
-                var vm = _reservationService.GetPlaceReservationForm(id, CurrentUserId);
-                return View(vm);
-            }
-            catch (InvalidOperationException ex)
+            if (!validationResult.IsSuccess)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = validationResult.Message;
                 return RedirectToAction("Details", "Books", new { id = id });
             }
+
+            var vm = _reservationService.GetPlaceReservationForm(id, CurrentUserId);
+            return View(vm);
         }
 
-
-        //public IActionResult Confirm(int id)
-        //{
-
-        //    // var vm = _reservationService.GetPlaceReservationForm(id, CurrentUserId);
-
-
-        //    var fakeVm = new Project.Application.ViewModels.Reservation.PlaceReservationViewModel
-        //    {
-        //        BookId = id,
-        //        BookTitle = "Test Book"
-        //    };
-
-        //    return View(fakeVm);
-        //}
         // ─────────────────────────────────────────────────────────────────────
         // CREATE (POST): Place the reservation
         // ─────────────────────────────────────────────────────────────────────
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-
-        //public IActionResult Create(int bookId)
-        //{
-        //    try
-        //    {
-        //        var result = _reservationService.PlaceReservation(bookId, CurrentUserId);
-        //        TempData["SuccessMessage"] =
-        //            $"Your reservation for '{result.BookTitle}' has been placed. " +
-        //            $"You are #{_reservationService.GetUserReservations(CurrentUserId)
-        //                .Reservations.Count(r => r.BookId == bookId)} in the queue.";
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch (InvalidOperationException ex)
-        //    {
-        //        TempData["ErrorMessage"] = ex.Message;
-        //        return RedirectToAction("Details", "Books", new { id = bookId });
-        //    }
-        //}
-
-        [HttpPost]
-        [AllowAnonymous] 
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Create(int bookId)
         {
-            try
-            {
-             
-                var userId = CurrentUserId;
+            var result = _reservationService.PlaceReservation(bookId, CurrentUserId);
 
-                var result = _reservationService.PlaceReservation(bookId, userId);
-
-                TempData["SuccessMessage"] = "Reservation placed successfully!";
-                return RedirectToAction(nameof(Index)); 
-            }
-            catch (Exception ex)
+            if (!result.IsSuccess)
             {
-                
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction("Index"); 
+                TempData["ErrorMessage"] = result.Message;
+                return RedirectToAction("Details", "Books", new { id = bookId });
             }
-        }
 
-        // ─────────────────────────────────────────────────────────────────────
-        // CANCEL (POST): Cancel a reservation
-        // ─────────────────────────────────────────────────────────────────────
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Cancel(int id)
-        {
-            try
-            {
-                _reservationService.CancelReservation(id, CurrentUserId);
-                TempData["SuccessMessage"] = "Your reservation has been cancelled.";
-            }
-            catch (InvalidOperationException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-            }
+            TempData["SuccessMessage"] =
+                $"Your reservation for '{result.Message}' has been placed. " +
+                "You'll be notified when a copy is ready for pickup.";
             return RedirectToAction(nameof(Index));
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        // EXPIRE (POST): Admin-triggered expiry sweep
+        // CANCEL (POST): Cancel a reservation (User view)
         // ─────────────────────────────────────────────────────────────────────
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Cancel(int id)
+        {
+            var result = _reservationService.CancelReservation(id, CurrentUserId);
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+            if (!result.IsSuccess)
+            {
+                TempData["ErrorMessage"] = result.Message;
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "Your reservation has been cancelled successfully.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // ADMIN CANCEL (POST): Librarian cancel any user's reservation
+        // ─────────────────────────────────────────────────────────────────────
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Librarian")]
+        public IActionResult AdminCancel(int id, string reservationUserId)
+        {
+            var result = _reservationService.CancelReservation(id, reservationUserId);
+
+            if (!result.IsSuccess)
+            {
+                TempData["ErrorMessage"] = result.Message;
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "Reservation cancelled successfully.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // MAINTENANCE: Expiry sweep (Admin/Librarian only)
+        // ─────────────────────────────────────────────────────────────────────
+        [HttpPost, ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Librarian")]
         public IActionResult ExpireSweep()
         {
             var count = _reservationService.ExpireOverdueReservations();
             TempData["SuccessMessage"] = count > 0
-                ? $"{count} overdue reservation(s) were expired and processed."
+                ? $"{count} overdue reservation(s) expired and re-processed."
                 : "No overdue reservations found.";
             return RedirectToAction(nameof(Index));
         }
