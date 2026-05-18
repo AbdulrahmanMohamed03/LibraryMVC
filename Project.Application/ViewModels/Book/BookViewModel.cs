@@ -25,5 +25,10 @@ namespace Project.Application.ViewModels.Book
 
         public string CreatedAtDisplay => CreatedAt.ToString("MMM dd, yyyy");
         public bool IsAvailable => AvailableCopies > 0;
+
+        /// True when the current user already has a Pending or Ready reservation
+        /// for this book. Used to hide the Borrow button and show a notice.
+        public bool HasActiveReservation { get; set; } = false;
+        public bool IsCurrentlyBorrowing { get; set; } = false;
     }
 }
