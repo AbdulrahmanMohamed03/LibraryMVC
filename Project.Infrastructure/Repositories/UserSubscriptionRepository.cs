@@ -50,5 +50,16 @@ namespace Project.Infrastructure.Repositories
                 .OrderByDescending(u => u.StartDate)
                 .ToListAsync();
         }
+        public async Task<UserSubscription?> GetExpiredSubscriptionByUserAsync(string userId)
+        {
+            return await _context.UserSubscriptions
+                .Include(u => u.Plan)
+                .Where(u => u.UserId == userId
+                         && u.IsActive
+                         && u.EndDate <= DateTime.Now  
+                         && u.Plan.Name != "Free")     
+                .OrderByDescending(u => u.EndDate)
+                .FirstOrDefaultAsync();
+        }
     }
 }

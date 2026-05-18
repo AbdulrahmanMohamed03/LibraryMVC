@@ -11,6 +11,7 @@ namespace Project.Core.RepositoriesAbstraction
         Task<IEnumerable<UserSubscription>> GetAllWithDetailsAsync();
         Task<UserSubscription?> GetByIdWithDetailsAsync(int id);
         Task<IEnumerable<UserSubscription>> GetSubscriptionHistoryAsync(string userId);
+        Task<UserSubscription?> GetExpiredSubscriptionByUserAsync(string userId);
 
     }
 }

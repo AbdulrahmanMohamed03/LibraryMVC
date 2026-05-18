@@ -1,7 +1,7 @@
 ﻿
 @model Project.Application.ViewModels.Book.BookViewModel
 @{
-    ViewData["Title"] = "Book Details";
+    ViewData["Title"] = "Book Details - " + Model.Title;
     var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
     var isLibrarianOrAdmin = User.IsInRole("Admin") || User.IsInRole("Librarian");
 }
@@ -266,11 +266,69 @@
         }
     </div>
 </div>
+                    </a>
+                <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                    <a asp-action="Index" class="text-decoration-none text-muted tracking-wide small text-uppercase fw-bold">
+                        <i class="fa-solid fa-arrow-left me-2"></i> Catalog Grid
+                    </a>
+                    
+                    @if (isLibrarianOrAdmin)
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-booksaw">
+                            <i class="fa-solid fa-pen-to-square me-2"></i> Edit Record
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+@section Scripts {
+    <script src="~/js/plugins.js"></script>
+    <script src="~/js/script.js"></script>
+}
 <div class="form-actions">
     @if (isLibrarianOrAdmin)
     {
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
     }
     <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>            {
+                <div class="reservation-box"
+                     style="background:#fce4ec; border:1px solid #f48fb1; color:#880e4f; font-size:13px;">
+
+                    📭
+                    <strong>Librarian Note:</strong>
+
+                    All copies are currently out.
+                    The system will automatically notify
+                    the next person in the queue upon return.
+                </div>
+            }
+        }
+
+    </div>
 </div>
+
+                <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                    <a asp-action="Index" class="text-decoration-none text-muted tracking-wide small text-uppercase fw-bold">
+                        <i class="fa-solid fa-arrow-left me-2"></i> Catalog Grid
+                    </a>
+                    
+                    @if (isLibrarianOrAdmin)
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-booksaw">
+                            <i class="fa-solid fa-pen-to-square me-2"></i> Edit Record
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/plugins.js"></script>
+    <script src="~/js/script.js"></script>
+}
