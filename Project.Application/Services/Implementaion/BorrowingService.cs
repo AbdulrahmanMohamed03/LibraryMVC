@@ -6,6 +6,7 @@ using Project.Core.Models;
 using Project.Core.RepositoriesAbstraction;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
 namespace Project.Application.Services.Implementaion
@@ -67,56 +68,54 @@ namespace Project.Application.Services.Implementaion
                 .GetActiveSubscriptionByUserAsync(record.UserId);
 
             var subscription = subscriptionTask;
-            SubscriptionPlan plan;
-            DateTime startDate;
             if (subscription == null)
-            {
-                plan = _unitOfWork.SubscriptionPlans.GetByName("Free");
-                if (plan == null)
-                {
-                    return new CreateBorrowVM
-                    {
-                        IsSuccess = false,
-                        Message = "Free subscription plan is not configured."
-                    };
-                }
-                startDate = record.RequestedAt;
-            }
-            else
-            {
-                plan = subscription.Plan;
-                startDate = subscription.StartDate;
-            }
-            var endDate = subscription?.EndDate ?? DateTime.UtcNow;
-            var borrowCount = _unitOfWork.BorrowingRecords
-                .CountUserBorrowsThisMonth(record.UserId, startDate, endDate);
-            if (borrowCount >= plan.MonthlyBorrowLimit)
             {
                 return new CreateBorrowVM
                 {
                     IsSuccess = false,
-                    Message = "User reached borrow limit for current subscription."
+                    Message = "No active subscription found. Please subscribe to borrow books."
                 };
             }
+            var plan = subscription.Plan ?? _unitOfWork.SubscriptionPlans.GetByName("Free");
 
             var loanDays = plan.LoanDurationDays;
 
             record.Status = BorrowingStatus.Active;
-            record.CheckedOutAt = DateTime.UtcNow;
-            record.DueDate = DateTime.UtcNow.AddDays(loanDays);
+            record.CheckedOutAt = DateTime.Now;
+            record.DueDate = DateTime.Now.AddDays(loanDays);
             record.ProcessedByLibrarianId = librarianId;
 
             book.AvailableCopies--;
+
+            if (book.AvailableCopies == 0) { 
+                var pendingBorrows = _unitOfWork.BorrowingRecords.GetPendingByBookId(record.BookId)
+                    .Where(br => br.Id != borrowingRecordId)
+                    .ToList();
+
+                foreach (var item in pendingBorrows)
+                {
+                    var reservation = new Reservation
+                    {
+                        UserId = item.UserId,
+                        BookId = item.BookId,
+                        ReservedAt = item.RequestedAt,
+                        ExpiresAt = DateTime.Now.AddDays(2),
+                        Status = ReservationStatus.Pending
+                    };
+                    _unitOfWork.Reservations.Add(reservation);
+                    _unitOfWork.BorrowingRecords.Delete(item.Id);
+                }
+            }
             _unitOfWork.Save();
             return new CreateBorrowVM
             {
                 IsSuccess = true,
-                Message = "Borrow request approved successfully.",
+                Message = "Borrow request approved successfully, and all pending requests for books that are now unavailable have been converted to reservations. (if any)",
                 BorrowingRecordId = record.Id
             };
         }
 
-        public CreateBorrowVM BorrowBook(int bookId, string userId)
+        public async Task<CreateBorrowVM> BorrowBook(int bookId, string userId)
         {
             var book = _unitOfWork.Books.GetById(bookId);
             if (book == null) { 
@@ -130,22 +129,45 @@ namespace Project.Application.Services.Implementaion
             {
                 return new CreateBorrowVM { IsSuccess = false, Message = "You already have this book" };
             }
+             var subscription = await _unitOfWork.UserSubscriptions.GetActiveSubscriptionByUserAsync(userId);
+
+            if (subscription == null)
+            {
+                return new CreateBorrowVM
+                {
+                    IsSuccess = false,
+                    Message = "No active subscription found. Please subscribe to borrow books."
+                };
+            }
+            
+            var plan = subscription.Plan;
+            var startDate = subscription.StartDate;
+            var endDate = subscription.EndDate;
+            var borrowCount =  _unitOfWork.BorrowingRecords.CountUserBorrowsThisMonth(userId, startDate, endDate);
+            if (borrowCount >= plan.MonthlyBorrowLimit)
+            {
+                return new CreateBorrowVM
+                {
+                    IsSuccess = false,
+                    Message = $"You reached your monthly borrow limit ({plan.MonthlyBorrowLimit})."
+                };
+            }
             var borrowRequest = new BorrowingRecord
             {
                 BookId = bookId,
                 UserId = userId,
                 Status = BorrowingStatus.Pending,
-                RequestedAt = DateTime.UtcNow
+                RequestedAt = DateTime.Now
             };
 
             _unitOfWork.BorrowingRecords.Add(borrowRequest);
             _unitOfWork.Save();
-            return new CreateBorrowVM { BorrowingRecordId = borrowRequest.Id, IsSuccess = true, Message = "Request submitted successfully." };
+            return new CreateBorrowVM { BorrowingRecordId = borrowRequest.Id, IsSuccess = true, Message = "Request submitted successfully. Please wait for it to be processed." };
         }
 
-        public IEnumerable<BorrowingRecordVM> GetAllForLibrarian()
+        public IEnumerable<BorrowingRecordVM> GetAllForLibrarian(string? search = null)
         {
-            var records = _unitOfWork.BorrowingRecords.GetAll();
+            var records = _unitOfWork.BorrowingRecords.GetAll(search);
             return records.Select(r => new BorrowingRecordVM
             {
                 Id = r.Id,
@@ -176,14 +198,15 @@ namespace Project.Application.Services.Implementaion
                 ReturnedAt = record.ReturnedAt,
                 BorrowingFeeAmount = record.BorrowingFeeTransaction?.Amount ?? 0,
                 FineAmount = record.FineTransaction?.Amount ?? 0,
+                DamageFeeAmount = record.AccruedFine - (record.FineTransaction?.Amount ?? 0),
                 ProcessedByLibrarianName = record.ProcessedByLibrarian?.FullName,
                 Notes = record.Notes
             };
         }
 
-        public IEnumerable<BorrowingRecordVM> GetPendingRequests()
+        public IEnumerable<BorrowingRecordVM> GetPendingRequests(string? search = null)
         {
-            var records = _unitOfWork.BorrowingRecords.GetAllPendingForLibrarian();
+            var records = _unitOfWork.BorrowingRecords.GetAllPendingForLibrarian(search);
 
             return records.Select(r => new BorrowingRecordVM
             {
@@ -205,7 +228,7 @@ namespace Project.Application.Services.Implementaion
             {
                 return null;
             }
-            var returnedAt = DateTime.UtcNow;
+            var returnedAt = DateTime.Now;
             int lateDays = 0;
             if (record.DueDate.HasValue && returnedAt > record.DueDate.Value)
             {
@@ -237,7 +260,7 @@ namespace Project.Application.Services.Implementaion
         //            Message = "Borrowing record not found."
         //        };
         //    }
-        //    var returnedAt = DateTime.UtcNow;
+        //    var returnedAt = DateTime.Now;
         //    int lateDays = 0;
         //    if (record.DueDate.HasValue && returnedAt > record.DueDate.Value)
         //    {
@@ -250,9 +273,9 @@ namespace Project.Application.Services.Implementaion
         //        LibrarianId = librarianId,
         //        Amount = record.Book.BorrowFee,
         //        Type = TransactionType.BorrowFee,
-        //        RecordedAt = DateTime.UtcNow,
+        //        RecordedAt = DateTime.Now,
         //        IsPaid = true,
-        //        PaidAt = DateTime.UtcNow,
+        //        PaidAt = DateTime.Now,
         //        Notes = $"Borrow fee for book: {record.Book.Title}"
         //    };
         //    _unitOfWork.Transactions.Add(borrowTransaction);
@@ -265,9 +288,9 @@ namespace Project.Application.Services.Implementaion
         //            LibrarianId = librarianId,
         //            Amount = fineAmount,
         //            Type = TransactionType.Fine,
-        //            RecordedAt = DateTime.UtcNow,
+        //            RecordedAt = DateTime.Now,
         //            IsPaid = true,
-        //            PaidAt = DateTime.UtcNow,
+        //            PaidAt = DateTime.Now,
         //            Notes = $"Late return fine for book: {record.Book.Title}"
         //        };
         //        _unitOfWork.Transactions.Add(fineTransaction);
@@ -297,34 +320,36 @@ namespace Project.Application.Services.Implementaion
         //        BorrowingRecordId = record.Id
         //    };
         //}
-        public async Task<CreateBorrowVM> ReturnBook(int borrowingRecordId, string librarianId)
+        public async Task<CreateBorrowVM> ReturnBook(int borrowingRecordId, string librarianId,
+                                             bool isDamaged = false, decimal damageFee = 0,
+                                             string? notes = null)
         {
-
             var record = _unitOfWork.BorrowingRecords.GetActiveBorrowing(borrowingRecordId);
             if (record == null)
                 return new CreateBorrowVM { IsSuccess = false, Message = "Borrowing record not found." };
 
-            var returnedAt = DateTime.UtcNow;
+            var returnedAt = DateTime.Now;
             int lateDays = 0;
             if (record.DueDate.HasValue && returnedAt > record.DueDate.Value)
                 lateDays = (returnedAt.Date - record.DueDate.Value.Date).Days;
 
             decimal fineAmount = lateDays * record.Book.DailyFineRate;
 
-
+            // Borrow Fee Transaction
             var borrowTransaction = new Transaction
             {
                 UserId = record.UserId,
                 LibrarianId = librarianId,
                 Amount = record.Book.BorrowFee,
                 Type = TransactionType.BorrowFee,
-                RecordedAt = DateTime.UtcNow,
+                RecordedAt = DateTime.Now,
                 IsPaid = true,
-                PaidAt = DateTime.UtcNow,
+                PaidAt = DateTime.Now,
                 Notes = $"Borrow fee for book: {record.Book.Title}"
             };
             _unitOfWork.Transactions.Add(borrowTransaction);
 
+            // Late Fine Transaction
             Transaction? fineTransaction = null;
             if (fineAmount > 0)
             {
@@ -334,39 +359,136 @@ namespace Project.Application.Services.Implementaion
                     LibrarianId = librarianId,
                     Amount = fineAmount,
                     Type = TransactionType.Fine,
-                    RecordedAt = DateTime.UtcNow,
+                    RecordedAt = DateTime.Now,
                     IsPaid = true,
-                    PaidAt = DateTime.UtcNow,
+                    PaidAt = DateTime.Now,
                     Notes = $"Late return fine for book: {record.Book.Title}"
                 };
                 _unitOfWork.Transactions.Add(fineTransaction);
             }
 
+            // Damage Transaction
+            Transaction? damageTransaction = null;
+            if (isDamaged && damageFee > 0)
+            {
+                damageTransaction = new Transaction
+                {
+                    UserId = record.UserId,
+                    LibrarianId = librarianId,
+                    Amount = damageFee,
+                    Type = TransactionType.Damaged,
+                    RecordedAt = DateTime.Now,
+                    IsPaid = true,
+                    PaidAt = DateTime.Now,
+                    Notes = $"Damage fee for book: {record.Book.Title}"
+                };
+                _unitOfWork.Transactions.Add(damageTransaction);
+            }
+
             _unitOfWork.Save();
 
             record.ReturnedAt = returnedAt;
-            record.AccruedFine = fineAmount;
+            record.AccruedFine = fineAmount + (isDamaged ? damageFee : 0);
             record.BorrowingFeeTransactionId = borrowTransaction.Id;
             record.FineTransactionId = fineTransaction?.Id;
             record.ProcessedByLibrarianId = librarianId;
-            record.Status = fineAmount > 0
-                ? BorrowingStatus.ReturnedOverdue
-                : BorrowingStatus.Returned;
+            record.Notes = notes;
 
-       
+            record.Status = isDamaged
+                ? BorrowingStatus.ReturnedDamaged
+                : fineAmount > 0
+                    ? BorrowingStatus.ReturnedOverdue
+                    : BorrowingStatus.Returned;
+
+            record.Book.AvailableCopies++;
+
             _unitOfWork.Save();
 
-      
             _reservationService.CheckAndAssignReservationOnReturn(record.BookId);
+
+            var message = isDamaged
+                ? $"Book returned with damage. Damage fee: {damageFee:C}" +
+                  (fineAmount > 0 ? $" + Late fine: {fineAmount:C}" : "")
+                : fineAmount > 0
+                    ? $"Book returned successfully. Late fine: {fineAmount:C}"
+                    : "Book returned successfully.";
 
             return new CreateBorrowVM
             {
                 IsSuccess = true,
-                Message = fineAmount > 0
-                    ? $"Book returned successfully. Late fine applied: {fineAmount:C}"
-                    : "Book returned successfully.",
+                Message = message,
                 BorrowingRecordId = record.Id
             };
+        }
+
+        public async Task<CreateBorrowVM> CreateBorrowingOnPickup(int reservationId, string librarianId)
+        {
+            var reservation = _unitOfWork.Reservations.GetById(reservationId);
+            if (reservation == null) return new CreateBorrowVM { IsSuccess = false, Message = "Reservation not found." };
+
+            if (reservation.Status != ReservationStatus.Ready) return new CreateBorrowVM { IsSuccess = false, Message = "Reservation is not ready for pickup." };
+
+            var book = _unitOfWork.Books.GetById(reservation.BookId);
+            if (book == null) return new CreateBorrowVM { IsSuccess = false, Message = "Book not found." };
+
+            var subscription = await _unitOfWork.UserSubscriptions.GetActiveSubscriptionByUserAsync(reservation.UserId);
+            var plan = subscription?.Plan ?? _unitOfWork.SubscriptionPlans.GetByName("Free");
+
+            if (plan == null)
+                return new CreateBorrowVM { IsSuccess = false, Message = "Subscription plan not found." };
+
+            var borrowRecord = new BorrowingRecord
+            {
+                UserId = reservation.UserId,
+                BookId = reservation.BookId,
+                Status = BorrowingStatus.Active,
+                RequestedAt = reservation.ReservedAt,
+                CheckedOutAt = DateTime.Now,
+                DueDate = DateTime.Now.AddDays(plan.LoanDurationDays),
+                ProcessedByLibrarianId = librarianId
+            };
+
+            _unitOfWork.BorrowingRecords.Add(borrowRecord);
+            _unitOfWork.Save();
+            return new CreateBorrowVM
+            {
+                IsSuccess = true,
+                BorrowingRecordId = borrowRecord.Id,
+                Message = "Borrowing started successfully."
+            };
+        }
+
+        public IEnumerable<BorrowingRecordVM> GetByUserId(string userId)
+        {
+            return _unitOfWork.BorrowingRecords.GetByUserId(userId)
+                .Select(r => new BorrowingRecordVM
+                {
+                    Id = r.Id,
+                    BorrowerName = r.User.FullName,
+                    BookTitle = r.Book.Title,
+                    Status = r.Status,
+                    RequestedAt = r.RequestedAt,
+                    CheckedOutAt = r.CheckedOutAt,
+                    DueDate = r.DueDate
+                }).ToList();
+        }
+
+        public async Task<CreateBorrowVM> CancelBorrowRequest(int borrowingRecordId, string userId)
+        {
+            var record = _unitOfWork.BorrowingRecords.GetById(borrowingRecordId);
+            if (record == null)
+                return new CreateBorrowVM { IsSuccess = false, Message = "Request not found." };
+
+            if (record.UserId != userId)
+                return new CreateBorrowVM { IsSuccess = false, Message = "You do not have permission to cancel this request." };
+
+            if (record.Status != BorrowingStatus.Pending)
+                return new CreateBorrowVM { IsSuccess = false, Message = "Only pending requests can be cancelled." };
+
+            record.Status = BorrowingStatus.Cancelled;
+           
+            _unitOfWork.Save();
+            return new CreateBorrowVM { IsSuccess = true, Message = "Your borrow request has been cancelled." };
         }
     }
 }

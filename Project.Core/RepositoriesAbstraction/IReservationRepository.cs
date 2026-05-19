@@ -28,5 +28,6 @@ namespace Project.Core.RepositoriesAbstraction
 
 
         IEnumerable<Reservation> GetAllWithDetails();
+        int GetReadyReservations();
     }
 }

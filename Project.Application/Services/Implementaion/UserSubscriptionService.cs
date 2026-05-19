@@ -54,9 +54,9 @@ namespace Project.Application.Services.Implementaion
                     LibrarianId = vm.UserId,
                     Amount = plan.MonthlyFee,
                     Type = TransactionType.Subscription,
-                    RecordedAt = DateTime.UtcNow,
+                    RecordedAt = DateTime.Now,
                     IsPaid = true,
-                    PaidAt = DateTime.UtcNow,
+                    PaidAt = DateTime.Now,
                     Notes = $"Subscription to {plan.Name} plan"
                 };
                 _unitOfWork.Transactions.Add(transaction);
@@ -109,11 +109,24 @@ namespace Project.Application.Services.Implementaion
         {
             var subscription = await _unitOfWork.UserSubscriptions
                                                 .GetByIdWithDetailsAsync(id);
-            //if (subscription == null) return false;
+
             if (subscription == null || subscription.UserId != userId || !subscription.IsActive)
                 return false;
+
             subscription.IsActive = false;
             _unitOfWork.UserSubscriptions.Update(subscription);
+
+            var freePlan = _unitOfWork.SubscriptionPlans.GetByName("Free");
+            if(freePlan == null) return false;
+            var freeSubscription = new UserSubscription
+            {
+                UserId = userId,
+                PlanId = freePlan.Id,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(30),
+                IsActive = true
+            };
+            _unitOfWork.UserSubscriptions.Add(freeSubscription);
             _unitOfWork.Save();
             return true;
         }
@@ -149,9 +162,9 @@ namespace Project.Application.Services.Implementaion
                     LibrarianId = userId,
                     Amount = plan.MonthlyFee,
                     Type = TransactionType.Subscription,
-                    RecordedAt = DateTime.UtcNow,
+                    RecordedAt = DateTime.Now,
                     IsPaid = true,
-                    PaidAt = DateTime.UtcNow,
+                    PaidAt = DateTime.Now,
                     Notes = $"Renewal of {plan.Name} plan"
                 };
                 _unitOfWork.Transactions.Add(transaction);

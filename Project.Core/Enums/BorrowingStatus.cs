@@ -11,5 +11,6 @@ namespace Project.Core.Enums
         ReturnedOverdue = 2,
         Returned = 3,
         ReturnedDamaged = 4,
+        Cancelled = 5
     }
 }

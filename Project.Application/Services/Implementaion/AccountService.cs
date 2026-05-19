@@ -64,7 +64,7 @@ namespace Project.Application.Services.Implementaion
                     Email = model.Email,
                     UserName = model.Email,
                     IsActive = true,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.Now,
                 };
                 IdentityResult result = await _userManager.CreateAsync(user, model.Password);
                 if (!result.Succeeded)
@@ -115,5 +115,14 @@ namespace Project.Application.Services.Implementaion
             await signInManager.SignOutAsync();
         }
 
+        public async Task<ApplicationUser> GetUserByEmail(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public Task<bool> IsUserInRoleAsync(ApplicationUser user, string role)
+        {
+            return _userManager.IsInRoleAsync(user, role);
+        }
     }
 }

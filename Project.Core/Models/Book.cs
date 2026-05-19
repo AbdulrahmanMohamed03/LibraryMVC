@@ -26,7 +26,7 @@ namespace Project.Core.Models
         public string? CoverImageUrl { get; set; }
         [Timestamp]
         public byte[] RowVersion { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public ICollection<BorrowingRecord> BorrowingRecords { get; set; }
         public ICollection<Reservation> Reservations { get; set; }
     }

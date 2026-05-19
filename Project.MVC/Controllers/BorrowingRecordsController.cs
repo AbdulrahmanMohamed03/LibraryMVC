@@ -12,10 +12,18 @@ namespace Project.MVC.Controllers
         {
             this._borrowingService = _borrowingService;
         }
-        public IActionResult Index()
+        public IActionResult Index(string? search)
         {
-            var data = _borrowingService.GetAllForLibrarian();
-            return View(data);
+            if (User.IsInRole("Admin") || User.IsInRole("Librarian"))
+            {
+                var data = _borrowingService.GetAllForLibrarian(search);
+                ViewBag.Search = search;
+                return View(data);
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRecords = _borrowingService.GetByUserId(userId);
+            return View(userRecords);
         }
 
         public IActionResult Details(int id)
@@ -29,21 +37,23 @@ namespace Project.MVC.Controllers
         }
 
         [HttpPost]
-        public IActionResult BorrowBook(int bookId)
+        public async Task<IActionResult> BorrowBook(int bookId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = _borrowingService.BorrowBook(bookId, userId);
+            var result = await _borrowingService.BorrowBook(bookId, userId);
             if(!result.IsSuccess)
             {
                 TempData["ErrorMessage"] = result.Message;
                 return RedirectToAction("Details", "Books", new { id = bookId });
             }
-            return RedirectToAction("Index", "Books");
+            TempData["SuccessMessage"] = result.Message;
+            return RedirectToAction("Index", "BorrowingRecords");
         }
 
-        public IActionResult Pending()
+        [Authorize(Roles = "Librarian,Admin")]
+        public IActionResult Pending(string? search)
         { 
-            var data = _borrowingService.GetPendingRequests();
+            var data = _borrowingService.GetPendingRequests(search);
             return View(data);
         }
 
@@ -61,7 +71,7 @@ namespace Project.MVC.Controllers
             TempData["SuccessMessage"] = result.Message;
             return RedirectToAction("Pending");
         }
-
+        [Authorize(Roles = "Librarian,Admin")]
         public IActionResult Return(int id)
         {
             var vm = _borrowingService.GetReturnDetails(id);
@@ -69,15 +79,16 @@ namespace Project.MVC.Controllers
             {
                 return NotFound();
             }
-            return View(vm);
+            return View(vm);    
         }
 
         [HttpPost]
         [Authorize(Roles = "Librarian,Admin")]
-        public async Task<IActionResult> ConfirmReturn(int id)
+        public async Task<IActionResult> ConfirmReturn(int id, bool isDamaged = false, 
+                                               decimal damageFee = 0, string? notes = null)
         {
             var librarianId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _borrowingService.ReturnBook(id, librarianId);
+            var result = await _borrowingService.ReturnBook(id, librarianId, isDamaged, damageFee, notes);
             if (!result.IsSuccess)
             {
                 TempData["ErrorMessage"] = result.Message;
@@ -86,6 +97,21 @@ namespace Project.MVC.Controllers
             }
             TempData["SuccessMessage"] = result.Message;
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelRequest(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _borrowingService.CancelBorrowRequest(id, userId);
+
+            if (!result.IsSuccess)
+                TempData["ErrorMessage"] = result.Message;
+            else
+                TempData["SuccessMessage"] = result.Message;
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

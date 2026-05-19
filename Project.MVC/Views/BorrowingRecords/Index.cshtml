@@ -6,16 +6,48 @@
     ViewData["Title"] = "Borrowing Records";
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="fw-bold">Borrowing Records</h2>
     </div>
 
+    @if (User.IsInRole("Admin") || User.IsInRole("Librarian"))
+    {
+        <form method="get" class="d-flex gap-2 mb-3">
+            <input type="text"
+                   name="search"
+                   value="@ViewBag.Search"
+                   class="form-control w-25"
+                   placeholder="Search by National ID..." />
+
+            <button type="submit" class="btn btn-primary">Search</button>
+
+            @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+            }
+        </form>
+    }
+
     <div class="card shadow-sm border-0">
-
         <div class="card-body p-0">
-
             <table class="table table-hover align-middle mb-0">
 
                 <thead class="table-dark">
@@ -31,11 +63,19 @@
                 </thead>
 
                 <tbody>
-
                     @if (!Model.Any())
                     {
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4"> No borrowing records found </td>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+                                {
+                                    <span>No records found for National ID: <strong>@ViewBag.Search</strong></span>
+                                }
+                                else
+                                {
+                                    <span>No borrowing records found</span>
+                                }
+                            </td>
                         </tr>
                     }
                     else
@@ -45,44 +85,43 @@
                         {
                             <tr>
                                 <td>@index</td>
-                                <td class="fw-semibold"> @item.BorrowerName </td>
-                                <td> @item.BookTitle </td>
+                                <td class="fw-semibold">@item.BorrowerName</td>
+                                <td>@item.BookTitle</td>
+
                                 <td>
                                     @switch (item.Status)
                                     {
                                         case BorrowingStatus.Pending:
-                                            <span class="badge bg-warning text-dark"> @item.StatusLabel </span>
+                                            <span class="badge bg-warning text-dark">@item.StatusLabel</span>
                                             break;
-
                                         case BorrowingStatus.Active:
-                                            <span class="badge bg-primary"> @item.StatusLabel </span>
+                                            <span class="badge bg-primary">@item.StatusLabel</span>
                                             break;
-
                                         case BorrowingStatus.Returned:
-                                            <span class="badge bg-success"> @item.StatusLabel </span>
+                                            <span class="badge bg-success">@item.StatusLabel</span>
                                             break;
-
                                         case BorrowingStatus.ReturnedOverdue:
-                                            <span class="badge bg-danger"> @item.StatusLabel </span>
+                                            <span class="badge bg-danger">@item.StatusLabel</span>
                                             break;
-
                                         case BorrowingStatus.ReturnedDamaged:
-                                            <span class="badge bg-dark"> @item.StatusLabel </span>
+                                            <span class="badge bg-dark">@item.StatusLabel</span>
                                             break;
-
                                         default:
-                                            <span class="badge bg-secondary"> @item.StatusLabel </span>
+                                            <span class="badge bg-secondary">@item.StatusLabel</span>
                                             break;
                                     }
                                 </td>
-                                <td> @item.RequestedAt.ToString("yyyy-MM-dd") </td>
+
+                                <td>@item.RequestedAt.ToString("yyyy-MM-dd")</td>
 
                                 <td>
                                     @if (item.DueDate.HasValue &&
-                                         item.DueDate.Value < DateTime.UtcNow &&
-                                         item.Status == Project.Core.Enums.BorrowingStatus.Active)
+                                         item.DueDate.Value < DateTime.Now &&
+                                         item.Status == BorrowingStatus.Active)
                                     {
-                                        <span class="text-danger fw-bold"> @item.DueDate.Value.ToString("yyyy-MM-dd") ⚠ Overdue </span>
+                                        <span class="text-danger fw-bold">
+                                            @item.DueDate.Value.ToString("yyyy-MM-dd") ⚠ Overdue
+                                        </span>
                                     }
                                     else
                                     {
@@ -91,14 +130,26 @@
                                 </td>
 
                                 <td>
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary"> Details </a>
-                                    @if (item.Status == BorrowingStatus.Active)
+                                    <a asp-action="Details" asp-route-id="@item.Id"
+                                       class="btn btn-sm btn-outline-primary">Details</a>
+
+                                    @if (item.Status == BorrowingStatus.Active &&
+                                         (User.IsInRole("Admin") || User.IsInRole("Librarian")))
                                     {
-                                        <a asp-action="Return"
-                                           asp-route-id="@item.Id"
-                                           class="btn btn-warning btn-sm">
-                                            Return
-                                        </a>
+                                        <a asp-action="Return" asp-route-id="@item.Id"
+                                           class="btn btn-warning btn-sm">Return</a>
+                                    }
+
+                                    @if (item.Status == BorrowingStatus.Pending &&
+                                         !User.IsInRole("Admin") && !User.IsInRole("Librarian"))
+                                    {
+                                        <form asp-action="CancelRequest" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('Cancel this request?')">
+                                                Cancel
+                                            </button>
+                                        </form>
                                     }
                                 </td>
                             </tr>
@@ -106,6 +157,7 @@
                         }
                     }
                 </tbody>
+
             </table>
         </div>
     </div>

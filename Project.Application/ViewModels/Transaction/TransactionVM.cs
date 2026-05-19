@@ -15,7 +15,7 @@ namespace Project.Application.ViewModels.Transaction
         public bool IsPaid { get; set; }
         public DateTime? PaidAt { get; set; }
         public TransactionType Type { get; set; }
-        public DateTime RecordedAt { get; set; } = DateTime.UtcNow;
+        public DateTime RecordedAt { get; set; } = DateTime.Now;
 
         public string? Notes { get; set; }
 

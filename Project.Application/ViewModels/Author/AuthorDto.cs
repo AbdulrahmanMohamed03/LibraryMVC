@@ -10,6 +10,6 @@ namespace Project.Application.ViewModels.Author
         public string FullName { get; set; }
         public string? Bio { get; set; }
         public string? Nationality { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

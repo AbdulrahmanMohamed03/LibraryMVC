@@ -11,5 +11,7 @@ namespace Project.Application.ViewModels.Admin
         public int LibrariansCount { get; set; }
         public int ReservationsCount { get; set; }
         public decimal TotalIncome { get; set; }
+        public int PendingBorrowsCount { get; set; }
+        public int ReadyReservationsCount { get; set; }
     }
 }

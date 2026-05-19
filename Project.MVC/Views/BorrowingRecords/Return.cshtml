@@ -4,66 +4,100 @@
     ViewData["Title"] = "Return Book";
 }
 
-<h2>Return Book</h2>
+<div class="container mt-4">
 
-<hr />
+    <h2 class="fw-bold mb-4">Return Book</h2>
 
-<div class="card p-4">
+    <div class="card shadow-sm border-0 p-4">
+        <h4 class="mb-3">@Model.BookTitle</h4>
 
-    <h4>@Model.BookTitle</h4>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Borrower:</strong> @Model.BorrowerName</p>
+                <p><strong>Due Date:</strong> @Model.DueDate?.ToString("yyyy-MM-dd")</p>
+                <p><strong>Returned At:</strong> @Model.ReturnedAt?.ToString("yyyy-MM-dd HH:mm")</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Borrow Fee:</strong> @Model.BorrowFee.ToString("C")</p>
+                <p><strong>Late Days:</strong> @Model.LateDays</p>
+                <p>
+                    <strong>Late Fine:</strong>
+                    <span class="@(Model.FineAmount > 0 ? "text-danger fw-bold" : "")">
+                        @Model.FineAmount.ToString("C")
+                    </span>
+                </p>
+            </div>
+        </div>
 
-    <p>
-        <strong>Borrower:</strong>
-        @Model.BorrowerName
-    </p>
+        <hr />
 
-    <p>
-        <strong>Due Date:</strong>
-        @Model.DueDate?.ToString("yyyy-MM-dd")
-    </p>
+        <form asp-action="ConfirmReturn" method="post">
 
-    <p>
-        <strong>Returned At:</strong>
-        @Model.ReturnedAt?.ToString("yyyy-MM-dd HH:mm")
-    </p>
+            <input type="hidden" name="id" value="@Model.BorrowingRecordId" />
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           id="isDamaged" name="isDamaged" value="true"
+                           onchange="toggleDamage(this)" />
+                    <label class="form-check-label text-danger fw-bold" for="isDamaged">
+                        Book returned with damage
+                    </label>
+                </div>
+            </div>
 
-    <p>
-        <strong>Borrow Fee:</strong>
-        @Model.BorrowFee.ToString("C")
-    </p>
+            <div id="damageFeeSection" class="mb-3" style="display:none;">
+                <label class="form-label fw-semibold">Damage Fee (EGP)</label>
+                <input type="number" class="form-control w-25"
+                       id="damageFee" name="damageFee"
+                       min="0" step="0.01" value="0"
+                       oninput="updateTotal()" />
+            </div>
 
-    <p>
-        <strong>Late Days:</strong>
-        @Model.LateDays
-    </p>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Notes <span class="text-muted">(optional)</span></label>
+                <textarea class="form-control" name="notes" rows="3"
+                          placeholder="Add any notes about this return..."></textarea>
+            </div>
 
-    <p>
-        <strong>Fine:</strong>
-        @Model.FineAmount.ToString("C")
-    </p>
+            <hr />
+            <h4 class="mb-4">
+                Total:
+                <span id="totalAmount" class="text-success fw-bold">
+                    @Model.TotalAmount.ToString("C")
+                </span>
+            </h4>
 
-    <hr />
+            <button type="submit" class="btn btn-success me-2">
+                Confirm Return
+            </button>
 
-    <h4>
-        Total:
-        @Model.TotalAmount.ToString("C")
-    </h4>
+            <a asp-action="Index" class="btn btn-secondary">
+                Cancel
+            </a>
 
-    <form asp-action="ConfirmReturn" method="post">
-
-        <input type="hidden"
-               name="id"
-               value="@Model.BorrowingRecordId" />
-
-        <button type="submit"
-                class="btn btn-success">
-            Confirm Return
-        </button>
-
-        <a asp-action="Index"
-           class="btn btn-secondary">
-            Cancel
-        </a>
-
-    </form>
+        </form>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        const baseFine = @Model.FineAmount;
+        const borrowFee = @Model.BorrowFee;
+
+        function toggleDamage(checkbox) {
+            const section = document.getElementById('damageFeeSection');
+            section.style.display = checkbox.checked ? 'block' : 'none';
+
+            if (!checkbox.checked) {
+                document.getElementById('damageFee').value = 0;
+            }
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const damageFee = parseFloat(document.getElementById('damageFee').value) || 0;
+            const total = borrowFee + baseFine + damageFee;
+            document.getElementById('totalAmount').textContent = total.toFixed(2) + ' EGP';
+        }
+    </script>
+}

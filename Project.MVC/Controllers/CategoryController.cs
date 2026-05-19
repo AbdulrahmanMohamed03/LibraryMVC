@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Project.Application.Services.Interfaces;
 using Project.Application.ViewModels.Category;
 using System.Security.Claims;
 
 namespace Project.MVC.Controllers
 {
-    // [Authorize] 
+    [Authorize(Roles = "Admin, Librarian")]
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -31,7 +32,6 @@ namespace Project.MVC.Controllers
 
 
         [HttpGet]
-        // [Authorize(Roles = "Admin,Librarian")]
         public IActionResult Create()
         {
             return View(new CategoryFormViewModel());
@@ -40,7 +40,6 @@ namespace Project.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // [Authorize(Roles = "Admin,Librarian")]
         public IActionResult Create(CategoryFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -62,7 +61,6 @@ namespace Project.MVC.Controllers
 
 
         [HttpGet]
-        // [Authorize(Roles = "Admin,Librarian")]
         public IActionResult Edit(int id)
         {
             try
@@ -79,7 +77,6 @@ namespace Project.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // [Authorize(Roles = "Admin,Librarian")]
         public IActionResult Edit(CategoryFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -102,7 +99,7 @@ namespace Project.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // [Authorize(Roles = "Admin")]
+         
         public IActionResult Delete(int id)
         {
             try

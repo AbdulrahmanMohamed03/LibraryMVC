@@ -15,5 +15,8 @@ namespace Project.Application.ViewModels.BorrowingRecord
         public decimal FineAmount { get; set; }
         public int LateDays { get; set; }
         public decimal TotalAmount => BorrowFee + FineAmount;
+        public bool IsDamaged { get; set; }
+        public decimal DamageFee { get; set; }
+        public string? Notes { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace Project.Infrastructure.DataSeeding
                     FullName = fullName,
                     NationalId = nationalId,
                     IsActive = true,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.Now
                 };
                 var result = await userManager.CreateAsync(user, "Admin123@");
                 if (result.Succeeded)

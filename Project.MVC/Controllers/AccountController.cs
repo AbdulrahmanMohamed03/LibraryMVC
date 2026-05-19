@@ -53,6 +53,11 @@ namespace Project.MVC.Controllers
 
                 if (result.Succeeded)
                 {
+                    var user = await accountService.GetUserByEmail(model.Email);  
+                    if(await accountService.IsUserInRoleAsync(user, "Admin") || await accountService.IsUserInRoleAsync(user, "Librarian"))
+                    {
+                        return RedirectToAction("Index", "Admin");
+                    }
                     return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError("", "invalid email or password");

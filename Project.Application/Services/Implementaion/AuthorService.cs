@@ -40,7 +40,7 @@ namespace Project.Application.Services.Implementaion
             var author = _uow.Authors.GetByName(fullName);
             return author is null ? null : ToDto(author);
         }
-        // will exist in the future when we implement the GetWithBooks method in the repository
+
         public AuthorWithBooksDto? GetWithBooks(int id)
         {
             var author = _uow.Authors.GetWithBooks(id);
@@ -56,7 +56,20 @@ namespace Project.Application.Services.Implementaion
                 Books = author.Books?.Select(b => new BookViewModel
                 {
                     Id = b.Id,
-                    Title = b.Title
+                    Title = b.Title,
+                    Description = b.Description,
+                    AuthorId = b.AuthorId,
+                    AuthorName = b.Author?.FullName ?? "Unknown",
+                    CategoryId = b.CategoryId,
+                    CategoryName = b.Category?.Name ?? "Unknown",
+                    ISBN = b.ISBN,
+                    PublishedYear = b.PublishedYear,
+                    BorrowFee = b.BorrowFee,
+                    DailyFineRate = b.DailyFineRate,
+                    TotalCopies = b.TotalCopies,
+                    AvailableCopies = b.AvailableCopies,
+                    CoverImageUrl = b.CoverImageUrl,
+                    CreatedAt = b.CreatedAt,
                     // map other Book fields
                 }) ?? Enumerable.Empty<BookViewModel>()
             };

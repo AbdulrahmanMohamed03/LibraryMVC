@@ -17,7 +17,7 @@ namespace Project.Core.Models
         public ApplicationUser Librarian { get; set; }
         public decimal Amount { get; set; }
         public TransactionType Type { get; set; }
-        public DateTime RecordedAt { get; set; } = DateTime.UtcNow;
+        public DateTime RecordedAt { get; set; } = DateTime.Now;
         public bool IsPaid { get; set; }
         public DateTime? PaidAt { get; set; }
         public string? Notes { get; set; }
