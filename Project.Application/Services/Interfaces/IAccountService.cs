@@ -12,6 +12,9 @@ namespace Project.Application.Services.Interfaces
         Task<ServiceResult> register(RegisterVM model);
         Task<SignInResult> Login(LoginVM model);
 
+        Task<ApplicationUser> GetUserByEmail(string email);
+        Task<bool> IsUserInRoleAsync(ApplicationUser user, string role);
+
         Task Logout();
     }
 }

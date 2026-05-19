@@ -58,8 +58,8 @@ namespace Project.Application.ViewModels.Reservation
 
         public bool IsExpiringSoon =>
             Status == ReservationStatus.Ready &&
-            ExpiresAt <= DateTime.UtcNow.AddHours(24);
+            ExpiresAt <= DateTime.Now.AddHours(24);
 
-        public bool IsExpired => ExpiresAt < DateTime.UtcNow;
+        public bool IsExpired => ExpiresAt < DateTime.Now;
     }
 }

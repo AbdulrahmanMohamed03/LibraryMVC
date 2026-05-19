@@ -35,17 +35,17 @@ namespace Project.Web.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index(int? categoryId)
-        {
-            var books = _service.GetAll();
+        //public IActionResult Index(int? categoryId)
+        //{
+        //    var books = _service.GetAll();
 
-            if (categoryId.HasValue)
-            {
-                books = books.Where(b => b.CategoryId == categoryId.Value).ToList();
-            }
+        //    if (categoryId.HasValue)
+        //    {
+        //        books = books.Where(b => b.CategoryId == categoryId.Value).ToList();
+        //    }
 
-            return View(new BookIndexViewModel { Books = books });
-        }
+        //    return View(new BookIndexViewModel { Books = books });
+        //}
 
         // ─────────────────────────────────────────────────────────────────────
         // DETAILS: validations for users regarding active borrowings and reservations

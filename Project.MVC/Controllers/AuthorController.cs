@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Project.Application.Services.Interfaces;
 using Project.Application.ViewModels.Author;
 
 namespace Project.MVC.Controllers
 {
+    [Authorize(Roles = "Admin, Librarian")]
     public class AuthorController : Controller
     {
         private readonly IAuthorService _service;

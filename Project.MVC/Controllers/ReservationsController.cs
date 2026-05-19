@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Project.Application.Services.Implementaion;
 using Project.Application.Services.Interfaces;
 using Project.Core.Models;
+using System.Security.Claims;
 
 namespace Project.Web.Controllers
 {
@@ -10,14 +12,17 @@ namespace Project.Web.Controllers
     public class ReservationsController : Controller
     {
         private readonly IReservationService _reservationService;
+        private readonly IBorrowingService _borrowingService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public ReservationsController(
             IReservationService reservationService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IBorrowingService borrowingService)
         {
             _reservationService = reservationService;
             _userManager = userManager;
+            _borrowingService = borrowingService;
         }
 
         // ── Helper ────────────────────────────────────────────────────────────
@@ -132,6 +137,28 @@ namespace Project.Web.Controllers
             TempData["SuccessMessage"] = count > 0
                 ? $"{count} overdue reservation(s) expired and re-processed."
                 : "No overdue reservations found.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Librarian")]
+        public async Task<IActionResult> Pickup(int reservationId)
+        {
+            var librarianId = _userManager.GetUserId(User);
+            var borrowResult = await _borrowingService.CreateBorrowingOnPickup(reservationId, librarianId);
+            if (!borrowResult.IsSuccess)
+            {
+                TempData["ErrorMessage"] = borrowResult.Message;
+                return RedirectToAction(nameof(Index));
+            }
+            var fulfillResult = _reservationService.MarkAsFulfilled(reservationId);
+            if (!fulfillResult.IsSuccess)
+            {
+                TempData["ErrorMessage"] = fulfillResult.Message;
+                return RedirectToAction(nameof(Index));
+            }
+            TempData["SuccessMessage"] = "Book picked up successfully.";
             return RedirectToAction(nameof(Index));
         }
     }

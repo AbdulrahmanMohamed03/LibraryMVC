@@ -1,51 +1,212 @@
-﻿
-@model Project.Application.ViewModels.Reservation.UserReservationsViewModel
+﻿@model Project.Application.ViewModels.Reservation.UserReservationsViewModel
 @{
     ViewData["Title"] = Model.IsAdminView ? "All Reservations" : "My Reservations";
     var displayList = Model.IsAdminView ? Model.AllReservations : Model.Reservations;
 }
 
 <style>
-    .page-header   { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-    h2             { margin-bottom:4px; }
-    hr             { border:none; border-top:1px solid #ddd; margin-bottom:20px; }
-    .stats-row     { display:flex; gap:14px; margin-bottom:24px; flex-wrap:wrap; }
-    .stat-card     { background:#f9f9f9; border:1px solid #e0e0e0; border-radius:8px;
-                     padding:14px 22px; text-align:center; min-width:110px; }
-    .stat-number   { font-size:26px; font-weight:700; color:#1565c0; }
-    .stat-label    { font-size:12px; color:#777; margin-top:2px; }
-    .alert         { padding:11px 16px; border-radius:6px; margin-bottom:12px; font-size:14px; }
-    .alert-success { background:#d4edda; border:1px solid #c3e6cb; color:#155724; }
-    .alert-error   { background:#fdecea; border:1px solid #f5c6cb; color:#721c24; }
-    .alert-urgent  { background:#fff3cd; border:1px solid #ffc107; color:#856404;
-                     display:flex; align-items:center; gap:8px; }
-    .table-wrap    { overflow-x:auto; }
-    table          { width:100%; border-collapse:collapse; font-size:14px; }
-    th             { background:#f5f5f5; padding:10px 14px; text-align:left;
-                     font-weight:600; border-bottom:2px solid #ddd; }
-    td             { padding:10px 14px; border-bottom:1px solid #eee; vertical-align:middle; }
-    tr:hover td    { background:#fafafa; }
-    .badge         { display:inline-block; padding:3px 10px; border-radius:12px;
-                     font-size:11px; font-weight:600; color:#fff; white-space:nowrap; }
-    .badge-warning   { background:#f0a500; }
-    .badge-success   { background:#4caf50; }
-    .badge-secondary { background:#9e9e9e; }
-    .badge-danger    { background:#e25555; }
-    .book-thumb    { display:flex; align-items:center; gap:10px; }
-    .book-thumb img { width:34px; height:48px; object-fit:cover;
-                      border-radius:3px; border:1px solid #ddd; }
-    .no-img        { width:34px; height:48px; background:#eee; border-radius:3px;
-                     display:flex; align-items:center; justify-content:center;
-                     font-size:9px; color:#aaa; }
-    .btn           { padding:5px 14px; border:none; border-radius:4px; cursor:pointer;
-                     text-decoration:none; font-size:13px; display:inline-block; }
-    .btn-danger    { background:#e25555; color:#fff; }
-    .btn-secondary { background:#9e9e9e; color:#fff; }
-    .btn-sm        { padding:3px 10px; font-size:12px; }
-    .btn:hover     { opacity:.88; }
-    .empty-state   { text-align:center; padding:50px; color:#999; }
-    .admin-banner  { background:#e8eaf6; border:1px solid #9fa8da; border-radius:8px;
-                     padding:10px 16px; margin-bottom:16px; font-size:13px; color:#283593; }
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    h2 {
+        margin-bottom: 4px;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #ddd;
+        margin-bottom: 20px;
+    }
+
+    .stats-row {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        background: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 14px 22px;
+        text-align: center;
+        min-width: 110px;
+    }
+
+    .stat-number {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1565c0;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: #777;
+        margin-top: 2px;
+    }
+
+    .alert {
+        padding: 11px 16px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+
+    .alert-error {
+        background: #fdecea;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+
+    .alert-urgent {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        color: #856404;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    th {
+        background: #f5f5f5;
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid #ddd;
+    }
+
+    td {
+        padding: 10px 14px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+
+    tr:hover td {
+        background: #fafafa;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #fff;
+        white-space: nowrap;
+    }
+
+    .badge-warning {
+        background: #f0a500;
+    }
+
+    .badge-success {
+        background: #4caf50;
+    }
+
+    .badge-secondary {
+        background: #9e9e9e;
+    }
+
+    .badge-danger {
+        background: #e25555;
+    }
+
+    .book-thumb {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .book-thumb img {
+            width: 34px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+    .no-img {
+        width: 34px;
+        height: 48px;
+        background: #eee;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        color: #aaa;
+    }
+
+    .btn {
+        padding: 5px 14px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 13px;
+        display: inline-block;
+    }
+
+    .btn-danger {
+        background: #e25555;
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background: #9e9e9e;
+        color: #fff;
+    }
+
+    .btn-success {
+        background: #4caf50;
+        color: #fff;
+    }
+
+    .btn-sm {
+        padding: 3px 10px;
+        font-size: 12px;
+    }
+
+    .btn:hover {
+        opacity: .88;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px;
+        color: #999;
+    }
+
+    .admin-banner {
+        background: #e8eaf6;
+        border: 1px solid #9fa8da;
+        border-radius: 8px;
+        padding: 10px 16px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        color: #283593;
+    }
 </style>
 
 <div class="page-header">
@@ -57,7 +218,6 @@
             }
             else
             {
-
                 <text>📚 My Reservations</text>
             }
         </h2>
@@ -68,7 +228,6 @@
             }
             else
             {
-
                 <text>Track your place in the queue and pickup notifications.</text>
             }
         </p>
@@ -99,14 +258,6 @@
     <div class="alert alert-error">⚠ @TempData["ErrorMessage"]</div>
 }
 
-@* @if (Model.IsAdminView)
-{
-    <div class="admin-banner">
-         You are viewing all reservations as <strong>Admin / Librarian</strong>.
-        You can cancel any reservation on behalf of users.
-    </div>
-} *@
-
 @* ── Urgent alerts ── *@
 @foreach (var urgent in Model.UrgentAlerts)
 {
@@ -118,7 +269,6 @@
         }
         else
         {
-
             <text>Your reservation for</text>
         }
         <strong>@urgent.BookTitle</strong> expires <strong>@urgent.ExpiresAtDisplay</strong>.
@@ -175,6 +325,7 @@ else
                     <th>Action</th>
                 </tr>
             </thead>
+
             <tbody>
                 @foreach (var r in displayList)
                 {
@@ -183,11 +334,10 @@ else
                             <div class="book-thumb">
                                 @if (!string.IsNullOrEmpty(r.BookCoverUrl))
                                 {
-                                    <img src="@r.BookCoverUrl" alt="cover" />
+                                    <img src="@r.BookCoverUrl" />
                                 }
                                 else
                                 {
-
                                     <div class="no-img">N/A</div>
                                 }
                                 <div>
@@ -197,7 +347,6 @@ else
                             </div>
                         </td>
 
-                        @* Admin-only: show member info *@
                         @if (Model.IsAdminView)
                         {
                             <td>
@@ -207,6 +356,7 @@ else
                         }
 
                         <td style="font-size:13px">@r.ReservedAtDisplay</td>
+
                         <td style="font-size:13px">
                             @r.ExpiresAtDisplay
                             @if (r.IsExpiringSoon)
@@ -214,29 +364,58 @@ else
                                 <span style="color:#e25555;font-size:10px;display:block">⚠ Soon!</span>
                             }
                         </td>
+
                         <td>
                             <span class="badge @r.StatusBadgeClass">@r.StatusLabel</span>
                         </td>
+
                         <td>
+
+                            @* ================= PICKUP BUTTON (ADDED ONLY) ================= *@
+                            @if (Model.IsAdminView && r.StatusLabel.Contains("Ready"))
+                            {
+                                <form asp-controller="Reservations"
+                                      asp-action="Pickup"
+                                      method="post"
+                                      style="display:inline"
+                                      onsubmit="return confirm('Confirm pickup for @r.BookTitle ?')">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" name="reservationId" value="@r.Id" />
+
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        Pickup
+                                    </button>
+                                </form>
+                            }
+
+                            @* ================= CANCEL (UNCHANGED) ================= *@
                             @if (r.IsCancellable)
                             {
                                 @if (Model.IsAdminView)
                                 {
-                                    @* Admin cancels on behalf of the user *@
-                                    <form asp-action="AdminCancel" method="post" style="display:inline"
+                                    <form asp-action="AdminCancel" method="post"
+                                          style="display:inline"
                                           onsubmit="return confirm('Cancel @r.UserFullName\'s reservation for \'@r.BookTitle\'?')">
+
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@r.Id" />
                                         <input type="hidden" name="reservationUserId" value="@r.UserId" />
+
                                         <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
                                     </form>
                                 }
                                 else
                                 {
-                                    <form asp-action="Cancel" asp-route-id="@r.Id" method="post"
+                                    <form asp-action="Cancel"
+                                          asp-route-id="@r.Id"
+                                          method="post"
                                           style="display:inline"
                                           onsubmit="return confirm('Cancel your reservation for \'@r.BookTitle\'?')">
+
                                         @Html.AntiForgeryToken()
+
                                         <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
                                     </form>
                                 }
@@ -245,6 +424,7 @@ else
                             {
                                 <span style="color:#ccc;font-size:12px">—</span>
                             }
+
                         </td>
                     </tr>
                 }

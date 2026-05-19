@@ -58,7 +58,7 @@ namespace Project.Infrastructure.Repositories
         // ── search for expired reservations ────────────────────────────────────────
         public IEnumerable<Reservation> GetExpired()
         {
-            var now = DateTime.UtcNow;
+            var now = DateTime.Now;
             return _context.Reservations
                            .Include(r => r.Book)
                            .Where(r =>
@@ -78,7 +78,7 @@ namespace Project.Infrastructure.Repositories
 
         public bool UserHasActiveSubscription(string userId)
         {
-            var now = DateTime.UtcNow;
+            var now = DateTime.Now;
             return _context.UserSubscriptions
                            .Any(s => s.UserId == userId
                                   && s.IsActive
@@ -107,5 +107,10 @@ namespace Project.Infrastructure.Repositories
                            r.Status == ReservationStatus.Fulfilled ? 2 : 3)
                        .ThenByDescending(r => r.ReservedAt)
                        .ToList();
+
+        public int GetReadyReservations()
+        {
+            return _context.Reservations.Count(r => r.Status == ReservationStatus.Ready);
+        }
     }
 }

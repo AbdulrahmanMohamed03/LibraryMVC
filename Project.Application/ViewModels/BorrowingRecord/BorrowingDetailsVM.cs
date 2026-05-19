@@ -22,7 +22,8 @@ namespace Project.Application.ViewModels.BorrowingRecord
         public DateTime? ReturnedAt { get; set; }
         public decimal BorrowingFeeAmount { get; set; }
         public decimal FineAmount { get; set; }
-        public decimal TotalPaid => BorrowingFeeAmount + FineAmount;
+        public decimal DamageFeeAmount { get; set; }
+        public decimal TotalPaid => BorrowingFeeAmount + FineAmount + DamageFeeAmount;
         public string ProcessedByLibrarianName { get; set; }
         public string Notes { get; set; }
     }

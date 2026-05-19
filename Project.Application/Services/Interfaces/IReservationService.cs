@@ -58,5 +58,6 @@ namespace Project.Application.Services.Interfaces
         bool CheckAndAssignReservationOnReturn(int bookId);
         int ProcessNewCopiesIntoQueue(int bookId, int addedCopiesCount);
         int ExpireOverdueReservations();
+        CreateReservationResultVM MarkAsFulfilled(int reservationId);
     }
 }

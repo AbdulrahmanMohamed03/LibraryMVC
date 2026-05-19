@@ -78,6 +78,8 @@ namespace Project.Application.Services.Implementaion
                 };
             }
 
+
+
             return new CreateReservationResultVM { IsSuccess = true };
         }
 
@@ -126,7 +128,7 @@ namespace Project.Application.Services.Implementaion
                 return eligibility;
             }
 
-            var now = DateTime.UtcNow;
+            var now = DateTime.Now;
             var reservation = new Reservation
             {
                 UserId = userId,
@@ -167,7 +169,7 @@ namespace Project.Application.Services.Implementaion
 
             bool wasReady = reservation.Status == ReservationStatus.Ready;
             reservation.Status = ReservationStatus.Cancelled;
-            reservation.ExpiresAt = DateTime.UtcNow;
+            reservation.ExpiresAt = DateTime.Now;
             _uow.Reservations.Update(reservation);
 
             if (wasReady)
@@ -220,10 +222,10 @@ namespace Project.Application.Services.Implementaion
         {
             bool promoted = PromoteNextPendingReservation(bookId);
 
-            if (!promoted)
+            if (promoted)
             {
-                var book = _uow.Books.GetById(bookId)!;
-                book.AvailableCopies++;
+                var book = _uow.Books.GetById(bookId);
+                book.AvailableCopies--;
             }
 
             _uow.Save();
@@ -247,7 +249,7 @@ namespace Project.Application.Services.Implementaion
                 if (next is null) break;
 
                 next.Status = ReservationStatus.Ready;
-                next.ExpiresAt = DateTime.UtcNow.AddDays(ReadyExpiryDays);
+                next.ExpiresAt = DateTime.Now.AddDays(ReadyExpiryDays);
                 _uow.Reservations.Update(next);
 
                 book.AvailableCopies--;
@@ -302,10 +304,40 @@ namespace Project.Application.Services.Implementaion
             if (next is null) return false;
 
             next.Status = ReservationStatus.Ready;
-            next.ExpiresAt = DateTime.UtcNow.AddDays(ReadyExpiryDays);
+            next.ExpiresAt = DateTime.Now.AddDays(ReadyExpiryDays);
             _uow.Reservations.Update(next);
 
             return true;
+        }
+
+        public CreateReservationResultVM MarkAsFulfilled(int reservationId)
+        {
+            var reservation = _uow.Reservations.GetById(reservationId);
+            if (reservation == null)
+                return new CreateReservationResultVM
+                {
+                    IsSuccess = false,
+                    Message = "Reservation not found."
+                };
+
+            if (reservation.Status != ReservationStatus.Ready)
+                return new CreateReservationResultVM
+                {
+                    IsSuccess = false,
+                    Message = "Only Ready reservations can be fulfilled."
+                };
+
+            reservation.Status = ReservationStatus.Fulfilled;
+            reservation.ExpiresAt = DateTime.Now;
+
+            _uow.Reservations.Update(reservation);
+            _uow.Save();
+            return new CreateReservationResultVM
+            {
+                IsSuccess = true,
+                ReservationId = reservation.Id,
+                Message = "Reservation fulfilled."
+            };
         }
     }
 }

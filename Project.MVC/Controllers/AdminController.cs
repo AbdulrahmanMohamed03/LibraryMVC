@@ -7,11 +7,9 @@ using Project.Application.ViewModels.User;
 
 namespace Project.MVC.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
-
 
         public AdminController(IAdminService adminService)
         {
@@ -19,6 +17,7 @@ namespace Project.MVC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, Librarian")]
         public async Task<IActionResult> Index()
         {
             var data = await _adminService.GetDashboardDataAsync();
@@ -26,6 +25,7 @@ namespace Project.MVC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateLibrarian()
         {
             ViewBag.Roles = new SelectList(await _adminService.GetAllRolesAsync(), "Name", "Name");
@@ -34,6 +34,7 @@ namespace Project.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateLibrarian(CreateLibrarianVM vm)
         {
             if (!ModelState.IsValid)
@@ -55,6 +56,7 @@ namespace Project.MVC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ManageRoles()
         {
             var vm = new ManageUserRolesVm
@@ -72,6 +74,7 @@ namespace Project.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ManageRoles(ManageUserRolesVm vm)
         {
             vm.AllRoles = (await _adminService.GetAllRolesAsync())
@@ -89,6 +92,7 @@ namespace Project.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddRole(ManageUserRolesVm vm)
         {
             vm.AllRoles = (await _adminService.GetAllRolesAsync())
@@ -120,6 +124,7 @@ namespace Project.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRole(string email, string roleName)
         {
             await _adminService.RemoveUserFromRoleAsync(new AssignRoleVm
@@ -131,6 +136,7 @@ namespace Project.MVC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ManageLibrarians()
         {
             var librarians = await _adminService.GetAllLibrariansAsync();
@@ -139,6 +145,7 @@ namespace Project.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> FireLibrarian(string id)
         {
             var result = await _adminService.FireLibrarianAsync(id);
@@ -148,6 +155,7 @@ namespace Project.MVC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> LibrarianDetails(string id)
         {
             var librarian = await _adminService.GetLibrarianDetailsAsync(id);
@@ -157,6 +165,7 @@ namespace Project.MVC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditLibrarian(string id)
         {
             var vm = await _adminService.GetLibrarianForEditAsync(id);
@@ -167,6 +176,7 @@ namespace Project.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditLibrarian(EditLibrarianVM vm)
         {
             if (!ModelState.IsValid)
@@ -179,6 +189,7 @@ namespace Project.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ReHireLibrarian(string id)
         {
             var result = await _adminService.ReHireLibrarianAsync(id);
@@ -189,6 +200,7 @@ namespace Project.MVC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> FiredLibrarians()
         {
             var data = await _adminService.GetFiredLibrariansAsync();

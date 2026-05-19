@@ -5,11 +5,9 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<!-- Add FontAwesome if you don't already have it in your _Layout.cshtml -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-    /* Custom CSS for Dashboard Cards - You can move this to your site.css */
     .dashboard-card {
         border-radius: 12px;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -17,10 +15,10 @@
         border: none;
     }
 
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-    }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
 
     .icon-wrapper {
         width: 60px;
@@ -33,22 +31,40 @@
         background-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* Gradients */
-    .bg-gradient-primary { background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); }
-    .bg-gradient-success { background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); }
-    .bg-gradient-warning { background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%); }
-    .bg-gradient-danger  { background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%); }
-    .bg-gradient-info    { background: linear-gradient(135deg, #36b9cc 0%, #258391 100%); }
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+    }
+
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);
+    }
+
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+    }
+
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);
+    }
+
+    .bg-gradient-purple {
+        background: linear-gradient(135deg, #6f42c1 0%, #4e2d8a 100%);
+    }
 </style>
 
 <div class="container-fluid mt-4 px-4">
-    
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-gray-800 fw-bold">Library Dashboard</h2>
-        <span class="text-muted"><i class="fas fa-calendar-alt me-2"></i>@DateTime.Now.ToString("MMMM dd, yyyy")</span>
+        <span class="text-muted">
+            <i class="fas fa-calendar-alt me-2"></i>@DateTime.Now.ToString("MMMM dd, yyyy")
+        </span>
     </div>
 
-    <!-- We use justify-content-center or standard row/cols depending on how you want the 5 cards to wrap -->
     <div class="row">
 
         <!-- Categories -->
@@ -89,24 +105,27 @@
             </a>
         </div>
 
-        <!-- Librarians -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <a href="@Url.Action("ManageLibrarians", "Admin")" class="text-decoration-none">
-                <div class="card dashboard-card shadow-sm text-white bg-gradient-warning">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Librarians</p>
-                                <h2 class="mb-0 fw-bold">@Model.LibrariansCount</h2>
-                            </div>
-                            <div class="icon-wrapper">
-                                <i class="fas fa-user-tie"></i>
+        <!-- Librarians (Admin Only) -->
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="col-xl-3 col-md-6 mb-4">
+                <a href="@Url.Action("ManageLibrarians", "Admin")" class="text-decoration-none">
+                    <div class="card dashboard-card shadow-sm text-white bg-gradient-warning">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Librarians</p>
+                                    <h2 class="mb-0 fw-bold">@Model.LibrariansCount</h2>
+                                </div>
+                                <div class="icon-wrapper">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+        }
 
         <!-- Reservations -->
         <div class="col-xl-3 col-md-6 mb-4">
@@ -122,6 +141,15 @@
                                 <i class="fas fa-bookmark"></i>
                             </div>
                         </div>
+
+                        @if (Model.ReadyReservationsCount > 0)
+                        {
+                            <div class="mt-2">
+                                <span class="badge bg-white text-dark fw-semibold">
+                                    ✅ @Model.ReadyReservationsCount Ready for Pickup
+                                </span>
+                            </div>
+                        }
                     </div>
                 </div>
             </a>
@@ -129,8 +157,7 @@
 
         <!-- Total Income -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <a href="@Url.Action("Index", "Transaction" )" class="text-decoration-none">
-                <!-- Replace "#" with your Income/Finance Controller if it exists -->
+            <a href="@Url.Action("Index", "Transaction")" class="text-decoration-none">
                 <div class="card dashboard-card shadow-sm text-white bg-gradient-info">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center">
@@ -146,6 +173,39 @@
                 </div>
             </a>
         </div>
+
+        <!-- Pending Borrow Requests (Admin + Librarian) -->
+        @if (User.IsInRole("Admin") || User.IsInRole("Librarian"))
+        {
+            <div class="col-xl-3 col-md-6 mb-4">
+                <a href="@Url.Action("Pending", "BorrowingRecords")" class="text-decoration-none">
+                    <div class="card dashboard-card shadow-sm text-white bg-gradient-purple">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">
+                                        Pending Requests
+                                    </p>
+                                    <h2 class="mb-0 fw-bold">@Model.PendingBorrowsCount</h2>
+                                </div>
+                                <div class="icon-wrapper">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+
+                            @if (Model.PendingBorrowsCount > 0)
+                            {
+                                <div class="mt-2">
+                                    <span class="badge bg-white text-dark fw-semibold">
+                                        ⚠ Needs Approval
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
 
     </div>
 </div>

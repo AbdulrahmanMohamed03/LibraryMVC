@@ -19,32 +19,47 @@ namespace Project.Infrastructure.Repositories
         public IEnumerable<BorrowingRecord> GetAllOverDue()
         {
             return _context.BorrowingRecords
-                .Where(br => br.Status == BorrowingStatus.Active && br.DueDate < DateTime.UtcNow)
+                .Where(br => br.Status == BorrowingStatus.Active && br.DueDate < DateTime.Now)
                 .OrderBy(br => br.DueDate)
                 .ToList();
         }
 
-        public IEnumerable<BorrowingRecord> GetAllPendingForLibrarian()
+        public IEnumerable<BorrowingRecord> GetAllPendingForLibrarian(string? search = null)
         {
-            return _context.BorrowingRecords
+            var query = _context.BorrowingRecords
                 .Include(br => br.User)
                 .Include(br => br.Book)
                 .Where(br => br.Status == BorrowingStatus.Pending && br.ProcessedByLibrarianId == null)
-                .ToList();
+                .AsQueryable();
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(br => br.User.NationalId.Contains(search));
+            }
+            return query.ToList();
         }
 
-        public IEnumerable<BorrowingRecord> GetAll()
+        public IEnumerable<BorrowingRecord> GetAll(string? search = null)
         {
-            return _context.BorrowingRecords
+            var query = _context.BorrowingRecords
                 .Include(br => br.User)
                 .Include(br => br.Book)
-                .ToList();
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(br => br.User.NationalId.Contains(search));
+            }
+
+            return query.ToList();
         }
 
         public IEnumerable<BorrowingRecord> GetByUserId(string userId)
         {
             return _context.BorrowingRecords
+                .Include (br => br.User)
+                .Include(br => br.Book)
                 .Where(br => br.UserId == userId)
+                .OrderByDescending(br => br.RequestedAt)
                 .ToList();
         }
 
@@ -75,7 +90,7 @@ namespace Project.Infrastructure.Repositories
         public int CountUserBorrowsThisMonth(string userId, DateTime startDate, DateTime endDate)
         {
             return _context.BorrowingRecords
-                .Count(br => br.UserId == userId && br.RequestedAt >= startDate && br.RequestedAt < endDate  && br.Status != BorrowingStatus.Pending);
+                .Count(br => br.UserId == userId && br.RequestedAt >= startDate && br.RequestedAt < endDate);
         }
 
         public BorrowingRecord GetActiveBorrowing(int id)
@@ -86,6 +101,13 @@ namespace Project.Infrastructure.Repositories
                 .FirstOrDefault(br =>
                     br.Id == id &&
                     br.Status == BorrowingStatus.Active);
+        }
+        public IEnumerable<BorrowingRecord> GetPendingByBookId(int bookId)
+        {
+            return _context.BorrowingRecords
+                .Where(br => br.BookId == bookId && br.Status == BorrowingStatus.Pending)
+                .OrderBy(br => br.RequestedAt)
+                .ToList();
         }
     }
 }

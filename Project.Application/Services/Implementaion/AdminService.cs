@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Project.Application.Services.Interfaces;
-using Project.Core.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Project.Application.Services.Interfaces;
+using Project.Application.ViewModels.Admin;
 using Project.Application.ViewModels.Role;
 using Project.Application.ViewModels.User;
-using Project.Application.ViewModels.Admin;
 using Project.Core;
+using Project.Core.Enums;
+using Project.Core.Models;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Text;
 
 namespace Project.Application.Services.Implementaion
 {
@@ -96,7 +98,7 @@ namespace Project.Application.Services.Implementaion
                 Email = vm.Email,
                 UserName = vm.UserName,
                 IsActive = vm.IsActive,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             };
 
             var createResult = await _userManager.CreateAsync(user, vm.Password);
@@ -208,6 +210,8 @@ namespace Project.Application.Services.Implementaion
             int reservationsCount = _unitOfWork.Reservations.GetAll().Count();
             int librariansCount = (await _userManager.GetUsersInRoleAsync("Librarian")).Count(u => u.IsActive);
             var totalIncome= _unitOfWork.Transactions.GetAll().Sum(x => x.Amount);
+            int pendingBorrowsCount = _unitOfWork.BorrowingRecords.GetAllPendingForLibrarian().Count();
+            int readyReservationsCount = _unitOfWork.Reservations.GetReadyReservations();
             var dashboardData = new AdminDashboardVM
             {
                 CategoriesCount = categoriesCount,
@@ -215,6 +219,8 @@ namespace Project.Application.Services.Implementaion
                 LibrariansCount = librariansCount,
                 ReservationsCount = reservationsCount,
                 TotalIncome = totalIncome,
+                PendingBorrowsCount = pendingBorrowsCount,
+                ReadyReservationsCount = readyReservationsCount,
             };
 
             return dashboardData;

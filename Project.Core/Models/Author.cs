@@ -10,7 +10,7 @@ namespace Project.Core.Models
         public string FullName { get; set; }
         public string? Bio { get; set; }
         public string? Nationality { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public ICollection<Book> Books { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace Project.MVC.Controllers
 {
-    //[Authorize]
+    [Authorize(Roles = "User")]
     public class UserSubscriptionController : Controller
     {
         private readonly IUserSubscriptionService _subscriptionService;

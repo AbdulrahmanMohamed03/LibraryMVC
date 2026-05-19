@@ -12,6 +12,8 @@
         <div class="card-body">
 
             <div class="row">
+
+                <!-- Borrower -->
                 <div class="col-md-6 mt-2">
                     <h5 class="text-muted">Borrower</h5>
                     <p class="fw-bold">@Model.BorrowerName</p>
@@ -21,18 +23,15 @@
                     <p>@Model.NationalId</p>
                 </div>
 
-
                 <!-- Book -->
                 <div class="col-md-6 mt-3">
                     <h5 class="text-muted">Book Title</h5>
                     <p class="fw-bold">@Model.BookTitle</p>
                 </div>
-
                 <div class="col-md-6 mt-3">
                     <h5 class="text-muted">Author</h5>
                     <p>@Model.BookAuthor</p>
                 </div>
-
                 <div class="col-md-6 mt-3">
                     <h5 class="text-muted">Category</h5>
                     <p>@Model.Category</p>
@@ -41,7 +40,27 @@
                 <!-- Status -->
                 <div class="col-md-6 mt-3">
                     <h5 class="text-muted">Status</h5>
-                    <span class="badge bg-info">@Model.StatusLabel</span>
+                    @switch (Model.Status)
+                    {
+                        case Project.Core.Enums.BorrowingStatus.Pending:
+                            <span class="badge bg-warning text-dark">@Model.StatusLabel</span>
+                            break;
+                        case Project.Core.Enums.BorrowingStatus.Active:
+                            <span class="badge bg-primary">@Model.StatusLabel</span>
+                            break;
+                        case Project.Core.Enums.BorrowingStatus.Returned:
+                            <span class="badge bg-success">@Model.StatusLabel</span>
+                            break;
+                        case Project.Core.Enums.BorrowingStatus.ReturnedOverdue:
+                            <span class="badge bg-danger">@Model.StatusLabel</span>
+                            break;
+                        case Project.Core.Enums.BorrowingStatus.ReturnedDamaged:
+                            <span class="badge bg-dark">@Model.StatusLabel</span>
+                            break;
+                        default:
+                            <span class="badge bg-secondary">@Model.StatusLabel</span>
+                            break;
+                    }
                 </div>
 
                 <!-- Dates -->
@@ -49,26 +68,17 @@
                     <h5 class="text-muted">Requested At</h5>
                     <p>@Model.RequestedAt.ToString("yyyy-MM-dd")</p>
                 </div>
-
                 <div class="col-md-6 mt-3">
                     <h5 class="text-muted">Checked Out At</h5>
-                    <p>
-                        @(Model.CheckedOutAt?.ToString("yyyy-MM-dd") ?? "Not checked out yet")
-                    </p>
+                    <p>@(Model.CheckedOutAt?.ToString("yyyy-MM-dd") ?? "Not checked out yet")</p>
                 </div>
-
                 <div class="col-md-6 mt-3">
                     <h5 class="text-muted">Due Date</h5>
-                    <p>
-                        @(Model.DueDate?.ToString("yyyy-MM-dd") ?? "N/A")
-                    </p>
+                    <p>@(Model.DueDate?.ToString("yyyy-MM-dd") ?? "N/A")</p>
                 </div>
-
                 <div class="col-md-6 mt-3">
                     <h5 class="text-muted">Returned At</h5>
-                    <p>
-                        @(Model.ReturnedAt?.ToString("yyyy-MM-dd") ?? "Not returned yet")
-                    </p>
+                    <p>@(Model.ReturnedAt?.ToString("yyyy-MM-dd") ?? "Not returned yet")</p>
                 </div>
 
             </div>
@@ -78,25 +88,29 @@
             <!-- Financial -->
             <div class="row">
 
-                <div class="col-md-6">
+                <div class="col-md-6 mt-2">
                     <h5 class="text-muted">Borrowing Fee</h5>
-                    <p class="text-primary fw-bold">
-                        @Model.BorrowingFeeAmount EGP
-                    </p>
+                    <p class="text-primary fw-bold">@Model.BorrowingFeeAmount EGP</p>
                 </div>
 
-                <div class="col-md-6">
-                    <h5 class="text-muted">Fine</h5>
-                    <p class="text-danger fw-bold">
+                <div class="col-md-6 mt-2">
+                    <h5 class="text-muted">Late Fine</h5>
+                    <p class="@(Model.FineAmount > 0 ? "text-danger fw-bold" : "fw-bold")">
                         @Model.FineAmount EGP
                     </p>
                 </div>
 
-                <div class="col-md-12 mt-2">
+                @if (Model.DamageFeeAmount > 0)
+                {
+                    <div class="col-md-6 mt-2">
+                        <h5 class="text-muted">Damage Fee</h5>
+                        <p class="text-warning fw-bold">@Model.DamageFeeAmount EGP</p>
+                    </div>
+                }
+
+                <div class="col-md-12 mt-3">
                     <h5 class="text-muted">Total Paid</h5>
-                    <p class="fw-bold fs-5">
-                        @Model.TotalPaid EGP
-                    </p>
+                    <p class="fw-bold fs-5">@Model.TotalPaid EGP</p>
                 </div>
 
             </div>
@@ -105,12 +119,10 @@
 
             <!-- Staff -->
             <div class="row">
-
                 <div class="col-md-12">
                     <h5 class="text-muted">Processed By</h5>
-                    <p>@Model.ProcessedByLibrarianName</p>
+                    <p>@(Model.ProcessedByLibrarianName ?? "—")</p>
                 </div>
-
             </div>
 
             <!-- Notes -->
@@ -121,9 +133,7 @@
                 <p>@Model.Notes</p>
             }
 
-            <a asp-action="Index" class="btn btn-secondary mt-3">
-                Back
-            </a>
+            <a asp-action="Index" class="btn btn-secondary mt-3">Back</a>
 
         </div>
     </div>
