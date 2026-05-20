@@ -1,26 +1,151 @@
-﻿@model Project.Application.ViewModels.Author.UpdateAuthorDto
+﻿
 
-<h2>Edit Author</h2>
+@model Project.Application.ViewModels.Author.UpdateAuthorDto
 
-<form asp-action="Edit" method="post">
+@{
+    ViewData["Title"] = "Edit Author";
+    Layout = "_Layout";
+}
 
-    <input type="hidden" asp-for="Id" />
+<style>
+    .aut-header {
+        padding: 2.5rem 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--cream);
+    }
 
-    <div>
-        <label>Full Name</label>
-        <input asp-for="FullName" class="form-control" />
+    .aut-page-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+    }
+
+    .aut-eyebrow {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: .4rem;
+    }
+
+    .form-card-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        margin-top: 3rem;
+        padding: 2.5rem;
+        max-width: 600px;
+    }
+
+    .custom-label {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ash);
+        display: block;
+        margin-bottom: .6rem;
+    }
+
+    .custom-input, .custom-textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        padding: .75rem 1rem;
+        font-size: .95rem;
+        font-family: 'Jost', sans-serif;
+        color: var(--ink);
+        outline: none;
+        transition: border-color .2s;
+        border-radius: 0;
+    }
+
+        .custom-input:focus, .custom-textarea:focus {
+            border-color: var(--gold);
+        }
+
+    .btn-gold-submit {
+        padding: .75rem 2rem;
+        background: var(--gold);
+        color: var(--white);
+        border: none;
+        cursor: pointer;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        transition: background .2s;
+    }
+
+        .btn-gold-submit:hover {
+            background: var(--ink);
+        }
+
+    .btn-link-cancel {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ash);
+        text-decoration: none;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 2px;
+        transition: color .2s, border-color .2s;
+    }
+
+        .btn-link-cancel:hover {
+            color: var(--ink);
+            border-color: var(--ink);
+        }
+</style>
+
+<div class="aut-header">
+    <div class="container">
+        <div class="mb-3">
+            <a asp-action="Index" class="text-decoration-none text-muted small" style="font-size: .78rem; letter-spacing: 1px; text-transform: uppercase;">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Authors
+            </a>
+        </div>
+        <div>
+            <div class="aut-eyebrow">Admin Panel</div>
+            <h1 class="aut-page-title">Edit Author</h1>
+        </div>
     </div>
+</div>
 
-    <div>
-        <label>Bio</label>
-        <input asp-for="Bio" class="form-control" />
+<div class="container d-flex justify-content-center" style="padding-bottom: 5rem;">
+    <div class="form-card-wrap w-100">
+        <form asp-action="Edit" method="post" novalidate>
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-4">
+                <label asp-for="FullName" class="custom-label">Full Name *</label>
+                <input asp-for="FullName" class="custom-input" placeholder="e.g. Leo Tolstoy" />
+                <span asp-validation-for="FullName" class="text-danger small d-block mt-2"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Nationality" class="custom-label">Nationality</label>
+                <input asp-for="Nationality" class="custom-input" placeholder="e.g. Russian" />
+                <span asp-validation-for="Nationality" class="text-danger small d-block mt-2"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Bio" class="custom-label">Biography</label>
+                <textarea asp-for="Bio" class="custom-textarea" rows="4" placeholder="Brief history or background details..."></textarea>
+                <span asp-validation-for="Bio" class="text-danger small d-block mt-2"></span>
+            </div>
+
+            <div class="d-flex align-items-center gap-4 mt-5">
+                <button type="submit" class="btn-gold-submit"><i class="fa-solid fa-check me-2"></i> Update Author</button>
+                <a asp-action="Index" class="btn-link-cancel">Cancel</a>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div>
-        <label>Nationality</label>
-        <input asp-for="Nationality" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Update</button>
-
-</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

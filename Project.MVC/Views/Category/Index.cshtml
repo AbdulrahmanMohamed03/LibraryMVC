@@ -1,121 +1,344 @@
-﻿@model Project.Application.ViewModels.Category.CategoryIndexViewModel
+﻿
+
+        @model Project.Application.ViewModels.Category.CategoryIndexViewModel
+
 @{
     ViewData["Title"] = "Categories";
-
-    var isLibrarian = User.IsInRole("Admin") || User.IsInRole("Librarian") || true;
+    Layout = "_Layout";
+    
+    // Role logic from your original codebase
+    var isLibrarian = User.IsInRole("Admin") || User.IsInRole("Librarian");
+    
+    // Parse the Active vs Archived tabs from URL parameters
+    var currentShowDeleted = Context.Request.Query["showDeleted"].ToString().ToLower();
+    var isActiveTab = string.IsNullOrEmpty(currentShowDeleted) || currentShowDeleted == "false";
+    var isArchivedTab = currentShowDeleted == "true";
 }
 
-<div class="container-fluid px-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
-        <div>
-            <h1 class="h3 mb-0 fw-bold text-dark">
-                <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Categories
-            </h1>
-        </div>
-        @if (isLibrarian)
-        {
-            <a asp-action="Create" class="btn btn-primary d-flex align-items-center gap-2">
-                <i class="bi bi-plus-circle-fill"></i> Add Category
-            </a>
-        }
-    </div>
-
-    @* Alerts Section *@
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+<style>
+    .cat-header {
+        padding: 2.5rem 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--cream);
     }
 
-    @* Stats *@
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm p-3">
-                <h2 class="text-primary">@Model.TotalCategories</h2>
-                <span class="text-muted">Total Categories</span>
+    .cat-page-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+    }
+
+    .cat-eyebrow {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: .4rem;
+    }
+
+    /* Minimalist Stat Cards */
+    .stat-container {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-box {
+        background: var(--white);
+        border: 1px solid var(--border);
+        padding: 1.5rem 2rem;
+        min-width: 200px;
+        flex: 1;
+    }
+
+    .stat-number {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--gold);
+        line-height: 1;
+        margin-bottom: .25rem;
+    }
+
+    .stat-label {
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ash);
+    }
+
+    /* Filter Toolbar Controls */
+    .toolbar-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+
+    .search-bar-wrap {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: 360px;
+        border: 1px solid var(--border);
+        background: var(--white);
+    }
+
+    .search-bar-wrap input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: .65rem 1rem;
+        font-size: .85rem;
+        font-family: 'Jost', sans-serif;
+        color: var(--ink);
+        background: transparent;
+    }
+
+    .search-bar-wrap button {
+        padding: .65rem 1.25rem;
+        background: var(--gold);
+        color: var(--white);
+        border: none;
+        cursor: pointer;
+        font-size: .75rem;
+        transition: background .2s;
+    }
+
+    .search-bar-wrap button:hover {
+        background: var(--ink);
+    }
+
+    /* Luxury Tab Switches */
+    .premium-tabs {
+        display: flex;
+        border: 1px solid var(--border);
+        background: var(--white);
+        padding: 4px;
+    }
+
+    .premium-tab-btn {
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ash);
+        text-decoration: none;
+        padding: .5rem 1.25rem;
+        transition: all .2s;
+    }
+
+    .premium-tab-btn:hover {
+        color: var(--ink);
+    }
+
+    .premium-tab-btn.is-active {
+        background: var(--gold);
+        color: var(--white);
+    }
+
+    /* Table System */
+    .cat-table-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+    }
+
+    .cat-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .cat-table thead tr {
+        border-bottom: 2px solid var(--gold);
+    }
+
+    .cat-table thead th {
+        padding: .9rem 1.25rem;
+        font-size: .63rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--ash);
+        text-align: left;
+        background: var(--cream);
+    }
+
+    .cat-table th.r, .cat-table td.r { text-align: right; }
+    .cat-table tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    .cat-table tbody tr:last-child { border-bottom: none; }
+    .cat-table tbody tr:hover { background: var(--cream); }
+    .cat-table td { padding: 1.1rem 1.25rem; font-size: .88rem; color: var(--ink-soft); vertical-align: middle; }
+    
+    .cat-name-cell { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+    .cat-count-badge { display: inline-block; padding: 2px 10px; background: var(--gold); color: var(--white); font-size: .65rem; font-weight: 700; letter-spacing: 1px; }
+
+    .cat-act-edit { font-size: .65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); padding-bottom: 1px; margin-right: 1rem; transition: all .2s; }
+    .cat-act-edit:hover { color: var(--gold); border-color: var(--gold); }
+    
+    .cat-act-del { font-size: .65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #b33; background: transparent; border: none; border-bottom: 1px solid #b33; padding: 0 0 1px; cursor: pointer; transition: opacity .2s; }
+    .cat-act-del:hover { opacity: .65; }
+    
+    .cat-act-restore { font-size: .65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1a6832; background: transparent; border: none; border-bottom: 1px solid #1a6832; padding: 0 0 1px; cursor: pointer; }
+
+    /* Alternate User Grid View */
+    .user-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+    .user-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        padding: 1.5rem;
+        transition: transform .2s, border-color .2s;
+    }
+    .user-card:hover {
+        border-color: var(--gold);
+    }
+</style>
+
+<div class="cat-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <div class="cat-eyebrow">Inventory Catalog</div>
+                <h1 class="cat-page-title">Categories</h1>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm p-3">
-                @* should we link to the books page with a filter for this category?
-                     <a href="/Books?categoryId=@Model.Id" class="badge bg-info text-dark text-decoration-none">
-                    @Model.TotalBooks
+            @if (isLibrarian)
+            {
+                <a asp-action="Create" class="btn-gold">
+                    <i class="fa-solid fa-plus me-2"></i>Add Category
                 </a>
+            }
+        </div>
+    </div>
+</div>
 
-                *@
-                  
-                <h2 class="text-success">@Model.TotalBooks</h2>
-                <span class="text-muted">Total Books</span>
-            </div>
+<div class="container" style="padding-bottom: 5rem;">
+
+    <div class="stat-container">
+        <div class="stat-box">
+            <div class="stat-number">@Model.TotalCategories</div>
+            <div class="stat-label">Total Categories</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">@Model.TotalBooks</div>
+            <div class="stat-label">Total Books Tracked</div>
         </div>
     </div>
 
-    @* Search *@
-    <div class="card border-0 shadow-sm mb-4 p-3">
-        <form method="get" asp-action="Index" class="d-flex gap-2">
-            <input type="text" name="search" value="@Model.SearchTerm" class="form-control" placeholder="Search..." />
-            <button type="submit" class="btn btn-primary">Search</button>
-            <div class="col-md-6 d-flex justify-content-md-end align-items-center gap-2">
-
-                <div class="btn-group shadow-sm" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
-                    @{
-
-                        var currentShowDeleted = Context.Request.Query["showDeleted"].ToString().ToLower();
-                        var isActiveTab = string.IsNullOrEmpty(currentShowDeleted) || currentShowDeleted == "false";
-                        var isArchivedTab = currentShowDeleted == "true";
-                    }
-
-                    <a href="@Url.Action("Index", new { search = Model.SearchTerm, showDeleted = false })"
-                       class="btn btn-sm @(isActiveTab ? "btn-primary active" : "btn-light text-muted")">
-                        <i class="bi bi-check-circle-fill me-1"></i> Active
-                    </a>
-
-                    
-                    <a href="@Url.Action("Index", new { search = Model.SearchTerm, showDeleted = true })"
-                       class="btn btn-sm @(isArchivedTab ? "btn-primary active" : "btn-light text-muted")">
-                        <i class="bi bi-archive-fill me-1"></i> Archived
-                    </a>
-                </div>
-            </div>
+    <div class="toolbar-wrap">
+        <form method="get" asp-action="Index" class="search-bar-wrap">
+            <input type="hidden" name="showDeleted" value="@(isArchivedTab ? "true" : "false")" />
+            <input type="text" name="search" value="@Model.SearchTerm" placeholder="Filter categories by keyword…" />
+            <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
         </form>
+
+        <div class="premium-tabs">
+            <a href="@Url.Action("Index", new { search = Model.SearchTerm, showDeleted = false })"
+               class="premium-tab-btn @(isActiveTab ? "is-active" : "")">
+                <i class="fa-solid fa-square-check me-1"></i> Active
+            </a>
+            <a href="@Url.Action("Index", new { search = Model.SearchTerm, showDeleted = true })"
+               class="premium-tab-btn @(isArchivedTab ? "is-active" : "")">
+                <i class="fa-solid fa-box-archive me-1"></i> Archived
+            </a>
+        </div>
     </div>
 
-    @* Logic for View Types *@
+  @*   @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="padding:.9rem 1.25rem;background:#e6f4ea;border-left:3px solid #1a6832;margin-bottom:1.5rem;font-size:.85rem;color:#1a6832;">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+        </div>
+    } *@
+
     @if (isLibrarian)
     {
-        <partial name="_LibrarianTable" model="Model" />
+        <div class="cat-table-wrap">
+            @if (Model.Categories == null || !Model.Categories.Any())
+            {
+                <div style="padding:4rem;text-align:center;color:var(--ash)">
+                    <i class="fa-solid fa-tags" style="font-size:2rem;color:var(--border);display:block;margin-bottom:1rem"></i>
+                    No data matched your current filter criteria.
+                </div>
+            }
+            else
+            {
+                <table class="cat-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Category Descriptor</th>
+                            <th class="r">Linked Books</th>
+                            <th class="r">Management Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int index = 1; }
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <tr>
+                                <td style="color:var(--ash);font-size:.8rem;width:40px">@(index++)</td>
+                                <td><span class="cat-name-cell">@cat.Name</span></td>
+                                <td class="r">
+                                    @if (cat.BookCount > 0)
+                                    {
+                                        <span class="cat-count-badge">@cat.BookCount</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:var(--ash);font-size:.8rem">—</span>
+                                    }
+                                </td>
+                                <td class="r">
+                                    @if (!isArchivedTab)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@cat.Id" class="cat-act-edit">Edit</a>
+                                        <form asp-action="Delete" asp-route-id="@cat.Id" method="post" style="display:inline"
+                                              onsubmit="return confirm('Archive \'@cat.Name\'? All associated items will be unlinked.')">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="cat-act-del">Archive</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Restore" asp-route-id="@cat.Id" method="post" style="display:inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="cat-act-restore">Restore Item</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
     }
     else
     {
-        <partial name="_UserCards" model="Model" />
+        <div class="user-grid">
+            @if (Model.Categories != null)
+            {
+                @foreach (var cat in Model.Categories)
+                {
+                    <div class="user-card">
+                        <div class="cat-name-cell" style="font-size: 1.25rem; margin-bottom: .5rem;">@cat.Name</div>
+                        <div style="font-size: .75rem; color: var(--ash); text-transform: uppercase; letter-spacing: 1px;">
+                            @cat.BookCount Volumes Available
+                        </div>
+                    </div>
+                }
+            }
+        </div>
     }
 </div>
-
-@section Scripts {
-    <script>
-        const deleteModal = document.getElementById('deleteModal');
-        if (deleteModal) {
-            deleteModal.addEventListener('show.bs.modal', event => {
-                const btn = event.relatedTarget;
-                const id = btn.getAttribute('data-category-id');
-                const name = btn.getAttribute('data-category-name');
-                const count = parseInt(btn.getAttribute('data-book-count'));
-
-                deleteModal.querySelector('#modalCategoryName').textContent = name;
-                deleteModal.querySelector('#deleteForm').action = `/Category/Delete/${id}`;
-
-                const warning = deleteModal.querySelector('#bookWarning');
-                if (count > 0) {
-                    warning.textContent = `Caution: This category has ${count} books and cannot be deleted.`;
-                    warning.classList.remove('d-none');
-                    deleteModal.querySelector('#confirmDeleteBtn').disabled = true;
-                } else {
-                    warning.classList.add('d-none');
-                    deleteModal.querySelector('#confirmDeleteBtn').disabled = false;
-                }
-            });
-        }
-    </script>
-}

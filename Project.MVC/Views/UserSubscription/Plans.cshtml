@@ -1,59 +1,443 @@
-﻿@model IEnumerable<Project.Application.ViewModels.SubscriptionPlan.SubscriptionPlanDTO>
+﻿
 
+
+
+@model IEnumerable<Project.Application.ViewModels.SubscriptionPlan.SubscriptionPlanDTO>
 @{
-    ViewData["Title"] = "Available Plans";
+    ViewData["Title"] = "Subscription Plans";
+    var plans = Model.ToList();
 }
 
-<h2 class="mb-4">Available Plans</h2>
-<a asp-action="Index" class="btn btn-secondary mb-3">Back to My Subscription</a>
+<style>
+    .plans-hero {
+        background: var(--ink);
+        padding: 4rem 0 3rem;
+        text-align: center;
+    }
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        .plans-hero h1 {
+            font-family: 'Cormorant Garamond',serif;
+            font-size: clamp(2rem,5vw,3.5rem);
+            font-weight: 300;
+            color: var(--white);
+            margin: 0;
+        }
+
+            .plans-hero h1 strong {
+                font-weight: 700;
+                color: var(--gold);
+            }
+
+        .plans-hero p {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+    .plans-section {
+        padding: 5rem 0;
+        background: var(--cream);
+    }
+
+    /* Fixed Flexible Row Configuration */
+    .plans-grid {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 2.5rem; 
+        max-width: 1200px;
+        margin: 0 auto;
+        background: transparent;
+        justify-content: center;
+        align-items: stretch;
+    }
+
+    /* Individual Card Box Adjustments */
+    .plan-card {
+        background: var(--white);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        flex: 1;
+        min-width: 320px; 
+        border: 1px solid var(--border); 
+        transition: transform 0.2s, border-color 0.2s;
+    }
+
+        .plan-card:hover {
+            border-color: var(--ash);
+        }
+
+        .plan-card.featured {
+            background: var(--ink);
+            border-color: var(--ink);
+        }
+
+            .plan-card.featured .plan-name,
+            .plan-card.featured .plan-price,
+            .plan-card.featured .plan-detail-label,
+            .plan-card.featured .plan-note {
+                color: var(--white);
+            }
+
+            .plan-card.featured .plan-detail-value {
+                color: var(--gold);
+            }
+
+            .plan-card.featured .plan-divider {
+                border-color: rgba(255,255,255,0.1);
+            }
+
+    .plan-featured-tag {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--gold);
+        color: var(--white);
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 16px;
+    }
+
+    .plan-header {
+        padding: 3rem 2.2rem 1.5rem;
+    }
+
+    .plan-name {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--ash);
+        margin-bottom: 1rem;
+    }
+
+    .plan-price {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1;
+    }
+
+        .plan-price sup {
+            font-size: 1.4rem;
+            font-weight: 400;
+            vertical-align: super;
+            margin-right: 2px;
+            font-family: 'Jost', sans-serif;
+        }
+
+        .plan-price .period {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--ash);
+            font-family: 'Jost', sans-serif;
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+    .plan-card.featured .plan-price .period {
+        color: rgba(255,255,255,0.45);
+    }
+
+    .plan-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 0 2rem;
+    }
+
+    .plan-details {
+        padding: 1.5rem 2.2rem;
+        flex: 1;
+    }
+
+    .plan-detail-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.95rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .plan-card.featured .plan-detail-row {
+        border-bottom-color: rgba(255,255,255,0.1);
+    }
+
+    .plan-detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .plan-detail-label {
+        font-size: 0.78rem;
+        color: var(--ash);
+        letter-spacing: 0.3px;
+    }
+
+    .plan-detail-value {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .plan-note {
+        font-size: 0.72rem;
+        color: var(--ash);
+        padding: 0 2.2rem 1rem;
+        line-height: 1.5;
+    }
+
+    .plan-footer {
+        padding: 1.5rem 2.2rem 2.5rem;
+    }
+
+    .btn-plan-ink {
+        display: block;
+        width: 100%;
+        padding: 0.85rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-align: center;
+        background: var(--ink);
+        color: var(--white);
+        border: 1px solid var(--ink);
+        border-radius: 0;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-plan-ink:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+
+    .btn-plan-gold {
+        display: block;
+        width: 100%;
+        padding: 0.85rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-align: center;
+        background: var(--gold);
+        color: var(--white);
+        border: 1px solid var(--gold);
+        border-radius: 0;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-plan-gold:hover {
+            background: var(--gold-dark);
+            border-color: var(--gold-dark);
+        }
+
+    .btn-plan-ghost {
+        display: block;
+        width: 100%;
+        padding: 0.85rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-align: center;
+        background: transparent;
+        color: var(--white);
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 0;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-plan-ghost:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+    .plans-note {
+        text-align: center;
+        margin-top: 3.5rem;
+        font-size: 0.78rem;
+        color: var(--ash);
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.7;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ash);
+        text-decoration: none;
+        margin-bottom: 2rem;
+        transition: color 0.2s;
+    }
+
+        .back-link:hover {
+            color: var(--gold);
+        }
+
+    /* Handled responsive viewports gracefully */
+    @@media(max-width: 1024px) {
+        .plans-grid {
+            flex-wrap: wrap;
+            padding: 0 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .plan-card {
+            min-width: calc(50% - 1rem);
+        }
+    }
+
+    @@media(max-width: 680px) {
+        .plan-card {
+            min-width: 100%;
+        }
+
+        .plan-featured-tag {
+            position: relative;
+            top: auto;
+            left: auto;
+            transform: none;
+            display: inline-block;
+            margin: 1.5rem 2.2rem 0;
+            text-align: center;
+        }
+
+        .plan-header {
+            padding-top: 1.5rem;
+        }
+    }
+</style>
+
+<div class="plans-hero">
+    <div class="container">
+        <p><i class="fa-solid fa-id-card me-2" style="color:var(--gold)"></i>Membership</p>
+        <h1>Choose Your <strong>Plan</strong></h1>
     </div>
-}
+</div>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">
-        No plans available at the moment.
-    </div>
-}
-else
-{
-    <div class="row">
-        @foreach (var plan in Model)
+<section class="plans-section">
+    <div class="container">
+
+        <div style="max-width:1300px; margin:0 auto; padding: 0 10px;">
+            <a asp-action="Index" class="back-link">
+                <i class="fa-solid fa-arrow-left"></i> My Subscription
+            </a>
+        </div>
+
+        @if (TempData["Error"] != null)
         {
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm border-0 rounded-3">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold text-primary">@plan.Name</h5>
-                        <hr />
-                        <p class="card-text mb-1">
-                            <strong>Fee:</strong> @plan.MonthlyFee.ToString("C")
-                        </p>
-                        <p class="card-text mb-1">
-                            <strong>Borrow Limit:</strong> @plan.MonthlyBorrowLimit Books
-                        </p>
-                        <p class="card-text mb-0">
-                            <strong>Loan Duration:</strong> @plan.LoanDurationDays Days
-                        </p>
-                    </div>
-                    <div class="card-footer bg-light border-0 text-center py-3">
-                        <form asp-action="Subscribe" method="post">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="planId" value="@plan.Id" />
-                            <button type="submit"
-                                    class="btn btn-primary btn-sm rounded-pill px-4"
-                                    onclick="return confirm('Subscribe to @plan.Name?')">
-                                Subscribe
-                            </button>
-                        </form>
-                    </div>
-                </div>
+            <div class="alert-booksaw error" style="max-width:1300px; margin:0 auto 1.5rem">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>@TempData["Error"]
             </div>
         }
+
+        @if (!plans.Any())
+        {
+            <div style="text-align:center;padding:4rem;color:var(--ash)">
+                <i class="fa-solid fa-id-card" style="font-size:2.5rem;color:var(--border);display:block;margin-bottom:1rem"></i>
+                <p>No subscription plans are currently available.</p>
+            </div>
+        }
+        else
+        {
+            <div class="plans-grid">
+                @for (int i = 0; i < plans.Count; i++)
+                {
+                    var plan = plans[i];
+                    bool isFeatured = i == 1 || (plans.Count == 1);
+
+                    <div class="plan-card @(isFeatured ? "featured" : "")">
+
+                        @if (isFeatured)
+                        {
+                            <div class="plan-featured-tag">Most Popular</div>
+                        }
+
+                        <div class="plan-header">
+                            <div class="plan-name">@plan.Name</div>
+                            <div class="plan-price">
+                                <sup>$</sup>@plan.MonthlyFee.ToString("F2")
+                                <span class="period">per month</span>
+                            </div>
+                        </div>
+
+                        <hr class="plan-divider" />
+
+                        <div class="plan-details">
+                            <div class="plan-detail-row">
+                                <span class="plan-detail-label">Monthly Borrow Limit</span>
+                                <span class="plan-detail-value">@plan.MonthlyBorrowLimit Books</span>
+                            </div>
+                            <div class="plan-detail-row">
+                                <span class="plan-detail-label">Loan Duration</span>
+                                <span class="plan-detail-value">@plan.LoanDurationDays Days</span>
+                            </div>
+                            <div class="plan-detail-row">
+                                <span class="plan-detail-label">Reservation Queue</span>
+                                <span class="plan-detail-value" style="font-size:0.9rem">
+                                    <i class="fa-solid fa-check" style="color:#27ae60"></i> Included
+                                </span>
+                            </div>
+                        </div>
+
+                        @if (plan.MonthlyFee == 0)
+                        {
+                            <p class="plan-note">Perfect for casual readers looking to explore the catalog.</p>
+                        }
+
+                        <div class="plan-footer">
+                            <form asp-action="Subscribe" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="planId" value="@plan.Id" />
+                                @if (isFeatured)
+                                {
+                                    <button type="submit" class="btn-plan-ghost"
+                                            onclick="return confirm('Subscribe to @plan.Name plan?')">
+                                        Subscribe Now
+                                    </button>
+                                }
+                                else if (plan.MonthlyFee == 0)
+                                {
+                                    <button type="submit" class="btn-plan-ink"
+                                            onclick="return confirm('Subscribe to @plan.Name plan?')">
+                                        Get Started Free
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn-plan-gold"
+                                            onclick="return confirm('Subscribe to @plan.Name plan?')">
+                                        Subscribe Now
+                                    </button>
+                                }
+                            </form>
+                        </div>
+
+                    </div>
+                }
+            </div>
+
+            <p class="plans-note">
+                <i class="fa-solid fa-circle-info me-1" style="color:var(--gold)"></i>
+                Subscriptions renew monthly. You may upgrade or switch plans at any time.
+                Borrow limits reset at the start of each billing period.
+            </p>
+        }
     </div>
-}
+</section>

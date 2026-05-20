@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿@* <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -73,6 +73,1001 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html> *@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — MAKTBA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <style>
+            /* ═══════════════════════════════════════════════════
+                       BOOKSAW GLOBAL DESIGN SYSTEM
+                    ═══════════════════════════════════════════════════ */
+            :root {
+                --gold: #c5a880;
+                --gold-dark: #a8895e;
+                --gold-light: #f0e6d4;
+                --ink: #111111;
+                --ink-soft: #2d2d2d;
+                --ash: #747474;
+                --cream: #f3f2ec;
+                --cream-deep: #ede9e0;
+                --white: #ffffff;
+                --border: #e1ddd6;
+                --sidebar-bg: #111111;
+                --sidebar-w: 260px;
+                --red-soft: #c0392b;
+                --green-soft: #27ae60;
+                --blue-soft: #2980b9;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Jost', sans-serif;
+                font-weight: 400;
+                background: var(--cream);
+                color: var(--ink);
+                margin: 0;
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+
+            h1, h2, h3, h4, h5, h6 {
+                font-family: 'Cormorant Garamond', serif;
+                font-weight: 600;
+                color: var(--ink);
+            }
+
+            a {
+                color: var(--ink);
+                text-decoration: none;
+            }
+
+                a:hover {
+                    color: var(--gold);
+                }
+
+            /* ── PUBLIC TOP NAVBAR ─────────────────────────────────── */
+            .lib-navbar {
+                background: var(--white);
+                border-bottom: 1px solid var(--border);
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+
+                .lib-navbar .container-fluid {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 0 2rem;
+                    height: 68px;
+                }
+
+            .lib-brand {
+                font-family: 'Cormorant Garamond', serif;
+                font-size: 1.6rem;
+                font-weight: 700;
+                color: var(--ink) !important;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                text-decoration: none;
+            }
+
+                .lib-brand span {
+                    color: var(--gold);
+                }
+
+            .lib-nav-links {
+                display: flex;
+                align-items: center;
+                gap: 0.2rem;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+                .lib-nav-links .nav-item a {
+                    font-size: 0.78rem;
+                    font-weight: 500;
+                    letter-spacing: 1.5px;
+                    text-transform: uppercase;
+                    color: var(--ash);
+                    padding: 0.5rem 1rem;
+                    transition: color 0.2s;
+                    display: block;
+                }
+
+                    .lib-nav-links .nav-item a:hover,
+                    .lib-nav-links .nav-item a.active {
+                        color: var(--gold);
+                    }
+
+            .lib-nav-auth {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .btn-nav-login {
+                font-size: 0.75rem;
+                font-weight: 600;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                background: transparent;
+                border: 1px solid var(--ink);
+                color: var(--ink);
+                padding: 0.45rem 1.25rem;
+                transition: all 0.25s;
+                cursor: pointer;
+                text-decoration: none;
+            }
+
+                .btn-nav-login:hover {
+                    background: var(--ink);
+                    color: var(--white);
+                }
+
+            .btn-nav-gold {
+                font-size: 0.75rem;
+                font-weight: 600;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                background: var(--gold);
+                border: 1px solid var(--gold);
+                color: var(--white);
+                padding: 0.45rem 1.25rem;
+                transition: all 0.25s;
+                cursor: pointer;
+                text-decoration: none;
+            }
+
+                .btn-nav-gold:hover {
+                    background: var(--gold-dark);
+                    border-color: var(--gold-dark);
+                    color: var(--white);
+                }
+
+            /* ── DASHBOARD SIDEBAR ────────────────────────────────── */
+            .dash-wrapper {
+                display: flex;
+                min-height: 100vh;
+            }
+
+            .dash-sidebar {
+                width: var(--sidebar-w);
+                background: var(--sidebar-bg);
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+                z-index: 200;
+            }
+
+            .sidebar-brand {
+                padding: 1.8rem 1.5rem 1.2rem;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+            }
+
+                .sidebar-brand .brand-text {
+                    font-family: 'Cormorant Garamond', serif;
+                    font-size: 1.35rem;
+                    font-weight: 700;
+                    letter-spacing: 2px;
+                    text-transform: uppercase;
+                    color: var(--white);
+                }
+
+                    .sidebar-brand .brand-text span {
+                        color: var(--gold);
+                    }
+
+                .sidebar-brand .brand-sub {
+                    font-size: 0.65rem;
+                    letter-spacing: 2px;
+                    text-transform: uppercase;
+                    color: rgba(255,255,255,0.35);
+                    margin-top: 2px;
+                }
+
+            .sidebar-section-label {
+                font-size: 0.6rem;
+                letter-spacing: 2.5px;
+                text-transform: uppercase;
+                color: rgba(255,255,255,0.3);
+                padding: 1.4rem 1.5rem 0.5rem;
+                font-weight: 600;
+            }
+
+            .sidebar-nav {
+                list-style: none;
+                padding: 0 0.75rem;
+                margin: 0;
+            }
+
+                .sidebar-nav li a {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    padding: 0.65rem 0.85rem;
+                    color: rgba(255,255,255,0.65);
+                    font-size: 0.8rem;
+                    font-weight: 500;
+                    letter-spacing: 0.5px;
+                    border-radius: 4px;
+                    transition: all 0.2s;
+                    text-decoration: none;
+                    margin-bottom: 2px;
+                }
+
+                    .sidebar-nav li a:hover,
+                    .sidebar-nav li a.active {
+                        background: rgba(197,168,128,0.15);
+                        color: var(--gold);
+                    }
+
+                    .sidebar-nav li a i {
+                        width: 18px;
+                        font-size: 0.85rem;
+                        text-align: center;
+                    }
+
+                    .sidebar-nav li a .badge-count {
+                        margin-left: auto;
+                        background: var(--gold);
+                        color: var(--white);
+                        font-size: 0.65rem;
+                        padding: 1px 7px;
+                        border-radius: 10px;
+                        font-weight: 700;
+                    }
+
+            .sidebar-divider {
+                border: none;
+                border-top: 1px solid rgba(255,255,255,0.06);
+                margin: 0.75rem 1.5rem;
+            }
+
+            .sidebar-footer {
+                margin-top: auto;
+                padding: 1rem 1.5rem;
+                border-top: 1px solid rgba(255,255,255,0.08);
+            }
+
+                .sidebar-footer .user-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                }
+
+            .sidebar-avatar {
+                width: 34px;
+                height: 34px;
+                background: var(--gold);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: var(--white);
+                text-transform: uppercase;
+                flex-shrink: 0;
+            }
+
+            .sidebar-user-name {
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: var(--white);
+            }
+
+            .sidebar-user-role {
+                font-size: 0.65rem;
+                color: var(--gold);
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            /* ── DASHBOARD MAIN CONTENT ───────────────────────────── */
+            .dash-main {
+                margin-left: var(--sidebar-w);
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+
+            .dash-topbar {
+                background: var(--white);
+                border-bottom: 1px solid var(--border);
+                padding: 0 2rem;
+                height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+
+                .dash-topbar .page-title {
+                    font-family: 'Cormorant Garamond', serif;
+                    font-size: 1.3rem;
+                    font-weight: 600;
+                    color: var(--ink);
+                    margin: 0;
+                }
+
+                .dash-topbar .topbar-actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                }
+
+            .topbar-date {
+                font-size: 0.75rem;
+                color: var(--ash);
+                letter-spacing: 0.5px;
+            }
+
+            .dash-content {
+                padding: 2rem;
+                flex: 1;
+            }
+
+            /* ── PUBLIC PAGE CONTENT ──────────────────────────────── */
+            .public-content {
+                min-height: calc(100vh - 68px);
+            }
+
+            /* ── SHARED COMPONENTS ────────────────────────────────── */
+
+            /* Buttons */
+            .btn-ink {
+                background: var(--ink);
+                color: var(--white);
+                border: 1px solid var(--ink);
+                padding: 0.6rem 1.5rem;
+                font-size: 0.78rem;
+                font-weight: 600;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                transition: all 0.25s;
+                display: inline-block;
+                cursor: pointer;
+                text-decoration: none;
+                border-radius: 0;
+            }
+
+                .btn-ink:hover {
+                    background: var(--gold);
+                    border-color: var(--gold);
+                    color: var(--white);
+                }
+
+            .btn-gold {
+                background: var(--gold);
+                color: var(--white);
+                border: 1px solid var(--gold);
+                padding: 0.6rem 1.5rem;
+                font-size: 0.78rem;
+                font-weight: 600;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                transition: all 0.25s;
+                display: inline-block;
+                cursor: pointer;
+                text-decoration: none;
+                border-radius: 0;
+            }
+
+                .btn-gold:hover {
+                    background: var(--gold-dark);
+                    border-color: var(--gold-dark);
+                    color: var(--white);
+                }
+
+            .btn-ghost {
+                background: transparent;
+                color: var(--ink);
+                border: 1px solid var(--border);
+                padding: 0.6rem 1.5rem;
+                font-size: 0.78rem;
+                font-weight: 600;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                transition: all 0.25s;
+                display: inline-block;
+                cursor: pointer;
+                text-decoration: none;
+                border-radius: 0;
+            }
+
+                .btn-ghost:hover {
+                    border-color: var(--ink);
+                    color: var(--ink);
+                }
+
+            .btn-danger-outline {
+                background: transparent;
+                color: var(--red-soft);
+                border: 1px solid var(--red-soft);
+                padding: 0.45rem 1rem;
+                font-size: 0.72rem;
+                font-weight: 600;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                transition: all 0.2s;
+                display: inline-block;
+                cursor: pointer;
+                text-decoration: none;
+                border-radius: 0;
+            }
+
+                .btn-danger-outline:hover {
+                    background: var(--red-soft);
+                    color: var(--white);
+                }
+
+            /* Badges */
+            .badge-booksaw {
+                display: inline-block;
+                font-size: 0.68rem;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+                padding: 3px 10px;
+                text-transform: uppercase;
+            }
+
+            .badge-available {
+                background: #e6f4ea;
+                color: #1a6832;
+            }
+
+            .badge-checked-out {
+                background: #fdecea;
+                color: #9c2f2f;
+            }
+
+            .badge-pending {
+                background: #fff8e1;
+                color: #8a6000;
+            }
+
+            .badge-active {
+                background: #e3f2fd;
+                color: #1a5276;
+            }
+
+            .badge-returned {
+                background: #e8f5e9;
+                color: #1a6832;
+            }
+
+            .badge-overdue {
+                background: #fdecea;
+                color: #9c2f2f;
+            }
+
+            .badge-gold {
+                background: var(--gold-light);
+                color: var(--gold-dark);
+            }
+
+            .badge-cancelled {
+                background: #f5f5f5;
+                color: #666;
+            }
+
+            /* Alert strips */
+            .alert-booksaw {
+                border-radius: 0;
+                border-width: 1px 1px 1px 4px;
+                font-size: 0.88rem;
+                padding: 0.85rem 1rem;
+                margin-bottom: 1.25rem;
+            }
+
+                .alert-booksaw.success {
+                    background: #f4fdf6;
+                    border-color: #6bcf8a;
+                    border-left-color: var(--green-soft);
+                    color: #1a5e2e;
+                }
+
+                .alert-booksaw.error {
+                    background: #fdf4f4;
+                    border-color: #f5a0a0;
+                    border-left-color: var(--red-soft);
+                    color: #7a1f1f;
+                }
+
+                .alert-booksaw.info {
+                    background: #faf7f1;
+                    border-color: #e8d8b4;
+                    border-left-color: var(--gold);
+                    color: #5a4010;
+                }
+
+            /* Cards */
+            .lib-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                padding: 1.75rem;
+            }
+
+            /* Tables */
+            .lib-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.875rem;
+            }
+
+                .lib-table th {
+                    background: var(--ink);
+                    color: var(--white);
+                    font-family: 'Jost', sans-serif;
+                    font-size: 0.68rem;
+                    font-weight: 600;
+                    letter-spacing: 1.5px;
+                    text-transform: uppercase;
+                    padding: 0.85rem 1rem;
+                    text-align: left;
+                }
+
+                .lib-table td {
+                    padding: 0.85rem 1rem;
+                    border-bottom: 1px solid #f0ede8;
+                    vertical-align: middle;
+                    color: var(--ink-soft);
+                }
+
+                .lib-table tbody tr:hover td {
+                    background: #faf9f6;
+                }
+
+            /* Stat cards (dashboard) */
+            .stat-tile {
+                background: var(--white);
+                border: 1px solid var(--border);
+                padding: 1.5rem;
+                display: flex;
+                align-items: center;
+                gap: 1.25rem;
+                transition: transform 0.2s, box-shadow 0.2s;
+                text-decoration: none;
+            }
+
+                .stat-tile:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+                    color: inherit;
+                }
+
+                .stat-tile .stat-icon {
+                    width: 52px;
+                    height: 52px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.3rem;
+                    flex-shrink: 0;
+                }
+
+                .stat-tile .stat-body {
+                    flex: 1;
+                }
+
+                .stat-tile .stat-value {
+                    font-family: 'Cormorant Garamond', serif;
+                    font-size: 2rem;
+                    font-weight: 700;
+                    line-height: 1;
+                    color: var(--ink);
+                }
+
+                .stat-tile .stat-label {
+                    font-size: 0.7rem;
+                    font-weight: 600;
+                    letter-spacing: 1.5px;
+                    text-transform: uppercase;
+                    color: var(--ash);
+                    margin-top: 3px;
+                }
+
+            /* Section headers */
+            .section-eyebrow {
+                font-size: 1.5rem;
+                font-weight: 600;
+                letter-spacing: 2.5px;
+                text-transform: uppercase;
+                color: var(--gold);
+                display: block;
+                margin-bottom: 4px;
+            }
+
+            .section-title {
+                font-family: 'Cormorant Garamond', serif;
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: var(--ink);
+                margin: 0;
+            }
+
+            /* Forms */
+            .lib-form-control {
+                width: 100%;
+                border: 1px solid var(--border);
+                background: var(--white);
+                padding: 0.65rem 0.9rem;
+                font-family: 'Jost', sans-serif;
+                font-size: 0.875rem;
+                color: var(--ink);
+                border-radius: 0;
+                transition: border-color 0.2s;
+            }
+
+                .lib-form-control:focus {
+                    outline: none;
+                    border-color: var(--gold);
+                    box-shadow: none;
+                }
+
+            .lib-form-label {
+                font-size: 0.7rem;
+                font-weight: 600;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: var(--ash);
+                margin-bottom: 6px;
+                display: block;
+            }
+
+            /* Footer */
+            .lib-footer {
+                background: var(--ink);
+                color: rgba(255,255,255,0.4);
+                text-align: center;
+                padding: 1.5rem;
+                font-size: 0.75rem;
+                letter-spacing: 0.5px;
+            }
+
+                .lib-footer span {
+                    color: var(--gold);
+                }
+
+            /* Responsive */
+            @@media (max-width: 991px) {
+                .dash-sidebar {
+                    transform: translateX(-100%);
+                    transition: transform 0.3s;
+                }
+
+                    .dash-sidebar.open {
+                        transform: translateX(0);
+                    }
+
+                .dash-main {
+                    margin-left: 0;
+                }
+            }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    @{
+        bool isDashboardUser = User.IsInRole("Admin") || User.IsInRole("Librarian");
+    }
+
+    @if (isDashboardUser)
+    {
+        <!-- ══════════════════════════════════════════════════════
+         MANAGEMENT DASHBOARD LAYOUT (Admin / Librarian)
+    ══════════════════════════════════════════════════════ -->
+        <div class="dash-wrapper">
+
+            <!-- SIDEBAR -->
+            <aside class="dash-sidebar" id="dashSidebar">
+
+                <div class="sidebar-brand">
+                    <div class="brand-text">MAK<span>TBA</span></div>
+                    <div class="brand-sub">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <text>System Administrator</text>
+                        }
+                        else
+                        {
+
+                            <text>Library Desk</text>
+                        }
+                    </div>
+                </div>
+
+                <!-- CORE WORKFLOW -->
+                <p class="sidebar-section-label">Daily Workflow</p>
+                <ul class="sidebar-nav">
+                    <li>
+                        <a asp-controller="Admin" asp-action="Index">
+                            <i class="fa-solid fa-gauge-high"></i> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="BorrowingRecords" asp-action="Pending">
+                            <i class="fa-solid fa-hourglass-half"></i> Pending Requests
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="BorrowingRecords" asp-action="Index">
+                            <i class="fa-solid fa-book-open"></i> Active Borrows
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Reservations" asp-action="Index">
+                            <i class="fa-solid fa-bookmark"></i> Reservation Queue
+                        </a>
+                    </li>
+                </ul>
+
+                <hr class="sidebar-divider" />
+
+                <!-- CATALOG -->
+                <p class="sidebar-section-label">Catalog</p>
+                <ul class="sidebar-nav">
+                    <li>
+                        <a asp-controller="Books" asp-action="Index">
+                            <i class="fa-solid fa-books"></i> Books
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Author" asp-action="Index">
+                            <i class="fa-solid fa-feather-pointed"></i> Authors
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Category" asp-action="Index">
+                            <i class="fa-solid fa-tags"></i> Categories
+                        </a>
+                    </li>
+                </ul>
+
+                <hr class="sidebar-divider" />
+
+                <!-- FINANCE & MEMBERS -->
+                <p class="sidebar-section-label">Finance & Members</p>
+                <ul class="sidebar-nav">
+                    <li>
+                        <a asp-controller="Transaction" asp-action="Index">
+                            <i class="fa-solid fa-receipt"></i> Transactions
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="SubscriptionPlan" asp-action="Index">
+                            <i class="fa-solid fa-id-card"></i> Subscription Plans
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="UserSubscription" asp-action="Index">
+                            <i class="fa-solid fa-users"></i> Member Subscriptions
+                        </a>
+                    </li>
+                </ul>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <hr class="sidebar-divider" />
+                    <p class="sidebar-section-label">Administration</p>
+                    <ul class="sidebar-nav">
+                        <li>
+                            <a asp-controller="Admin" asp-action="ManageLibrarians">
+                                <i class="fa-solid fa-user-tie"></i> Manage Librarians
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Admin" asp-action="ManageRoles">
+                                <i class="fa-solid fa-shield-halved"></i> Roles & Access
+                            </a>
+                        </li>
+                    </ul>
+                }
+
+                <hr class="sidebar-divider" />
+
+                <!-- FOOTER -->
+                <div class="sidebar-footer">
+                    <div class="user-info">
+                        <div class="sidebar-avatar">
+                            @(User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "L")
+                        </div>
+                        <div>
+                            <div class="sidebar-user-name">@User.Identity?.Name</div>
+                            <div class="sidebar-user-role">
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <text>Administrator</text>
+                                }
+                                else
+                                {
+
+                                    <text>Librarian</text>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:1rem">
+                        <a asp-controller="Account" asp-action="Logout"
+                           style="font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);text-decoration:none;">
+                            <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
+                        </a>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- MAIN -->
+            <div class="dash-main">
+                <div class="dash-topbar">
+                    <div style="display:flex;align-items:center;gap:1rem">
+                        <button class="d-lg-none" id="sidebarToggle"
+                                style="background:none;border:none;font-size:1.2rem;cursor:pointer;">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                        <h1 class="page-title">@(ViewData["Title"] ?? "Dashboard")</h1>
+                    </div>
+                    <div class="topbar-actions">
+                        <span class="topbar-date">
+                            <i class="fa-regular fa-calendar me-1"></i>
+                            @DateTime.Now.ToString("MMMM dd, yyyy")
+                        </span>
+                        <a asp-controller="Books" asp-action="Index"
+                           style="font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--ash);">
+                            <i class="fa-solid fa-store me-1"></i>View Catalog
+                        </a>
+                    </div>
+                </div>
+
+                <div class="dash-content">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert-booksaw success">
+                            <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+                        </div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert-booksaw error">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>@TempData["ErrorMessage"]
+                        </div>
+                    }
+
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- ══════════════════════════════════════════════════════
+         PUBLIC LIBRARY WEBSITE (User / Guest)
+    ══════════════════════════════════════════════════════ -->
+        <nav class="lib-navbar">
+            <div class="container-fluid">
+
+                <a asp-controller="Home" asp-action="Index" class="lib-brand">
+                    MAK<span>TBA</span>
+                </a>
+
+                <ul class="lib-nav-links d-none d-lg-flex">
+                    <li class="nav-item">
+                        <a asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="Books" asp-action="Index">Catalog</a>
+                    </li>
+                    @* <li class="nav-item">
+                        <a asp-controller="Category" asp-action="Index">Categories</a>
+                    </li> *@
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item">
+                            <a asp-controller="Reservations" asp-action="Index">My Reservations</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="BorrowingRecords" asp-action="Index">My Borrows</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="UserSubscription" asp-action="Plans">Subscriptions</a>
+                        </li>
+                    }
+                </ul>
+
+                <div class="lib-nav-auth">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <span style="font-size:0.75rem;color:var(--ash);margin-right:0.5rem;">
+                            <i class="fa-regular fa-user me-1"></i>@User.Identity.Name
+                        </span>
+                        <a asp-controller="Account" asp-action="Logout" class="btn-nav-login">
+                            Sign Out
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn-nav-login">
+                            Sign In
+                        </a>
+                        <a asp-controller="Account" asp-action="Register" class="btn-nav-gold">
+                            Join Library
+                        </a>
+                    }
+                </div>
+            </div>
+        </nav>
+
+        <div class="public-content">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="container pt-3">
+                    <div class="alert-booksaw success">
+                        <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+                    </div>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="container pt-3">
+                    <div class="alert-booksaw error">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>@TempData["ErrorMessage"]
+                    </div>
+                </div>
+            }
+
+            @RenderBody()
+        </div>
+
+        <footer class="lib-footer">
+            © @DateTime.Now.Year <span>MAKTBA</span> Library Management System
+        </footer>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar toggle for mobile
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('dashSidebar');
+        if (toggle && sidebar) {
+        toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+        }
+
+        // Mark active sidebar link
+        const currentPath = window.location.pathname.toLowerCase();
+        document.querySelectorAll('.sidebar-nav a').forEach(link => {
+        if (link.getAttribute('href') &&
+        currentPath.startsWith(link.getAttribute('href').toLowerCase())) {
+        link.classList.add('active');
+        }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

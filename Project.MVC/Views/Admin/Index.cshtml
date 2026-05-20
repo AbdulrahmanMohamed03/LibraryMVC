@@ -1,211 +1,362 @@
-﻿@using Project.Application.ViewModels.Admin
+﻿
+
+@using Project.Application.ViewModels.Admin
 @model AdminDashboardVM
 
 @{
-    ViewData["Title"] = "Admin Dashboard";
+    ViewData["Title"] = "Dashboard";
 }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <style>
-    .dashboard-card {
-        border-radius: 12px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        overflow: hidden;
-        border: none;
+    .dash-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        margin-bottom: 2rem;
     }
 
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    .stat-tile-inner {
+        background: var(--white);
+        padding: 1.75rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        transition: background 0.2s;
+    }
+
+        .stat-tile-inner:hover {
+            background: #faf9f6;
         }
 
-    .icon-wrapper {
-        width: 60px;
-        height: 60px;
+    .tile-icon-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .tile-icon {
+        width: 44px;
+        height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .tile-val {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.6rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1;
+    }
+
+    .tile-lbl {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--ash);
+    }
+
+    .tile-sub {
+        font-size: 0.72rem;
+        color: var(--gold);
+        margin-top: 2px;
+    }
+
+    .activity-panel {
+        background: var(--white);
+        border: 1px solid var(--border);
+    }
+
+    .panel-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .panel-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .panel-body {
+        padding: 0;
+    }
+
+    .activity-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f5f3ef;
+    }
+
+        .activity-row:last-child {
+            border-bottom: none;
+        }
+
+    .activity-dot {
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        font-size: 1.5rem;
-        background-color: rgba(255, 255, 255, 0.2);
+        flex-shrink: 0;
     }
 
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    .dot-gold {
+        background: var(--gold);
     }
 
-    .bg-gradient-success {
-        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+    .dot-green {
+        background: #27ae60;
     }
 
-    .bg-gradient-warning {
-        background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);
+    .dot-red {
+        background: #c0392b;
     }
 
-    .bg-gradient-danger {
-        background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+    .dot-blue {
+        background: #2980b9;
     }
 
-    .bg-gradient-info {
-        background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);
+    .activity-text {
+        flex: 1;
+        font-size: 0.85rem;
+        color: var(--ink-soft);
     }
 
-    .bg-gradient-purple {
-        background: linear-gradient(135deg, #6f42c1 0%, #4e2d8a 100%);
+    .activity-value {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--ink);
     }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+        background: var(--border);
+        border: 1px solid var(--border);
+    }
+
+    .qa-btn {
+        background: var(--white);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        text-decoration: none;
+        color: var(--ink);
+        transition: background 0.2s;
+    }
+
+        .qa-btn:hover {
+            background: #faf9f6;
+            color: var(--gold);
+        }
+
+        .qa-btn i {
+            font-size: 1rem;
+            color: var(--gold);
+            width: 20px;
+        }
+
+        .qa-btn span {
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
 </style>
 
-<div class="container-fluid mt-4 px-4">
+<!-- STAT TILES -->
+<div class="dash-grid">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-gray-800 fw-bold">Library Dashboard</h2>
-        <span class="text-muted">
-            <i class="fas fa-calendar-alt me-2"></i>@DateTime.Now.ToString("MMMM dd, yyyy")
-        </span>
+    <a href="@Url.Action("Index", "Books")" class="text-decoration-none" style="display:contents">
+        <div class="stat-tile-inner">
+            <div class="tile-icon-row">
+                <div class="tile-val">@Model.BooksCount</div>
+                <div class="tile-icon" style="background:var(--gold-light);">
+                    <i class="fa-solid fa-books" style="color:var(--gold-dark)"></i>
+                </div>
+            </div>
+            <div class="tile-lbl">Total Books</div>
+        </div>
+    </a>
+
+    <a href="@Url.Action("Pending", "BorrowingRecords")" class="text-decoration-none" style="display:contents">
+        <div class="stat-tile-inner">
+            <div class="tile-icon-row">
+                <div class="tile-val">@Model.PendingBorrowsCount</div>
+                <div class="tile-icon" style="background:#fff8e1;">
+                    <i class="fa-solid fa-hourglass-half" style="color:#d4a017"></i>
+                </div>
+            </div>
+            <div class="tile-lbl">Pending Requests</div>
+            @if (Model.PendingBorrowsCount > 0)
+            {
+                <div class="tile-sub"><i class="fa-solid fa-triangle-exclamation me-1"></i>Needs approval</div>
+            }
+        </div>
+    </a>
+
+    <a href="@Url.Action("Index", "Reservations")" class="text-decoration-none" style="display:contents">
+        <div class="stat-tile-inner">
+            <div class="tile-icon-row">
+                <div class="tile-val">@Model.ReservationsCount</div>
+                <div class="tile-icon" style="background:#fdecea;">
+                    <i class="fa-solid fa-bookmark" style="color:#c0392b"></i>
+                </div>
+            </div>
+            <div class="tile-lbl">Reservations</div>
+            @if (Model.ReadyReservationsCount > 0)
+            {
+                <div class="tile-sub"><i class="fa-solid fa-circle-check me-1"></i>@Model.ReadyReservationsCount ready for pickup</div>
+            }
+        </div>
+    </a>
+
+    <a href="@Url.Action("Index", "Transaction")" class="text-decoration-none" style="display:contents">
+        <div class="stat-tile-inner">
+            <div class="tile-icon-row">
+                <div class="tile-val">$@Model.TotalIncome.ToString("N0")</div>
+                <div class="tile-icon" style="background:#e8f5e9;">
+                    <i class="fa-solid fa-dollar-sign" style="color:#27ae60"></i>
+                </div>
+            </div>
+            <div class="tile-lbl">Total Income</div>
+        </div>
+    </a>
+
+    <a href="@Url.Action("Index", "Category")" class="text-decoration-none" style="display:contents">
+        <div class="stat-tile-inner">
+            <div class="tile-icon-row">
+                <div class="tile-val">@Model.CategoriesCount</div>
+                <div class="tile-icon" style="background:#e3f2fd;">
+                    <i class="fa-solid fa-tags" style="color:#2980b9"></i>
+                </div>
+            </div>
+            <div class="tile-lbl">Categories</div>
+        </div>
+    </a>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <a href="@Url.Action("ManageLibrarians", "Admin")" class="text-decoration-none" style="display:contents">
+            <div class="stat-tile-inner">
+                <div class="tile-icon-row">
+                    <div class="tile-val">@Model.LibrariansCount</div>
+                    <div class="tile-icon" style="background:#f3e5f5;">
+                        <i class="fa-solid fa-user-tie" style="color:#7b1fa2"></i>
+                    </div>
+                </div>
+                <div class="tile-lbl">Librarians</div>
+            </div>
+        </a>
+    }
+
+</div>
+
+<!-- LOWER ROW -->
+<div class="row g-4">
+
+    <!-- ACTIVITY SNAPSHOT -->
+    <div class="col-lg-7">
+        <div class="activity-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">System Overview</h3>
+                <span style="font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--ash)">
+                    @DateTime.Now.ToString("MMM dd, yyyy")
+                </span>
+            </div>
+            <div class="panel-body">
+                <div class="activity-row">
+                    <div class="activity-dot dot-gold"></div>
+                    <div class="activity-text">Books in the catalog</div>
+                    <div class="activity-value">@Model.BooksCount</div>
+                </div>
+                <div class="activity-row">
+                    <div class="activity-dot dot-blue"></div>
+                    <div class="activity-text">Reservation queue entries</div>
+                    <div class="activity-value">@Model.ReservationsCount</div>
+                </div>
+                <div class="activity-row">
+                    <div class="activity-dot dot-green"></div>
+                    <div class="activity-text">Ready for pickup</div>
+                    <div class="activity-value">@Model.ReadyReservationsCount</div>
+                </div>
+                <div class="activity-row">
+                    <div class="activity-dot dot-red"></div>
+                    <div class="activity-text">Pending borrow approval</div>
+                    <div class="activity-value">@Model.PendingBorrowsCount</div>
+                </div>
+                <div class="activity-row">
+                    <div class="activity-dot dot-gold"></div>
+                    <div class="activity-text">Total library income recorded</div>
+                    <div class="activity-value">$@Model.TotalIncome.ToString("N0")</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="row">
+    <!-- QUICK ACTIONS -->
+    <div class="col-lg-5">
+        <div style="margin-bottom:1rem">
+            <span class="section-eyebrow">Shortcuts</span>
+            <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;margin:0">
+                Quick Actions
+            </h3>
+        </div>
 
-        <!-- Categories -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <a href="@Url.Action("Index", "Category")" class="text-decoration-none">
-                <div class="card dashboard-card shadow-sm text-white bg-gradient-primary">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Categories</p>
-                                <h2 class="mb-0 fw-bold">@Model.CategoriesCount</h2>
-                            </div>
-                            <div class="icon-wrapper">
-                                <i class="fas fa-tags"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="quick-actions">
+            <a asp-controller="Books" asp-action="Create" class="qa-btn">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add New Book</span>
+            </a>
+            <a asp-controller="BorrowingRecords" asp-action="Pending" class="qa-btn">
+                <i class="fa-solid fa-check-double"></i>
+                <span>Approve Borrows</span>
+            </a>
+            <a asp-controller="Reservations" asp-action="Index" class="qa-btn">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Manage Queue</span>
+            </a>
+            <a asp-controller="Author" asp-action="Create" class="qa-btn">
+                <i class="fa-solid fa-feather"></i>
+                <span>Add Author</span>
+            </a>
+            <a asp-controller="Category" asp-action="Create" class="qa-btn">
+                <i class="fa-solid fa-tag"></i>
+                <span>Add Category</span>
+            </a>
+            <a asp-controller="Transaction" asp-action="Index" class="qa-btn">
+                <i class="fa-solid fa-receipt"></i>
+                <span>View Transactions</span>
             </a>
         </div>
 
-        <!-- Books -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <a href="@Url.Action("Index", "Books")" class="text-decoration-none">
-                <div class="card dashboard-card shadow-sm text-white bg-gradient-success">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Books</p>
-                                <h2 class="mb-0 fw-bold">@Model.BooksCount</h2>
-                            </div>
-                            <div class="icon-wrapper">
-                                <i class="fas fa-book-open"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Librarians (Admin Only) -->
         @if (User.IsInRole("Admin"))
         {
-            <div class="col-xl-3 col-md-6 mb-4">
-                <a href="@Url.Action("ManageLibrarians", "Admin")" class="text-decoration-none">
-                    <div class="card dashboard-card shadow-sm text-white bg-gradient-warning">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Librarians</p>
-                                    <h2 class="mb-0 fw-bold">@Model.LibrariansCount</h2>
-                                </div>
-                                <div class="icon-wrapper">
-                                    <i class="fas fa-user-tie"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+            <div style="margin-top:1.5rem">
+                <div class="quick-actions">
+                    <a asp-controller="Admin" asp-action="CreateLibrarian" class="qa-btn">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Add Librarian</span>
+                    </a>
+                    <a asp-controller="Admin" asp-action="ManageRoles" class="qa-btn">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Manage Roles</span>
+                    </a>
+                </div>
             </div>
         }
-
-        <!-- Reservations -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <a href="@Url.Action("Index", "Reservations")" class="text-decoration-none">
-                <div class="card dashboard-card shadow-sm text-white bg-gradient-danger">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Reservations</p>
-                                <h2 class="mb-0 fw-bold">@Model.ReservationsCount</h2>
-                            </div>
-                            <div class="icon-wrapper">
-                                <i class="fas fa-bookmark"></i>
-                            </div>
-                        </div>
-
-                        @if (Model.ReadyReservationsCount > 0)
-                        {
-                            <div class="mt-2">
-                                <span class="badge bg-white text-dark fw-semibold">
-                                    ✅ @Model.ReadyReservationsCount Ready for Pickup
-                                </span>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Total Income -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <a href="@Url.Action("Index", "Transaction")" class="text-decoration-none">
-                <div class="card dashboard-card shadow-sm text-white bg-gradient-info">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Total Income</p>
-                                <h2 class="mb-0 fw-bold">$@Model.TotalIncome</h2>
-                            </div>
-                            <div class="icon-wrapper">
-                                <i class="fas fa-dollar-sign"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Pending Borrow Requests (Admin + Librarian) -->
-        @if (User.IsInRole("Admin") || User.IsInRole("Librarian"))
-        {
-            <div class="col-xl-3 col-md-6 mb-4">
-                <a href="@Url.Action("Pending", "BorrowingRecords")" class="text-decoration-none">
-                    <div class="card dashboard-card shadow-sm text-white bg-gradient-purple">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p class="mb-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">
-                                        Pending Requests
-                                    </p>
-                                    <h2 class="mb-0 fw-bold">@Model.PendingBorrowsCount</h2>
-                                </div>
-                                <div class="icon-wrapper">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                            </div>
-
-                            @if (Model.PendingBorrowsCount > 0)
-                            {
-                                <div class="mt-2">
-                                    <span class="badge bg-white text-dark fw-semibold">
-                                        ⚠ Needs Approval
-                                    </span>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </a>
-            </div>
-        }
-
     </div>
+
 </div>

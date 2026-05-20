@@ -26,16 +26,28 @@ namespace Project.MVC.Controllers
             return View(userRecords);
         }
 
-        public IActionResult Details(int id)
-        {
-            var record = _borrowingService.GetDetails(id);
-            if (record == null)
-            {
-                return NotFound();
-            }
-            return View(record);
-        }
+        //public IActionResult Details(int id)
+        //{
+        //    var record = _borrowingService.GetDetails(id);
+        //    if (record == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(record);
+        //}
 
+        public IActionResult Details(int id, string returnUrl = null)
+        {
+
+            var model =  _borrowingService.GetDetails(id);
+
+            if (model == null) return NotFound();
+
+            
+            ViewBag.ReturnUrl = returnUrl;
+
+            return View(model);
+        }
         [HttpPost]
         public async Task<IActionResult> BorrowBook(int bookId)
         {

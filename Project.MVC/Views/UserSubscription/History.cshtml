@@ -1,53 +1,177 @@
-﻿@model IEnumerable<Project.Application.ViewModels.UserSubscription.UserSubscriptionVM>
+﻿
+
+@model IEnumerable<Project.Application.ViewModels.UserSubscription.UserSubscriptionVM>
 
 @{
     ViewData["Title"] = "Subscription History";
 }
 
-<h2 class="mb-4">Subscription History</h2>
-<a asp-action="Index" class="btn btn-secondary mb-3">Back to My Subscription</a>
+<style>
+    /* Page Header Styling */
+    .history-page-title {
+        font-family: 'Cormorant Garamond', serif !important;
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+        color: var(--ink) !important;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem !important;
+    }
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">
-        No subscription history found.
-    </div>
-}
-else
-{
-    <div class="row">
-        @foreach (var sub in Model)
-        {
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm border-0 rounded-3">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold @(sub.IsActive ? "text-success" : "text-secondary")">
-                            @sub.PlanName
-                        </h5>
-                        <hr />
-                        <p class="card-text mb-1">
-                            <strong>Fee:</strong> @sub.MonthlyFee.ToString("C")
-                        </p>
-                        <p class="card-text mb-1">
-                            <strong>Start:</strong> @sub.StartDate.ToString("MMM dd, yyyy")
-                        </p>
-                        <p class="card-text mb-1">
-                            <strong>End:</strong> @sub.EndDate.ToString("MMM dd, yyyy")
-                        </p>
-                        <p class="card-text mb-0">
-                            <strong>Status:</strong>
-                            @if (sub.IsActive)
-                            {
-                                <span class="badge bg-success">Active</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">Cancelled / Expired</span>
-                            }
-                        </p>
+    /* Back Button Styling */
+    .custom-history-wrapper .btn-secondary {
+        display: inline-block !important;
+        background: transparent !important;
+        color: var(--ash) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 0 !important;
+        padding: 0.6rem 1.2rem !important;
+        font-size: 0.7rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 1.5px !important;
+        text-transform: uppercase !important;
+        transition: all .2s;
+        box-shadow: none !important;
+    }
+
+        .custom-history-wrapper .btn-secondary:hover {
+            background: var(--cream) !important;
+            color: var(--ink) !important;
+            border-color: var(--ash) !important;
+        }
+
+    /* Card Layout System */
+    .custom-history-wrapper {
+        padding: 1.5rem 0 4rem;
+    }
+
+        .custom-history-wrapper .card {
+            border: 1px solid var(--border) !important;
+            border-radius: 0px !important;
+            box-shadow: none !important;
+            background: var(--white);
+            padding: 2.2rem 1.8rem 1.5rem !important;
+            height: 100%;
+            transition: border-color 0.2s;
+        }
+
+            .custom-history-wrapper .card:hover {
+                border-color: var(--ash) !important;
+            }
+
+        /* Card Title & Conditional Coloring Controls */
+        .custom-history-wrapper .card-title {
+            font-family: 'Cormorant Garamond', serif !important;
+            font-size: 1.4rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem !important;
+        }
+
+            /* Keep logic text-classes intact but control color weight */
+            .custom-history-wrapper .card-title.text-success {
+                color: #1a6832 !important;
+            }
+
+            .custom-history-wrapper .card-title.text-secondary {
+                color: var(--ash) !important;
+            }
+
+        /* Hide standard horizontal rules */
+        .custom-history-wrapper hr {
+            display: none !important;
+        }
+
+        /* Data Rows Setup */
+        .custom-history-wrapper .card-body p {
+            border-top: 1px solid var(--border);
+            padding: 0.9rem 0 !important;
+            margin: 0 !important;
+            font-size: .88rem !important;
+            color: var(--ink-soft) !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+            .custom-history-wrapper .card-body p:last-of-type {
+                border-bottom: 1px solid var(--border);
+            }
+
+            .custom-history-wrapper .card-body p strong {
+                font-size: .65rem !important;
+                font-weight: 700 !important;
+                letter-spacing: 1.2px;
+                text-transform: uppercase;
+                color: var(--ash) !important;
+            }
+
+        /* Status Badges */
+        .custom-history-wrapper .badge {
+            border-radius: 0 !important;
+            padding: 4px 8px !important;
+            font-size: .62rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+            .custom-history-wrapper .badge.bg-success {
+                background-color: #1a6832 !important;
+            }
+
+            .custom-history-wrapper .badge.bg-danger {
+                background-color: #a33c3c !important;
+            }
+</style>
+
+<div class="custom-history-wrapper container">
+    <h2 class="history-page-title">Subscription History</h2>
+    <a asp-action="Index" class="btn btn-secondary mb-3">Back to My Subscription</a>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info" style="border-radius:0; font-size:0.9rem;">
+            No subscription history found.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4" style="margin-top: 0.5rem;">
+            @foreach (var sub in Model)
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold @(sub.IsActive ? "text-success" : "text-secondary")">
+                                @sub.PlanName
+                            </h5>
+                            <hr />
+                            <p class="card-text mb-1">
+                                <strong>Fee:</strong> @sub.MonthlyFee.ToString("C")
+                            </p>
+                            <p class="card-text mb-1">
+                                <strong>Start:</strong> @sub.StartDate.ToString("MMM dd, yyyy")
+                            </p>
+                            <p class="card-text mb-1">
+                                <strong>End:</strong> @sub.EndDate.ToString("MMM dd, yyyy")
+                            </p>
+                            <p class="card-text mb-0">
+                                <strong>Status:</strong>
+                                @if (sub.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Cancelled / Expired</span>
+                                }
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-}
+            }
+        </div>
+    }
+</div>

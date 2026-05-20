@@ -1,30 +1,359 @@
-﻿@model IEnumerable<Project.Application.ViewModels.Author.AuthorDto>
+﻿
 
-<h2>Authors</h2>
+@model IEnumerable<Project.Application.ViewModels.Author.AuthorDto>
 
-<a asp-action="Create" class="btn btn-primary">Create New</a>
+@{
+    ViewData["Title"] = "Authors";
+    Layout = "_Layout";
+}
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Full Name</th>
-            <th>Nationality</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
+<style>
+    .aut-header {
+        padding: 2.5rem 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--cream);
+    }
 
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.FullName</td>
-                <td>@item.Nationality</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
+    .aut-eyebrow {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: .4rem;
+    }
+
+    .aut-page-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+    }
+
+    .aut-table-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+
+    .aut-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .aut-table thead tr {
+            border-bottom: 2px solid var(--gold);
         }
-    </tbody>
-</table>
+
+        .aut-table thead th {
+            padding: .9rem 1.25rem;
+            font-size: .63rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ash);
+            text-align: left;
+            background: var(--cream);
+        }
+
+            .aut-table thead th.r {
+                text-align: right;
+            }
+
+        .aut-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+
+            .aut-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .aut-table tbody tr:hover {
+                background: var(--cream);
+            }
+
+        .aut-table td {
+            padding: 1.1rem 1.25rem;
+            font-size: .88rem;
+            color: var(--ink-soft);
+            vertical-align: middle;
+        }
+
+            .aut-table td.r {
+                text-align: right;
+            }
+
+    .aut-name-wrap {
+        display: flex;
+        align-items: center;
+        gap: .85rem;
+    }
+
+    .aut-monogram {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        background: var(--gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--white);
+    }
+
+    .aut-name {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .aut-bio {
+        font-size: .82rem;
+        color: var(--ash);
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .aut-country {
+        display: inline-block;
+        padding: 2px 8px;
+        border: 1px solid var(--border);
+        background: var(--cream);
+        font-size: .65rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--ash);
+    }
+
+    .aut-books-count {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--gold);
+    }
+
+    .aut-act-view {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ink);
+        text-decoration: none;
+        border-bottom: 1px solid var(--ink);
+        padding-bottom: 1px;
+        transition: color .2s, border-color .2s;
+        margin-right: .65rem;
+    }
+
+        .aut-act-view:hover {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+    .aut-act-edit {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ash);
+        text-decoration: none;
+        border-bottom: 1px solid var(--ash);
+        padding-bottom: 1px;
+        transition: color .2s, border-color .2s;
+        margin-right: .65rem;
+    }
+
+        .aut-act-edit:hover {
+            color: var(--ink);
+            border-color: var(--ink);
+        }
+
+    .aut-act-del {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #b33;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid #b33;
+        padding: 0 0 1px;
+        cursor: pointer;
+        transition: opacity .2s;
+    }
+
+        .aut-act-del:hover {
+            opacity: .65;
+        }
+
+    .search-bar-wrap {
+        display: flex;
+        align-items: center;
+        max-width: 320px;
+        border: 1px solid var(--border);
+        background: var(--white);
+    }
+
+        .search-bar-wrap input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: .6rem 1rem;
+            font-size: .85rem;
+            font-family: 'Jost', sans-serif;
+            color: var(--ink);
+            background: transparent;
+        }
+
+            .search-bar-wrap input::placeholder {
+                color: var(--ash);
+            }
+
+        .search-bar-wrap button {
+            padding: .6rem 1rem;
+            background: var(--gold);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+            .search-bar-wrap button:hover {
+                background: var(--ink);
+            }
+</style>
+
+<div class="aut-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <div class="aut-eyebrow">Admin Panel</div>
+                <h1 class="aut-page-title">Authors</h1>
+            </div>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <div class="search-bar-wrap">
+                    <input type="text" id="autSearch" placeholder="Search authors…" oninput="filterAuthors(this.value)" />
+                    <button type="button"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+                <a asp-action="Create" class="btn-gold">
+                    <i class="fa-solid fa-user-plus me-2"></i>Add Author
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding:2.5rem 0 5rem">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="padding:.9rem 1.25rem;background:#e6f4ea;border-left:3px solid #1a6832;margin-bottom:1.5rem;font-size:.85rem;color:#1a6832;">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div style="padding:.9rem 1.25rem;background:#fdf2f2;border-left:3px solid #b33;margin-bottom:1.5rem;font-size:.85rem;color:#b33;">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="aut-table-wrap">
+        @if (!Model.Any())
+        {
+            <div style="padding:4rem;text-align:center;color:var(--ash)">
+                <i class="fa-solid fa-pen-nib" style="font-size:2rem;color:var(--border);display:block;margin-bottom:1rem"></i>
+                No authors in the system yet.
+                <div style="margin-top:1rem"><a asp-action="Create" class="btn-gold">Add First Author</a></div>
+            </div>
+        }
+        else
+        {
+            <table class="aut-table" id="autTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Author</th>
+                        <th>Country</th>
+                        <th>Biography</th>
+                        <th class="r">Volumes</th>
+                        <th class="r">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int i = 1;
+                    }
+                    @foreach (var author in Model)
+                    {
+                        string initials = string.Join("", author.FullName?.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                              .Take(2).Select(w => w[0].ToString().ToUpper()) ?? new[] { "?" });
+                        <tr class="aut-row">
+                            <td style="color:var(--ash);font-size:.8rem;width:40px">@(i++)</td>
+                            <td>
+                                <div class="aut-name-wrap">
+                                    <div class="aut-monogram">@initials</div>
+                                    <div class="aut-name">@author.FullName</div>
+                                </div>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(author.Nationality))
+                                {
+                                    <span class="aut-country">@author.Nationality</span>
+                                }
+                                else
+                                {
+                                    <span style="color:var(--ash);font-size:.8rem">—</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(author.Bio))
+                                {
+                                    <div class="aut-bio" title="@author.Bio">
+                                        @(author.Bio.Length > 80 ? author.Bio[..80] + "…" : author.Bio)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span style="color:var(--ash);font-size:.8rem">—</span>
+                                }
+                            </td>
+                            <td class="r">
+                                @* <span class="aut-books-count">@author.BooksCount</span> *@
+                            </td>
+                            <td class="r" style="white-space:nowrap">
+                                <a asp-action="Details" asp-route-id="@author.Id" class="aut-act-view">View</a>
+                                <a asp-action="Edit" asp-route-id="@author.Id" class="aut-act-edit">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@author.Id" class="aut-act-del">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+    <div style="margin-top:1rem;font-size:.78rem;color:var(--ash)">
+        @Model.Count() @(Model.Count() == 1 ? "author" : "authors") total indexed
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterAuthors(q) {
+            q = q.toLowerCase();
+            document.querySelectorAll('.aut-row').forEach(r => {
+                const name = r.querySelector('.aut-name')?.textContent.toLowerCase() || '';
+                const country = r.querySelector('.aut-country')?.textContent.toLowerCase() || '';
+                r.style.display = (name.includes(q) || country.includes(q)) ? '' : 'none';
+            });
+        }
+    </script>
+}

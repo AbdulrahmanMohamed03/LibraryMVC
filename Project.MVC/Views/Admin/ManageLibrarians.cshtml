@@ -1,69 +1,155 @@
-﻿@using Project.Application.ViewModels.User
+﻿
+
+@using Project.Application.ViewModels.User
 @model List<LibrariansDataVM>
 
 @{
     ViewData["Title"] = "Manage Librarians";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">Librarians</h2>
-    <table class="table table-bordered table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>Full Name</th>
-                <th>National ID</th>
-                <th>Email</th>
-                <th>Hired At</th>
-                <th>Status</th>
-                <th width="250">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                @foreach (var librarian in Model)
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3" style="margin-bottom: 2.5rem;">
+        <div>
+            <span class="section-eyebrow">Staff Operations</span>
+            <h2 class="section-title" style="font-family: 'Cormorant Garamond', serif; font-size: 2.6rem; font-weight: 700; color: var(--ink); margin: 0;">
+                Registered <strong>Librarians</strong>
+            </h2>
+            <div style="width:48px;height:2px;background:var(--gold);margin-top:0.75rem"></div>
+        </div>
+    </div>
+
+    <div style="border: 1px solid var(--border); background: var(--white); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.03);">
+        <table class="table mb-0" style="vertical-align: middle;">
+            <thead style="background: var(--cream); border-bottom: 1px solid var(--border);">
+                <tr>
+                    <th style="padding: 1.1rem 1.5rem; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ash); border: none;">Full Name</th>
+                    <th style="padding: 1.1rem 1.5rem; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ash); border: none;">National ID</th>
+                    <th style="padding: 1.1rem 1.5rem; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ash); border: none;">Email Address</th>
+                    <th style="padding: 1.1rem 1.5rem; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ash); border: none;">Hired Date</th>
+                    <th style="padding: 1.1rem 1.5rem; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ash); border: none;">Status</th>
+                    <th style="padding: 1.1rem 1.5rem; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ash); border: none; text-align: right;" width="260">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var librarian in Model)
+                    {
+                        <tr id="row-@librarian.UserId" style="border-bottom: 1px solid var(--border); transition: background-color 0.2s;">
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.92rem; font-weight: 700; color: var(--ink);">
+                                <i class="fa-solid fa-user-tie text-muted me-2" style="font-size: 0.85rem;"></i>@librarian.FullName
+                            </td>
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.85rem; color: var(--ink-soft); font-family: monospace;">
+                                @librarian.NationalId
+                            </td>
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.88rem; color: var(--ash);">
+                                @librarian.Email
+                            </td>
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.85rem; color: var(--ink-soft);">
+                                @librarian.HiredAt.ToString("yyyy-MM-dd")
+                            </td>
+                            <td class="status-cell" style="padding: 1.2rem 1.5rem;">
+                                @if (librarian.IsStillWorking)
+                                {
+                                    <span class="csb csb-a" style="font-size: .58rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; padding: 3px 9px; background: #e6f4ea; color: #1a6832;">Active Staff</span>
+                                }
+                                else
+                                {
+                                    <span class="csb csb-o" style="font-size: .58rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; padding: 3px 9px; background: #fdecea; color: #9c2f2f;">Terminated</span>
+                                }
+                            </td>
+                            <td style="padding: 1.2rem 1.5rem; text-align: right;">
+                                <div class="d-inline-flex gap-1 action-container">
+                                    <a href="@Url.Action("LibrarianDetails", "Admin", new { id = librarian.UserId })" class="btn" style="padding: .4rem .7rem; font-size: .65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ink); border: 1px solid var(--border); background: var(--cream); border-radius:0;">
+                                        Info
+                                    </a>
+                                    <a href="@Url.Action("EditLibrarian", "Admin", new { id = librarian.UserId })" class="btn" style="padding: .4rem .7rem; font-size: .65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--white); border: 1px solid var(--ink); background: var(--ink); border-radius:0;">
+                                        Edit
+                                    </a>
+                                    @if (librarian.IsStillWorking)
+                                    {
+                                        <form asp-action="FireLibrarian" asp-route-id="@librarian.UserId" method="post" class="status-toggle-form" style="display:inline; margin:0;">
+                                            <button type="submit" class="btn" style="padding: .4rem .7rem; font-size: .65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #9c2f2f; border: 1px solid rgba(230,70,70,0.15); background: #fdecea; border-radius:0;">
+                                                Fire
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="ReHireLibrarian" asp-route-id="@librarian.UserId" method="post" class="status-toggle-form" style="display:inline; margin:0;">
+                                            <button type="submit" class="btn" style="padding: .4rem .7rem; font-size: .65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #1a6832; border: 1px solid rgba(26,104,50,0.15); background: #e6f4ea; border-radius:0;">
+                                                Rehire
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@librarian.FullName</td>
-                        <td>@librarian.NationalId</td>
-                        <td>@librarian.Email</td>
-                        <td>@librarian.HiredAt.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            @if (librarian.IsStillWorking)
-                            {
-                                <span class="badge bg-success"> Active </span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger"> Fired </span>
-                            }
-                        </td>
-
-                        <td>
-                            <a href="@Url.Action("LibrarianDetails", "Admin", new { id = librarian.UserId })" class="btn btn-info btn-sm"> Details </a>
-                            <a href="@Url.Action("EditLibrarian", "Admin", new { id = librarian.UserId })" class="btn btn-warning btn-sm"> Edit </a>
-                            @if (librarian.IsStillWorking)
-                            {
-                                <form asp-action="FireLibrarian" asp-route-id="@librarian.UserId" method="post" style="display:inline;">
-                                    <button class="btn btn-danger btn-sm"> Fire </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <form asp-action="ReHireLibrarian" asp-route-id="@librarian.UserId" method="post" style="display:inline;">
-                                    <button class="btn btn-success btn-sm">ReHire</button>
-                                </form>
-                            }
+                        <td colspan="6" class="text-center py-5" style="color: var(--ash); background: var(--white);">
+                            <i class="fa-solid fa-users-slash d-block mb-2" style="font-size: 2rem; color: var(--border);"></i>
+                            No library staff matching the description have been stored yet.
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="6" class="text-center"> No librarians found </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).on('submit', '.status-toggle-form', function (e) {
+            e.preventDefault(); // Stop the form from redirecting the browser
+
+            var $form = $(this);
+            var $row = $form.closest('tr');
+            var userId = $row.attr('id').replace('row-', '');
+            var url = $form.attr('action');
+
+            // Visual feedback: briefly fade the row opacity to show execution
+            $row.css('opacity', '0.5');
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: $form.serialize(),
+                success: function () {
+                    // Check if we just fired or rehired to update UI layout elements dynamically
+                    if (url.includes("FireLibrarian")) {
+                        // Change Badge to Terminated
+                        $row.find('.status-cell').html('<span class="csb csb-o" style="font-size: .58rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; padding: 3px 9px; background: #fdecea; color: #9c2f2f;">Terminated</span>');
+
+                        // Switch Fire Form into a ReHire Form inline without refreshing
+                        var rehireUrl = url.replace("FireLibrarian", "ReHireLibrarian");
+                        $form.attr('action', rehireUrl);
+                        $form.find('button')
+                            .text('Rehire')
+                            .css({ 'color': '#1a6832', 'border': '1px solid rgba(26,104,50,0.15)', 'background': '#e6f4ea' });
+                    } else {
+                        // Change Badge to Active Staff
+                        $row.find('.status-cell').html('<span class="csb csb-a" style="font-size: .58rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; padding: 3px 9px; background: #e6f4ea; color: #1a6832;">Active Staff</span>');
+
+                        // Switch ReHire Form into a Fire Form inline without refreshing
+                        var fireUrl = url.replace("ReHireLibrarian", "FireLibrarian");
+                        $form.attr('action', fireUrl);
+                        $form.find('button')
+                            .text('Fire')
+                            .css({ 'color': '#9c2f2f', 'border': '1px solid rgba(230,70,70,0.15)', 'background': '#fdecea' });
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while updating status settings.');
+                },
+                complete: function () {
+                
+                    $row.css('opacity', '1');
+                }
+            });
+        });
+    </script>
+}

@@ -1,63 +1,105 @@
-﻿@model Project.Application.ViewModels.Role.ManageUserRolesVm
+﻿
 
-<h2>Manage User Roles</h2>
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Success"]
+@model Project.Application.ViewModels.Role.ManageUserRolesVm
+
+<div class="container py-5" style="max-width: 900px;">
+    <div style="margin-bottom:2.5rem">
+        <span class="section-eyebrow">Access Control</span>
+        <h2 class="section-title" style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 700; color: var(--ink);">
+            Manage User <strong>Roles</strong>
+        </h2>
+        <div style="width:48px;height:2px;background:var(--gold);margin-top:0.75rem"></div>
     </div>
-}
-<div asp-validation-summary="All" class="text-danger mb-3"></div>
-<form method="post" asp-action="ManageRoles">
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" placeholder="Enter user email" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert-booksaw success mb-4" style="background: #e6f4ea; color: #1a6832; padding: 1rem; border-left: 4px solid #1a6832; font-size: 0.88rem;">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["Success"]
+        </div>
+    }
+
+    <div asp-validation-summary="All" class="text-danger mb-4" style="font-size: 0.88rem; list-style-type: none; padding-left: 0;"></div>
+
+    <div class="booksaw-card mb-5" style="background: var(--white); border: 1px solid var(--border); padding: 2rem;">
+        <h4 style="font-family: 'Cormorant Garamond', serif; font-weight: 700; color: var(--ink); margin-bottom: 1.5rem;">Find Account</h4>
+        <form method="post" asp-action="ManageRoles">
+            <div class="nl-form-wrap" style="display: flex; width: 100%; background-color: var(--white); border: 1px solid var(--border); padding: 0.35rem; transition: border-color 0.25s ease;">
+                <input asp-for="Email" class="nl-input" placeholder="Enter user email address..." style="flex: 1; border: none; background: transparent; padding: 0.75rem 1.25rem; font-size: 0.88rem; color: var(--ink); outline: none;" />
+                <button type="submit" class="nl-btn" style="background-color: var(--ink); color: var(--white); border: none; padding: 0 2rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; transition: all 0.2s;">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i>Search
+                </button>
+            </div>
+            <span asp-validation-for="Email" class="text-danger d-block mt-2" style="font-size:0.78rem;"></span>
+        </form>
     </div>
-    <button type="submit" class="btn btn-primary"> Search </button>
-</form>
-<hr />
-@if (Model.Roles != null && Model.Roles.Any())
-{
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Role Name</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var role in Model.Roles)
-            {
-                <tr>
-                    <td>@role.RoleName</td>
-                    <td>
-                        <form method="post" asp-action="DeleteRole">
-                            <input type="hidden" name="email" value="@Model.Email" />
-                            <input type="hidden" name="roleName" value="@role.RoleName" />
-                            <button type="submit" class="btn btn-danger btn-sm"> Delete </button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else if (!string.IsNullOrEmpty(Model.Email))
-{
-    <div class="alert alert-warning">
-        No roles assigned
-    </div>
-}
-<hr />
-<h4>Add Role</h4>
-<form method="post" asp-action="AddRole">
-    <input type="hidden" asp-for="Email" />
-    <div class="mb-3">
-        <select asp-for="SelectedRole" asp-items="Model.AllRoles" class="form-select">
-            <option value=""> Select Role </option>
-        </select>
-        <span asp-validation-for="SelectedRole" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success"> Add Role </button>
-</form>
+
+    @if (Model.Roles != null && Model.Roles.Any())
+    {
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 700; color: var(--ink);">Assigned Positions</h3>
+        </div>
+
+        <div style="border: 1px solid var(--border); background: var(--white); overflow: hidden; margin-bottom: 4rem;">
+            <table class="table mb-0" style="vertical-align: middle;">
+                <thead style="background: var(--cream-deep); border-bottom: 1px solid var(--border);">
+                    <tr>
+                        <th style="padding: 1rem 1.5rem; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ash); border: none;">Role Name</th>
+                        <th style="padding: 1rem 1.5rem; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ash); border: none; text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var role in Model.Roles)
+                    {
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.9rem; font-weight: 600; color: var(--ink);">
+                                <span style="background: var(--cream); border: 1px solid var(--border); padding: 4px 10px; font-size: 0.8rem; letter-spacing: 0.5px;"><i class="fa-solid fa-user-shield text-muted me-2"></i>@role.RoleName</span>
+                            </td>
+                            <td style="padding: 1.2rem 1.5rem; text-align: right;">
+                                <form method="post" asp-action="DeleteRole" style="display:inline;">
+                                    <input type="hidden" name="email" value="@Model.Email" />
+                                    <input type="hidden" name="roleName" value="@role.RoleName" />
+                                    <button type="submit" class="btn-cr" style="padding: .4rem .9rem; font-size: .65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: transparent; color: #9c2f2f; border: 1px solid #fdecea; background-color: #fdecea; transition: all .2s; border-radius: 0;">
+                                        <i class="fa-solid fa-trash-can me-1"></i> Revoke
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(Model.Email))
+    {
+        <div class="alert-booksaw error mb-5" style="background: #fff3cd; color: #856404; padding: 1rem; border-left: 4px solid #ffc107; font-size: 0.88rem;">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> No security roles are currently allocated to this profile account.
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.Email))
+    {
+        <div class="booksaw-card" style="background: var(--cream); border: 1px solid var(--border); padding: 2.5rem;">
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 700; color: var(--ink); margin: 0;">Elevate System Privileges</h4>
+                <p style="font-size: 0.8rem; color: var(--ash); margin-top: 2px;">Assign a new structural authority role profile targeting: <strong>@Model.Email</strong></p>
+            </div>
+
+            <form method="post" asp-action="AddRole">
+                <input type="hidden" asp-for="Email" />
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-8">
+                        <select asp-for="SelectedRole" asp-items="Model.AllRoles" class="form-select" style="border-radius: 0; border: 1px solid var(--border); padding: 0.75rem 1rem; font-size: 0.88rem; color: var(--ink); outline: none;">
+                            <option value=""> -- Choose Assignable Library Role -- </option>
+                        </select>
+                        <span asp-validation-for="SelectedRole" class="text-danger d-block mt-1" style="font-size:0.78rem;"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn-cd w-100" style="display: block; padding: .75rem 0; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; text-align: center; text-decoration: none; background: var(--ink); color: var(--white); border: 1px solid var(--ink); transition: all .2s; border-radius: 0;">
+                            <i class="fa-solid fa-plus me-2"></i>Authorize Assignment
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    }
+</div>

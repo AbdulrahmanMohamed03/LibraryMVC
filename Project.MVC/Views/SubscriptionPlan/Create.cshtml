@@ -1,39 +1,246 @@
-﻿@model Project.Application.ViewModels.SubscriptionPlan.CreateSubscriptionPlanDTO
+﻿
+@model Project.Application.ViewModels.SubscriptionPlan.CreateSubscriptionPlanDTO
 
-<h2>Create Subscription Plan</h2>
-<form asp-action="Create" method="post">
+@{
+    ViewData["Title"] = "Create Subscription Plan";
+    Layout = "_Layout";
+}
 
-    <div class="mb-3">
-        <label asp-for="Name"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+<style>
+    .form-page {
+        min-height: 80vh;
+        background: var(--cream-deep);
+        padding: 4rem 0;
+    }
+
+    .form-card {
+        max-width: 620px;
+        margin: 0 auto;
+        background: var(--white);
+        border: 1px solid var(--border);
+    }
+
+    .form-card-header {
+        padding: 1.75rem 2.25rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--cream);
+    }
+
+    .form-card-eyebrow {
+        font-size: .63rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: .3rem;
+    }
+
+    .form-card-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+    }
+
+    .form-card-body {
+        padding: 2.25rem;
+    }
+
+    .form-card-footer {
+        padding: 1.25rem 2.25rem;
+        border-top: 1px solid var(--border);
+        background: var(--cream);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .f-group {
+        margin-bottom: 1.5rem;
+    }
+
+        .f-group:last-child {
+            margin-bottom: 0;
+        }
+
+    .f-label {
+        display: block;
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--ash);
+        margin-bottom: .55rem;
+    }
+
+        .f-label span {
+            color: var(--gold);
+            margin-left: 2px;
+        }
+
+    /* SHARP INPUTS — no border-radius */
+    .f-control {
+        display: block;
+        width: 100%;
+        padding: .72rem 1rem;
+        font-size: .9rem;
+        color: var(--ink);
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 0;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+        font-family: 'Jost', sans-serif;
+    }
+
+        .f-control:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(197,168,128,.12);
+        }
+
+        .f-control.is-invalid {
+            border-color: #c0392b;
+        }
+
+    textarea.f-control {
+        resize: vertical;
+        min-height: 90px;
+    }
+
+    .f-hint {
+        font-size: .75rem;
+        color: var(--ash);
+        margin-top: .4rem;
+    }
+
+    .f-error {
+        font-size: .75rem;
+        color: #c0392b;
+        margin-top: .35rem;
+    }
+
+    .f-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+    }
+
+    .btn-form-submit {
+        padding: .72rem 2rem;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        background: var(--ink);
+        color: var(--white);
+        border: 1px solid var(--ink);
+        border-radius: 0;
+        cursor: pointer;
+        transition: background .2s, border-color .2s;
+    }
+
+        .btn-form-submit:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+
+    .btn-form-cancel {
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--ash);
+        text-decoration: none;
+        border-bottom: 1px solid var(--ash);
+        padding-bottom: 1px;
+        transition: color .2s, border-color .2s;
+    }
+
+        .btn-form-cancel:hover {
+            color: var(--ink);
+            border-color: var(--ink);
+        }
+
+    @@media(max-width:576px) {
+        .f-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="form-page">
+    <div class="container">
+        <div class="form-card">
+            <div class="form-card-header">
+                <div class="form-card-eyebrow">Admin / Plans</div>
+                <h1 class="form-card-title">Create Subscription Plan</h1>
+            </div>
+
+            <form asp-action="Create" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <div class="form-card-body">
+
+                    <div asp-validation-summary="ModelOnly"
+                         style="padding:.8rem 1rem;background:#fdecea;border-left:3px solid #c0392b;margin-bottom:1.5rem;font-size:.82rem;color:#c0392b;display:none"
+                         id="val-summary">
+                    </div>
+
+                    <!-- Name -->
+                    <div class="f-group">
+                        <label asp-for="Name" class="f-label">Plan Name <span>*</span></label>
+                        <input asp-for="Name" class="f-control" placeholder="e.g. Standard, Premium, Scholar" />
+                        <span asp-validation-for="Name" class="f-error"></span>
+                    </div>
+
+      
+
+                    <!-- Price / Duration -->
+                    <div class="f-row">
+                        <div class="f-group">
+                            <label asp-for="MonthlyFee" class="f-label">Price (EGP) <span>*</span></label>
+                            <input asp-for="MonthlyFee" type="number" step="0.01" min="0" class="f-control"
+                                   placeholder="0.00" />
+                            <span asp-validation-for="MonthlyFee" class="f-error"></span>
+                        </div>
+                        <div class="f-group">
+                            <label asp-for="LoanDurationDays" class="f-label">Duration (Days) <span>*</span></label>
+                            <input asp-for="LoanDurationDays" type="number" min="1" class="f-control"
+                                   placeholder="30" />
+                            <span asp-validation-for="LoanDurationDays" class="f-error"></span>
+                        </div>
+                    </div>
+
+                    <!-- Max Books -->
+                    <div class="f-group">
+                        <label asp-for="MonthlyBorrowLimit" class="f-label">Max Books Allowed <span>*</span></label>
+                        <input asp-for="MonthlyBorrowLimit" type="number" min="1" class="f-control"
+                               placeholder="3" />
+                        <div class="f-hint">Maximum number of books a subscriber may borrow concurrently.</div>
+                        <span asp-validation-for="MonthlyBorrowLimit" class="f-error"></span>
+                    </div>
+
+                </div>
+
+                <div class="form-card-footer">
+                    <a asp-action="Index" class="btn-form-cancel">Cancel</a>
+                    <button type="submit" class="btn-form-submit">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Create Plan
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="MonthlyBorrowLimit"></label>
-        <input asp-for="MonthlyBorrowLimit" class="form-control" />
-        <span asp-validation-for="MonthlyBorrowLimit" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="LoanDurationDays"></label>
-        <input asp-for="LoanDurationDays" class="form-control" />
-        <span asp-validation-for="LoanDurationDays" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="MonthlyFee"></label>
-        <input asp-for="MonthlyFee" class="form-control" />
-        <span asp-validation-for="MonthlyFee" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-        Save
-    </button>
-</form>
+</div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        /* show validation summary if it has content */
+        const vs = document.getElementById('val-summary');
+        if (vs && vs.innerText.trim()) vs.style.display = 'block';
+    </script>
 }
