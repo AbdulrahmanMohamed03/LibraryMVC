@@ -1,84 +1,248 @@
-﻿@model Project.Application.ViewModels.UserSubscription.UserSubscriptionVM
+﻿
+
+
+@model Project.Application.ViewModels.UserSubscription.UserSubscriptionVM
 
 @{
     ViewData["Title"] = "My Subscription";
 }
 
-<h2 class="mb-4">My Subscription</h2>
+<style>
+    /* Page Header Styling */
+    .history-page-title {
+        font-family: 'Cormorant Garamond', serif !important;
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+        color: var(--ink) !important;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem !important;
+    }
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
+    /* Premium Bibliotheca Custom Card Overrides */
+    .custom-sub-wrapper {
+        padding: 1rem 0 4rem;
+    }
 
-@if (Model == null || !Model.IsActive)
-{
-    <div class="alert alert-info">
-        You have no active subscription.
-    </div>
-    <a asp-action="Plans" class="btn btn-primary">Browse Plans</a>
-}
-else
-{
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-body text-center">
-                    <h5 class="card-title fw-bold text-primary">@Model.PlanName</h5>
-                    <hr />
-                    <p class="card-text mb-1">
-                        <strong>Fee:</strong> @Model.MonthlyFee.ToString("C")
-                    </p>
-                    <p class="card-text mb-1">
-                        <strong>Start:</strong> @Model.StartDate.ToString("MMM dd, yyyy")
-                    </p>
-                    <p class="card-text mb-1">
-                        <strong>Expires:</strong> @Model.EndDate.ToString("MMM dd, yyyy")
-                    </p>
-                    <p class="card-text mb-0">
-                        <strong>Status:</strong>
-                        <span class="badge bg-success">Active</span>
-                    </p>
+        .custom-sub-wrapper .card {
+            border: 1px solid var(--border) !important;
+            border-radius: 0px !important;
+            box-shadow: none !important;
+            background: var(--white);
+            padding: 3rem 2.2rem 2rem !important;
+        }
+
+        /* Transform Card Sub-Title to Serif Headings */
+        .custom-sub-wrapper .card-title {
+            font-family: 'Cormorant Garamond', serif !important;
+            font-size: 1.8rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 1px;
+            color: var(--ink) !important;
+            text-transform: uppercase;
+            margin-bottom: 2rem !important;
+        }
+
+        /* Hide standard line dividers */
+        .custom-sub-wrapper hr {
+            display: none !important;
+        }
+
+        /* Transform paragraphs into crisp receipt rows */
+        .custom-sub-wrapper .card-body p {
+            border-top: 1px solid var(--border);
+            padding: 1.1rem 0 !important;
+            margin: 0 !important;
+            font-size: .9rem !important;
+            color: var(--ink-soft) !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+            .custom-sub-wrapper .card-body p:last-of-type {
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 2.5rem !important;
+            }
+
+            .custom-sub-wrapper .card-body p strong {
+                font-size: .68rem !important;
+                font-weight: 700 !important;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: var(--ash) !important;
+            }
+
+        /* Premium Active Status Badge */
+        .custom-sub-wrapper .badge {
+            border-radius: 0 !important;
+            padding: 4px 10px !important;
+            font-size: .65rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background-color: #1a6832 !important;
+        }
+
+        /* Re-orienting the card footer into clean full-width block buttons */
+        .custom-sub-wrapper .card-footer {
+            background: transparent !important;
+            padding: 0 !important;
+            display: flex;
+            flex-direction: column !important;
+            gap: .8rem;
+        }
+
+            .custom-sub-wrapper .card-footer form {
+                width: 100% !important;
+                margin: 0 !important;
+            }
+
+        /* Renew Action Button Override */
+        .custom-sub-wrapper .btn-outline-success {
+            display: block !important;
+            width: 100% !important;
+            background: var(--ink) !important;
+            color: var(--white) !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: .9rem !important;
+            font-size: .75rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 2px !important;
+            text-transform: uppercase !important;
+            transition: background .2s;
+        }
+
+            .custom-sub-wrapper .btn-outline-success:hover {
+                background: var(--gold) !important;
+                color: var(--white) !important;
+            }
+
+        /* Cancel Action Button Override */
+        .custom-sub-wrapper .btn-outline-danger {
+            display: block !important;
+            width: 100% !important;
+            background: transparent !important;
+            color: #b33 !important;
+            border: 1px solid #b33 !important;
+            border-radius: 0 !important;
+            padding: .9rem !important;
+            font-size: .75rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 2px !important;
+            text-transform: uppercase !important;
+            transition: all .2s;
+        }
+
+            .custom-sub-wrapper .btn-outline-danger:hover {
+                background: #b33 !important;
+                color: var(--white) !important;
+            }
+
+        /* View History Link Override */
+        .custom-sub-wrapper .btn-outline-secondary {
+            display: block !important;
+            width: 100% !important;
+            background: transparent !important;
+            color: var(--ash) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 0 !important;
+            padding: .8rem !important;
+            font-size: .7rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 1.5px !important;
+            text-transform: uppercase !important;
+            margin-top: 1.5rem;
+            transition: all .2s;
+        }
+
+            .custom-sub-wrapper .btn-outline-secondary:hover {
+                background: var(--cream) !important;
+                color: var(--ink) !important;
+                border-color: var(--ash) !important;
+            }
+</style>
+
+<div class="container" style="margin-top: 1.5rem;">
+    <h2 class="history-page-title">My Subscription</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius:0;">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius:0;">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model == null || !Model.IsActive)
+    {
+        <div class="alert alert-info" style="border-radius:0;">
+            You have no active subscription.
+        </div>
+        <a asp-action="Plans" class="btn btn-primary" style="border-radius:0;">Browse Plans</a>
+    }
+    else
+    {
+        <div class="custom-sub-wrapper">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold text-primary">@Model.PlanName</h5>
+                            <hr />
+                            <p class="card-text mb-1">
+                                <strong>Fee:</strong> @Model.MonthlyFee.ToString("C")
+                            </p>
+                            <p class="card-text mb-1">
+                                <strong>Start:</strong> @Model.StartDate.ToString("MMM dd, yyyy")
+                            </p>
+                            <p class="card-text mb-1">
+                                <strong>Expires:</strong> @Model.EndDate.ToString("MMM dd, yyyy")
+                            </p>
+                            <p class="card-text mb-0">
+                                <strong>Status:</strong>
+                                <span class="badge bg-success">Active</span>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-light border-0 d-flex justify-content-around py-3">
+
+                            <form asp-action="Renew" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit"
+                                        class="btn btn-outline-success btn-sm rounded-pill px-3"
+                                        onclick="return confirm('Renew your subscription?')">
+                                    Renew
+                                </button>
+                            </form>
+
+                            <form asp-action="Cancel" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit"
+                                        class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                        onclick="return confirm('Are you sure you want to cancel?')">
+                                    Cancel
+                                </button>
+                            </form>
+
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a asp-action="History"
+                           class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                            View History
+                        </a>
+                    </div>
                 </div>
-                <div class="card-footer bg-light border-0 d-flex justify-content-around py-3">
-
-                    <form asp-action="Renew" method="post">
-                        @Html.AntiForgeryToken()
-                        <button type="submit"
-                                class="btn btn-outline-success btn-sm rounded-pill px-3"
-                                onclick="return confirm('Renew your subscription?')">
-                            Renew
-                        </button>
-                    </form>
-
-                    <form asp-action="Cancel" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@Model.Id" />
-                        <button type="submit"
-                                class="btn btn-outline-danger btn-sm rounded-pill px-3"
-                                onclick="return confirm('Are you sure you want to cancel?')">
-                            Cancel
-                        </button>
-                    </form>
-
-                </div>
-            </div>
-            <div class="text-center mt-3">
-                <a asp-action="History"
-                   class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                    View History
-                </a>
             </div>
         </div>
-    </div>
-}
+    }
+</div>

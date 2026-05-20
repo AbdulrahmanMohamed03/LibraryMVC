@@ -1,32 +1,53 @@
-﻿@using Project.Application.ViewModels.User
+﻿
+
+@using Project.Application.ViewModels.User
 @model EditLibrarianVM
 
-<h2>Edit Librarian</h2>
-
-<form asp-action="EditLibrarian" method="post">
-
-    <input type="hidden" asp-for="UserId" />
-
-    <div>
-        <label>Full Name</label>
-        <input asp-for="FullName" class="form-control" />
+<div class="container py-5" style="max-width: 650px;">
+    <div style="margin-bottom:2.5rem">
+        <span class="section-eyebrow">Data Correction</span>
+        <h2 class="section-title" style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 700; color: var(--ink); margin:0;">
+            Edit Librarian <strong>Records</strong>
+        </h2>
+        <div style="width:48px;height:2px;background:var(--gold);margin-top:0.75rem"></div>
     </div>
 
-    <div>
-        <label>NationalId</label>
-        <input asp-for="NationalId" class="form-control" readonly />
+    <div class="booksaw-card" style="background: var(--white); border: 1px solid var(--border); padding: 3rem; box-shadow: 0 12px 35px rgba(0,0,0,0.03);">
+        <form asp-action="EditLibrarian" method="post">
+
+            <input type="hidden" asp-for="UserId" />
+
+            <div class="mb-4">
+                <label style="display: block; font-size: .68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ash); margin-bottom: .5rem;">Full Name</label>
+                <input asp-for="FullName" class="form-control" style="border-radius: 0; border: 1px solid var(--border); padding: 0.75rem 1rem; font-size: 0.88rem; color: var(--ink); outline: none; transition: border-color .2s;" />
+                <span asp-validation-for="FullName" class="text-danger" style="font-size: 0.8rem;"></span>
+            </div>
+
+            <div class="mb-4">
+                <label style="display: block; font-size: .68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ash); margin-bottom: .5rem;">National ID <small class="text-muted" style="text-transform:lowercase; letter-spacing:0;">(Read Only)</small></label>
+                <input asp-for="NationalId" class="form-control" readonly style="border-radius: 0; border: 1px solid var(--border); padding: 0.75rem 1rem; font-size: 0.88rem; color: var(--ash); background-color: var(--cream); cursor: not-allowed; outline: none; font-family: monospace;" />
+            </div>
+
+            <div class="mb-4">
+                <label style="display: block; font-size: .68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ash); margin-bottom: .5rem;">Email Address</label>
+                <input asp-for="Email" class="form-control" style="border-radius: 0; border: 1px solid var(--border); padding: 0.75rem 1rem; font-size: 0.88rem; color: var(--ink); outline: none;" />
+                <span asp-validation-for="Email" class="text-danger" style="font-size: 0.8rem;"></span>
+            </div>
+
+            <div class="mb-5">
+                <label style="display: block; font-size: .68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ash); margin-bottom: .5rem;">System Account Username</label>
+                <input asp-for="UserName" class="form-control" style="border-radius: 0; border: 1px solid var(--border); padding: 0.75rem 1rem; font-size: 0.88rem; color: var(--ink); outline: none;" />
+                <span asp-validation-for="UserName" class="text-danger" style="font-size: 0.8rem;"></span>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center">
+                <button type="submit" class="btn-cd" style="flex: 1; padding: .8rem 0; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; text-align: center; text-decoration: none; background: var(--ink); color: var(--white); border: 1px solid var(--ink); transition: all .2s; border-radius: 0; cursor: pointer;">
+                    <i class="fa-solid fa-bookmark me-2"></i>Save Modifications
+                </button>
+                <a asp-action="ManageLibrarians" class="btn-cr" style="padding: .8rem 1.5rem; font-size: .68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; background: transparent; color: var(--ash); border: 1px solid var(--border); transition: all .2s; border-radius: 0; text-align: center;">
+                    Cancel
+                </a>
+            </div>
+        </form>
     </div>
-
-    <div>
-        <label>Email</label>
-        <input asp-for="Email" class="form-control" />
-    </div>
-
-    <div>
-        <label>UserName</label>
-        <input asp-for="UserName" class="form-control" />
-    </div>
-
-    <button class="btn btn-primary mt-2">Save</button>
-
-</form>
+</div>

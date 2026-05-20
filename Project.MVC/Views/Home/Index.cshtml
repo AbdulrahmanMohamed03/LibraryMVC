@@ -1,8 +1,1175 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿
+
+
+
+@{
+    ViewData["Title"] = "Welcome";
+    var featuredBooks = ViewBag.FeaturedBooks as IEnumerable<Project.Application.ViewModels.Book.BookViewModel>
+                          ?? Enumerable.Empty<Project.Application.ViewModels.Book.BookViewModel>();
+    var catalogBooks = ViewBag.CatalogBooks as IEnumerable<Project.Application.ViewModels.Book.BookViewModel>
+                          ?? Enumerable.Empty<Project.Application.ViewModels.Book.BookViewModel>();
+    /* ── FIX: unified ViewBag key — controller must populate ViewBag.Categories ── */
+    var categories = ViewBag.Categories as IEnumerable<Project.Application.ViewModels.Category.CategoryViewModel>
+                          ?? Enumerable.Empty<Project.Application.ViewModels.Category.CategoryViewModel>();
+    string activeFilter = ViewBag.ActiveFilter as string ?? "all";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+
+    .hero {
+        background: var(--ink);
+        position: relative;
+        overflow: hidden;
+        min-height: 95vh;
+        display: flex;
+        align-items: center;
+    }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at center, rgba(197,168,128,.12) 0%, transparent 65%);
+            z-index: 2;
+        }
+
+    .hero-bg-letter {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 32rem;
+        font-weight: 700;
+        color: rgba(255,255,255,.02);
+        user-select: none;
+        line-height: 1;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 3;
+        padding: 6rem 0;
+    }
+
+    .hero-eyebrow {
+        font-size: .68rem;
+        font-weight: 600;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--gold);
+        display: block;
+        margin-bottom: 1.25rem;
+    }
+
+    .hero-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(3.2rem,7vw,5.5rem);
+        font-weight: 300;
+        color: var(--white);
+        line-height: 1.1;
+        margin: 0 auto 1.5rem;
+    }
+
+        .hero-title strong {
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+    .hero-subtitle {
+        font-size: .95rem;
+        color: rgba(255,255,255,.5);
+        max-width: 520px;
+        line-height: 1.75;
+        margin: 0 auto 2.5rem;
+    }
+
+    .hero-ctas {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* ══════════════════════════════════════════
+                  DYNAMIC FLOW MARQUEE SYSTEM (NEW)
+               ══════════════════════════════════════════ */
+    .book-flow-container {
+        position: absolute;
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.22;
+        display: flex;
+    }
+
+    .hero-flow-top {
+        top: 8%;
+        transform: rotate(-1.5deg);
+    }
+
+    .hero-flow-bottom {
+        bottom: 8%;
+        transform: rotate(1.5deg);
+    }
+
+    .book-flow-track {
+        display: inline-flex;
+        gap: 3.5rem;
+        padding-right: 3.5rem;
+        animation: streamFlow 38s linear infinite;
+    }
+
+    .book-flow-track-reverse {
+        display: inline-flex;
+        gap: 3.5rem;
+        padding-right: 3.5rem;
+        animation: streamFlowReverse 38s linear infinite;
+    }
+
+    .flow-book-item {
+        width: 95px;
+        height: 135px;
+        background: var(--cream-deep);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        overflow: hidden;
+        position: relative;
+        transition: transform 0.3s;
+    }
+
+        /* Alternating layout variations like designspells */
+        .flow-book-item:nth-child(even) {
+            transform: rotate(6deg) translateY(6px);
+        }
+
+        .flow-book-item:nth-child(odd) {
+            transform: rotate(-5deg) translateY(-4px);
+        }
+
+        .flow-book-item:nth-child(3n) {
+            transform: rotate(3deg) translateY(10px);
+        }
+
+        .flow-book-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .flow-book-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--gold) 0%, var(--ink) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 1.5rem;
+    }
+
+    @@keyframes streamFlow {
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+
+    @@keyframes streamFlowReverse {
+        0% {
+            transform: translateX(-50%);
+        }
+
+        100% {
+            transform: translateX(0);
+        }
+    }
+
+    /* ══════════════════════════════════════════
+                  EXISTING ELEMENTS STYLE DEFINITIONS
+               ══════════════════════════════════════════ */
+    /* Stats */
+    .stats-strip {
+        background: var(--gold);
+        position: relative;
+        z-index: 4;
+    }
+
+    .stats-strip-inner {
+        display: flex;
+        justify-content: center;
+    }
+
+    .stat-pill {
+        padding: 1.4rem 2.5rem;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,.2);
+        flex: 1;
+    }
+
+        .stat-pill:last-child {
+            border-right: none;
+        }
+
+        .stat-pill .sv {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1;
+        }
+
+        .stat-pill .sl {
+            font-size: .65rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.7);
+            margin-top: 3px;
+        }
+
+    /* Category Nav */
+    .cat-nav-strip {
+        /* background: var(--cream); */
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .cat-nav-inner {
+        display: flex;
+        align-items: stretch;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+        .cat-nav-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+    .cat-nav-btn {
+        flex-shrink: 0;
+        padding: .9rem 1.4rem;
+        font-size: .72rem;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ash);
+        text-decoration: none;
+        white-space: nowrap;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        background: transparent;
+        cursor: pointer;
+        transition: color .2s, border-color .2s;
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+    }
+
+        .cat-nav-btn:hover {
+            color: var(--ink);
+        }
+
+        .cat-nav-btn.active {
+            color: var(--gold);
+            border-bottom-color: var(--gold);
+        }
+
+    .cat-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        background: var(--gold);
+        color: var(--white);
+        font-size: .52rem;
+        font-weight: 700;
+    }
+
+    /* Best Seller */
+    .bestseller-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid var(--border);
+        background: var(--white);
+        overflow: hidden;
+    }
+
+    .bestseller-cover {
+        background: var(--cream-deep);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3.5rem;
+        border-right: 1px solid var(--border);
+        min-height: 420px;
+    }
+
+        .bestseller-cover img {
+            max-height: 320px;
+            width: auto;
+            max-width: 100%;
+            box-shadow: 20px 20px 50px rgba(0,0,0,.18), -8px -8px 20px rgba(0,0,0,.06);
+        }
+
+    .bs-no-cover {
+        width: 200px;
+        height: 280px;
+        background: var(--gold-light);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 20px 20px 50px rgba(0,0,0,.12);
+    }
+
+    .bestseller-info {
+        padding: 3.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .bs-eyebrow {
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: .5rem;
+    }
+
+    .bs-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0 0 .3rem;
+        line-height: 1.1;
+    }
+
+    .bs-rule {
+        width: 40px;
+        height: 2px;
+        background: var(--gold);
+        margin: .85rem 0;
+    }
+
+    .bs-author {
+        font-size: .82rem;
+        color: var(--ash);
+        margin-bottom: 1rem;
+    }
+
+    .bs-desc {
+        font-size: .88rem;
+        color: var(--ink-soft);
+        line-height: 1.7;
+        max-width: 380px;
+        margin-bottom: 1.5rem;
+    }
+
+    .bs-fee {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--gold);
+        margin-bottom: 1.5rem;
+    }
+
+        .bs-fee small {
+            font-size: .8rem;
+            font-weight: 400;
+            color: var(--ash);
+            margin-right: .3rem;
+            font-family: 'Jost', sans-serif;
+        }
+
+    .bs-link {
+        display: inline-flex;
+        align-items: center;
+        gap: .75rem;
+        font-size: .78rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--ink);
+        text-decoration: none;
+        padding-bottom: 3px;
+        border-bottom: 1px solid var(--ink);
+        transition: color .2s, border-color .2s;
+        align-self: flex-start;
+    }
+
+        .bs-link:hover {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+    /* Book Cards */
+    .booksaw-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: transform .22s, box-shadow .22s;
+    }
+
+        .booksaw-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 32px rgba(0,0,0,.1);
+        }
+
+    .cover-frame {
+        width: 100%;
+        aspect-ratio: 2/3;
+        overflow: hidden;
+        background: var(--cream-deep);
+        position: relative;
+        flex-shrink: 0;
+    }
+
+        .cover-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s;
+        }
+
+    .booksaw-card:hover .cover-frame img {
+        transform: scale(1.04);
+    }
+
+    .card-ph {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        color: var(--ash);
+    }
+
+        .card-ph i {
+            font-size: 1.8rem;
+            color: var(--border);
+        }
+
+        .card-ph span {
+            font-size: .6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+    .csb {
+        position: absolute;
+        top: .65rem;
+        right: .65rem;
+        font-size: .58rem;
+        font-weight: 700;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+        padding: 2px 7px;
+    }
+
+    .csb-a {
+        background: #e6f4ea;
+        color: #1a6832;
+    }
+
+    .csb-o {
+        background: #fdecea;
+        color: #9c2f2f;
+    }
+
+    .card-body-b {
+        padding: 1.1rem 1.1rem .75rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: .3rem;
+    }
+
+    .cbt-cat {
+        font-size: .6rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--gold);
+    }
+
+    .cbt-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.2;
+        margin: 0;
+    }
+
+    .cbt-auth {
+        font-size: .72rem;
+        color: var(--ash);
+        margin: 0;
+    }
+
+    .card-acts {
+        padding: 0 1.1rem 1.1rem;
+        display: flex;
+        gap: .4rem;
+    }
+
+    .btn-cd {
+        flex: 1;
+        padding: .5rem 0;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-align: center;
+        text-decoration: none;
+        background: var(--ink);
+        color: var(--white);
+        border: 1px solid var(--ink);
+        transition: all .2s;
+        border-radius: 0;
+    }
+
+        .btn-cd:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--white);
+        }
+
+    .btn-cr {
+        padding: .5rem .75rem;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        background: transparent;
+        color: var(--gold);
+        border: 1px solid var(--gold);
+        transition: all .2s;
+        border-radius: 0;
+    }
+
+        .btn-cr:hover {
+            background: var(--gold);
+            color: var(--white);
+        }
+
+    /* Features */
+    .feat-grid {
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        border: 1px solid var(--border);
+    }
+
+    .feat-cell {
+        padding: 2.5rem 2rem;
+        border-right: 1px solid var(--border);
+        text-align: center;
+        background: var(--white);
+    }
+
+        .feat-cell:last-child {
+            border-right: none;
+        }
+
+    .feat-icon {
+        font-size: 1.5rem;
+        color: var(--gold);
+        margin-bottom: 1rem;
+    }
+
+    .feat-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: .5rem;
+    }
+
+    .feat-text {
+        font-size: .82rem;
+        color: var(--ash);
+        line-height: 1.7;
+        max-width: 220px;
+        margin: 0 auto;
+    }
+
+    /* CTA / Dynamic Flow Footer */
+    .cta-banner {
+        background: var(--ink);
+        padding: 7rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .cta-banner h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.2rem,5vw,3.4rem);
+            font-weight: 300;
+            color: var(--white);
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 3;
+        }
+
+            .cta-banner h2 strong {
+                font-weight: 700;
+                color: var(--gold);
+            }
+
+        .cta-banner p {
+            font-size: .88rem;
+            color: rgba(255,255,255,.45);
+            max-width: 480px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+            position: relative;
+            z-index: 3;
+        }
+
+        .cta-banner .btn-gold, .cta-banner .btn-ghost {
+            position: relative;
+            z-index: 3;
+        }
+
+    .footer-flow-mid {
+        top: 50%;
+        transform: translateY(-50%) rotate(-0.5deg);
+        opacity: 0.14;
+    }
+
+    /* ══════════════════════════════════════════
+              MATCHED DESIGN TOKEN STYLES FOR NEW SECTIONS
+           ══════════════════════════════════════════ */
+  
+    .newsletter-section {
+        background-color: var(--cream);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .nl-container {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .nl-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.4rem;
+        font-weight: 400;
+        color: var(--ink);
+        margin-bottom: 0.5rem;
+    }
+
+        .nl-title strong {
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+    .nl-desc {
+        font-size: 0.88rem;
+        color: var(--ash);
+        margin-bottom: 2rem;
+    }
+
+    .nl-form-wrap {
+        position: relative;
+        display: flex;
+        width: 100%;
+        background-color: var(--white);
+        border: 1px solid var(--border);
+        padding: 0.35rem;
+        transition: border-color 0.25s ease;
+    }
+
+        .nl-form-wrap:focus-within {
+            border-color: var(--gold);
+        }
+
+    .nl-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.88rem;
+        color: var(--ink);
+        outline: none;
+    }
+
+        .nl-input::placeholder {
+            color: var(--border);
+        }
+
+    .nl-btn {
+        background-color: var(--ink);
+        color: var(--white);
+        border: none;
+        padding: 0 2rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        transition: background-color 0.2s, color 0.2s;
+    }
+
+        .nl-btn:hover {
+            background-color: var(--gold);
+            color: var(--white);
+        }
+
+    @@media(max - width:768px) {
+        .bestseller-wrap {
+            grid-template-columns: 1fr;
+        }
+
+        .bestseller-cover {
+            min-height: 260px;
+            padding: 2rem;
+            border-right: none;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .bestseller-info {
+            padding: 2rem;
+        }
+
+        .feat-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .feat-cell {
+            border-right: none;
+            border-bottom: 1px solid var(--border);
+        }
+
+            .feat-cell:last-child {
+                border-bottom: none;
+            }
+
+        .stats-strip-inner {
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            border-right: none;
+            border-bottom: 1px solid rgba(255,255,255,.15);
+        }
+        /* New rules fallback responsive */
+        .sb-border-right {
+            border-right: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sb-item {
+            padding: 2rem 1rem;
+        }
+
+        .nl-form-wrap {
+            flex-direction: column;
+            gap: 0.5rem;
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+
+        .nl-input {
+            background-color: var(--white);
+            border: 1px solid var(--border);
+            width: 100%;
+        }
+
+        .nl-btn {
+            padding: 0.85rem 2rem;
+            width: 100%;
+        }
+    }
+</style>
+
+<section class="hero">
+    <div class="hero-bg-letter">B</div>
+
+    <div class="book-flow-container hero-flow-top">
+        <div class="book-flow-track">
+            @foreach (var book in catalogBooks)
+            {
+                <div class="flow-book-item">
+                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                    {
+                        <img src="@book.CoverImageUrl" alt="Flowing Cover" />
+                    }
+                    else
+                    {
+
+                        <div class="flow-book-placeholder"><i class="fa-solid fa-book"></i></div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="book-flow-track" aria-hidden="true">
+            @foreach (var book in catalogBooks)
+            {
+                <div class="flow-book-item">
+                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                    {
+                        <img src="@book.CoverImageUrl" alt="Flowing Cover" />
+                    }
+                    else
+                    {
+
+                        <div class="flow-book-placeholder"><i class="fa-solid fa-book"></i></div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="container hero-content">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-9">
+                <span class="hero-eyebrow"><i class="fa-solid fa-book-open me-2"></i>Est. 2024 — Digital Library</span>
+                <h1 class="hero-title">Where Every<br>Story Finds Its<br><strong>Reader</strong></h1>
+                <p class="hero-subtitle">MAKTBA is your intelligent library companion — discover, borrow, and reserve books with a beautifully effortless experience.</p>
+                <div class="hero-ctas">
+                    <a asp-controller="Books" asp-action="Index" class="btn-gold">
+                        <i class="fa-solid fa-magnifying-glass me-2"></i>Browse Catalog
+                    </a>
+                    @if (User.Identity?.IsAuthenticated != true)
+                    {
+                        <a asp-controller="Account" asp-action="Register" class="btn-ghost"
+                           style="color:rgba(255,255,255,.65);border-color:rgba(255,255,255,.22);">Become a Member</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Reservations" asp-action="Index" class="btn-ghost"
+                           style="color:rgba(255,255,255,.65);border-color:rgba(255,255,255,.22);">My Reservations</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="book-flow-container hero-flow-bottom">
+        <div class="book-flow-track-reverse">
+            @foreach (var book in catalogBooks.Reverse())
+            {
+                <div class="flow-book-item">
+                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                    {
+                        <img src="@book.CoverImageUrl" alt="Flowing Cover" />
+                    }
+                    else
+                    {
+
+                        <div class="flow-book-placeholder"><i class="fa-solid fa-book"></i></div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="book-flow-track-reverse" aria-hidden="true">
+            @foreach (var book in catalogBooks.Reverse())
+            {
+                <div class="flow-book-item">
+                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                    {
+                        <img src="@book.CoverImageUrl" alt="Flowing Cover" />
+                    }
+                    else
+                    {
+
+                        <div class="flow-book-placeholder"><i class="fa-solid fa-book"></i></div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<div class="stats-strip">
+    <div class="container">
+        <div class="stats-strip-inner">
+            <div class="stat-pill"><div class="sv">@(catalogBooks.Count())+</div><div class="sl">Volumes</div></div>
+            <div class="stat-pill"><div class="sv">@(categories.Count())</div><div class="sl">Genres</div></div>
+            <div class="stat-pill"><div class="sv">24/7</div><div class="sl">Digital Access</div></div>
+            <div class="stat-pill"><div class="sv">Free</div><div class="sl">To Join</div></div>
+        </div>
+    </div>
 </div>
+
+@{
+    var featured = featuredBooks.FirstOrDefault();
+}
+@if (featured != null)
+{
+    <section style="padding:5rem 0;background:var(--cream)">
+        <div class="container">
+            <div style="margin-bottom:2.5rem">
+                <span class="section-eyebrow">Staff Pick</span>
+                <h2 class="section-title">Best <strong>Seller</strong></h2>
+                <div style="width:48px;height:2px;background:var(--gold);margin-top:1rem"></div>
+            </div>
+            <div class="bestseller-wrap">
+                <div class="bestseller-cover">
+                    @if (!string.IsNullOrEmpty(featured.CoverImageUrl))
+                    {
+                        <img src="@featured.CoverImageUrl" alt="@featured.Title" />
+                    }
+                    else
+                    {
+                        <div class="bs-no-cover"><i class="fa-solid fa-book" style="font-size:3rem;color:var(--gold)"></i></div>
+                    }
+                </div>
+                <div class="bestseller-info">
+                    <div class="bs-eyebrow">@featured.CategoryName</div>
+                    <h2 class="bs-title">@featured.Title</h2>
+                    <div class="bs-rule"></div>
+                    <p class="bs-author">By @featured.AuthorName</p>
+                    <p class="bs-desc">
+                        @if (!string.IsNullOrEmpty(featured.Description))
+                        {
+                            @(featured.Description.Length > 180 ? featured.Description[..180] + "…" : featured.Description)
+                        }
+                        else
+                        {
+                            <text>A carefully curated title from our editorial team.</text>
+                        }
+                    </p>
+                    <div class="bs-fee"><small>Borrow fee</small>@featured.BorrowFee.ToString("C")</div>
+                    <a asp-controller="Books" asp-action="Details" asp-route-id="@featured.Id" class="bs-link">
+                        View Details <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+
+
+<section style="padding:5rem 0;background:var(--cream-deep)" id="popular">
+    <div class="container">
+        <div class="text-center" style="margin-bottom:2.5rem">
+            <span class="section-eyebrow">Our Collection</span>
+            <h2 class="section-title"><strong>Popular</strong> Books</h2>
+        </div>
+
+        <div class="cat-nav-strip">
+            <div class="container">
+                <nav class="cat-nav-inner" aria-label="Filter by genre">
+                    <button class="cat-nav-btn @(activeFilter == "all" ? "active" : "")"
+                            onclick="filterCards('all',this)">
+                        All Genres
+                        <span class="cat-count">@catalogBooks.Count()</span>
+                    </button>
+                    @foreach (var cat in categories)
+                    {
+                        int cnt = catalogBooks.Count(b => b.CategoryId == cat.Id);
+                        <button class="cat-nav-btn @(activeFilter == cat.Id.ToString() ? "active" : "")"
+                                data-cid="@cat.Id"
+                                onclick="filterCards('@cat.Id',this)">
+                            @cat.Name
+                            @if (cnt > 0)
+                            {
+                                <span class="cat-count">@cnt</span>
+                            }
+                        </button>
+                    }
+                </nav>
+            </div>
+        </div>
+        <div> <br />   </div>
+        <div class="row g-4" id="home-grid">
+            @if (!catalogBooks.Any())
+            {
+                <div class="col-12 text-center py-5" style="color:var(--ash)">
+                    <i class="fa-solid fa-books" style="font-size:2.5rem;color:var(--border);display:block;margin-bottom:1rem"></i>
+                    No books available at the moment.
+                </div>
+            }
+            @foreach (var book in catalogBooks.Take(8))
+            {
+                <div class="col-6 col-md-4 col-lg-3 hgi" data-cat="@book.CategoryId">
+                    <div class="booksaw-card">
+                        <div class="cover-frame">
+                            @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                            {
+                                <img src="@book.CoverImageUrl" alt="@book.Title" loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="card-ph"><i class="fa-solid fa-book"></i><span>No Cover</span></div>
+                            }
+                            <span class="csb @(book.AvailableCopies > 0 ? "csb-a" : "csb-o")">
+                                @(book.AvailableCopies > 0 ? "Available" : "Checked Out")
+                            </span>
+                        </div>
+                        <div class="card-body-b">
+                            <div class="cbt-cat">@book.CategoryName</div>
+                            <p class="cbt-title">@book.Title</p>
+                            <p class="cbt-auth">@book.AuthorName</p>
+                        </div>
+                        <div class="card-acts">
+                            <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="btn-cd">Details</a>
+                            @if (!book.IsAvailable && User.Identity?.IsAuthenticated == true)
+                            {
+                                <a asp-controller="Reservations" asp-action="Confirm" asp-route-id="@book.Id"
+                                   class="btn-cr" title="Reserve">
+                                    <i class="fa-solid fa-bookmark"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (catalogBooks.Count() > 8)
+        {
+            <div class="text-center" style="margin-top:2.5rem">
+                <a asp-controller="Books" asp-action="Index" class="btn-ghost">
+                    View Full Catalog <i class="fa-solid fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="newsletter-section py-5">
+    <div class="container text-center py-4">
+        <div class="nl-container">
+            <h2 class="nl-title">Subscribe To Our <strong>Newsletter</strong></h2>
+            <p class="nl-desc">Stay updated with newly arrived book collections, exclusive author updates, and featured monthly readings.</p>
+            <form action="#" method="post" onsubmit="event.preventDefault();">
+                <div class="nl-form-wrap">
+                    <input type="email" class="nl-input" placeholder="Enter your email address here..." required autocomplete="off" />
+                    <button type="submit" class="nl-btn">Subscribe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section style="padding:5rem 0;background:var(--cream)">
+    <div class="container">
+        <div class="text-center" style="margin-bottom:2.5rem">
+            <span class="section-eyebrow">Why MAKTBA</span>
+            <h2 class="section-title">A Library Built for<br><strong>Modern Readers</strong></h2>
+        </div>
+        <div class="feat-grid">
+            <div class="feat-cell">
+                <div class="feat-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <h3 class="feat-title">Smart Search</h3>
+                <p class="feat-text">Find any title, author, or category instantly with our intelligent catalog search.</p>
+            </div>
+            <div class="feat-cell">
+                <div class="feat-icon"><i class="fa-solid fa-bookmark"></i></div>
+                <h3 class="feat-title">Queue Reservation</h3>
+                <p class="feat-text">All copies checked out? Join the FIFO queue and get notified when your turn arrives.</p>
+            </div>
+            <div class="feat-cell">
+                <div class="feat-icon"><i class="fa-solid fa-id-card"></i></div>
+                <h3 class="feat-title">Flexible Plans</h3>
+                <p class="feat-text">Choose a subscription plan that fits your reading habit — from casual to bookworm.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+<section class="cta-banner">
+    <div class="book-flow-container footer-flow-mid">
+        <div class="book-flow-track">
+            @foreach (var book in catalogBooks)
+            {
+                <div class="flow-book-item" style="width: 80px; height: 115px;">
+                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                    {
+                        <img src="@book.CoverImageUrl" alt="Flowing Cover" />
+                    }
+                    else
+                    {
+
+                        <div class="flow-book-placeholder"><i class="fa-solid fa-book"></i></div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="book-flow-track" aria-hidden="true">
+            @foreach (var book in catalogBooks)
+            {
+                <div class="flow-book-item" style="width: 80px; height: 115px;">
+                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                    {
+                        <img src="@book.CoverImageUrl" alt="Flowing Cover" />
+                    }
+                    else
+                    {
+
+                        <div class="flow-book-placeholder"><i class="fa-solid fa-book"></i></div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="container text-center">
+        <h2>Ready to Start<br><strong>Reading?</strong></h2>
+        <p>Join thousands of readers who trust Bibliotheca to guide their literary journey.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+            <a asp-controller="Books" asp-action="Index" class="btn-gold">Explore Full Catalog</a>
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn-ghost"
+                   style="color:rgba(255,255,255,.55);border-color:rgba(255,255,255,.18);">Create Free Account</a>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        (function () {
+            function filterCards(catId, btn) {
+                document.querySelectorAll('.cat-nav-btn').forEach(t => t.classList.remove('active'));
+                if (btn) btn.classList.add('active');
+                else {
+                    const f = document.querySelector(`.cat-nav-btn[data-cid="${catId}"]`);
+                    if (f) f.classList.add('active');
+                }
+                document.querySelectorAll('#home-grid .hgi').forEach(c => {
+                    c.style.display = (catId === 'all' || c.dataset.cat === String(catId)) ? '' : 'none';
+                });
+                if (window.innerWidth < 992) {
+                    const sec = document.getElementById('popular');
+                    if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+            window.filterCards = filterCards;
+        })();
+    </script>
+}

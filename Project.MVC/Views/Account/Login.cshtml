@@ -1,43 +1,84 @@
-﻿@model Project.Application.ViewModels.Account.LoginVM
+﻿
+@model Project.Application.ViewModels.Account.LoginVM
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Sign In";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Login</h1>
+<div style="min-height:88vh;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:2rem 1rem">
 
-<h4>LoginVM</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Login">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+    <div style="width:100%;max-width:440px">
+
+        <!-- HEADER -->
+        <div style="text-align:center;margin-bottom:2.5rem">
+            <a asp-controller="Home" asp-action="Index"
+               style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--ink);text-decoration:none">
+                MAK<span style="color:var(--gold)">TTBA</span>
+            </a>
+            <p style="font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--ash);margin-top:0.5rem">
+                Member Sign In
+            </p>
+        </div>
+
+        <!-- CARD -->
+        <div style="background:var(--white);border:1px solid var(--border);padding:2.5rem">
+
+            @if (!ViewData.ModelState.IsValid){
+            <div asp-validation-summary="All"
+                 style="background:#fdf4f4;border:1px solid #f5a0a0;border-left:4px solid var(--red-soft);padding:0.85rem 1rem;font-size:0.85rem;color:#7a1f1f;margin-bottom:1.5rem;display:none"
+                 class="text-danger">
             </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="rememberMe" /> @Html.DisplayNameFor(model => model.rememberMe)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+            }
+            <form asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+
+                <div style="margin-bottom:1.25rem">
+                    <label asp-for="Email" class="lib-form-label">Email Address</label>
+                    <input asp-for="Email" class="lib-form-control" placeholder="you@example.com" />
+                    <span asp-validation-for="Email" style="font-size:0.75rem;color:var(--red-soft);display:block;margin-top:4px"></span>
+                </div>
+
+                <div style="margin-bottom:1.25rem">
+                    <label asp-for="Password" class="lib-form-label">Password</label>
+                    <input asp-for="Password" class="lib-form-control" placeholder="••••••••" type="password" />
+                    <span asp-validation-for="Password" style="font-size:0.75rem;color:var(--red-soft);display:block;margin-top:4px"></span>
+                </div>
+
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem">
+                    <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;cursor:pointer;color:var(--ash)">
+                        <input asp-for="rememberMe" type="checkbox"
+                               style="width:15px;height:15px;accent-color:var(--gold)" />
+                        Remember me
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-ink" style="width:100%;text-align:center">
+                    Sign In to Library
+                </button>
+
+            </form>
+
+        </div>
+
+        <div style="text-align:center;margin-top:1.5rem;font-size:0.82rem;color:var(--ash)">
+            Don't have an account?
+            <a asp-controller="Account" asp-action="Register"
+               style="color:var(--gold);font-weight:600;margin-left:4px">Join MAKTBA</a>
+        </div>
+
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Show validation summary if it has content
+        const summary = document.querySelector('[data-valmsg-summary]');
+        if (summary && summary.querySelectorAll('li').length > 0)
+            summary.style.display = 'block';
+    </script>
 }

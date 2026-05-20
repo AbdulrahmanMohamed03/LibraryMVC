@@ -1,434 +1,743 @@
-﻿@model Project.Application.ViewModels.Reservation.UserReservationsViewModel
+﻿
+@model Project.Application.ViewModels.Reservation.UserReservationsViewModel
 @{
-    ViewData["Title"] = Model.IsAdminView ? "All Reservations" : "My Reservations";
+    ViewData["Title"] = Model.IsAdminView ? "Reservation Queue" : "My Reservations";
+    Layout = "_Layout";
     var displayList = Model.IsAdminView ? Model.AllReservations : Model.Reservations;
+
+    int totalCount = Model.TotalCount;
+    int pendingCount = Model.PendingCount;
+    int readyCount = Model.ReadyCount;
+    int fulfilledCount = Model.FulfilledCount;
+    int cancelledCount = Model.CancelledCount;
 }
 
 <style>
-    .page-header {
+    .res-header {
+        padding: 2.5rem 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--cream);
+    }
+
+    .res-eyebrow {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: .4rem;
+    }
+
+    .res-page-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+    }
+
+    .toolbar-row {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
-    }
-
-    h2 {
-        margin-bottom: 4px;
-    }
-
-    hr {
-        border: none;
-        border-top: 1px solid #ddd;
-        margin-bottom: 20px;
-    }
-
-    .stats-row {
-        display: flex;
-        gap: 14px;
-        margin-bottom: 24px;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
         flex-wrap: wrap;
     }
 
-    .stat-card {
-        background: #f9f9f9;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 14px 22px;
-        text-align: center;
-        min-width: 110px;
-    }
-
-    .stat-number {
-        font-size: 26px;
-        font-weight: 700;
-        color: #1565c0;
-    }
-
-    .stat-label {
-        font-size: 12px;
-        color: #777;
-        margin-top: 2px;
-    }
-
-    .alert {
-        padding: 11px 16px;
-        border-radius: 6px;
-        margin-bottom: 12px;
-        font-size: 14px;
-    }
-
-    .alert-success {
-        background: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
-    }
-
-    .alert-error {
-        background: #fdecea;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-    }
-
-    .alert-urgent {
-        background: #fff3cd;
-        border: 1px solid #ffc107;
-        color: #856404;
+    .urgent-alert {
+        background: #fdf7ee;
+        border: 1px solid var(--gold);
+        border-left: 4px solid var(--gold);
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.85rem;
         display: flex;
         align-items: center;
-        gap: 8px;
-    }
-
-    .table-wrap {
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-    }
-
-    th {
-        background: #f5f5f5;
-        padding: 10px 14px;
-        text-align: left;
-        font-weight: 600;
-        border-bottom: 2px solid #ddd;
-    }
-
-    td {
-        padding: 10px 14px;
-        border-bottom: 1px solid #eee;
-        vertical-align: middle;
-    }
-
-    tr:hover td {
-        background: #fafafa;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 600;
-        color: #fff;
-        white-space: nowrap;
-    }
-
-    .badge-warning {
-        background: #f0a500;
-    }
-
-    .badge-success {
-        background: #4caf50;
-    }
-
-    .badge-secondary {
-        background: #9e9e9e;
-    }
-
-    .badge-danger {
-        background: #e25555;
-    }
-
-    .book-thumb {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-        .book-thumb img {
-            width: 34px;
-            height: 48px;
-            object-fit: cover;
-            border-radius: 3px;
-            border: 1px solid #ddd;
-        }
-
-    .no-img {
-        width: 34px;
-        height: 48px;
-        background: #eee;
-        border-radius: 3px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 9px;
-        color: #aaa;
-    }
-
-    .btn {
-        padding: 5px 14px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        text-decoration: none;
-        font-size: 13px;
-        display: inline-block;
-    }
-
-    .btn-danger {
-        background: #e25555;
-        color: #fff;
-    }
-
-    .btn-secondary {
-        background: #9e9e9e;
-        color: #fff;
-    }
-
-    .btn-success {
-        background: #4caf50;
-        color: #fff;
-    }
-
-    .btn-sm {
-        padding: 3px 10px;
-        font-size: 12px;
-    }
-
-    .btn:hover {
-        opacity: .88;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 50px;
-        color: #999;
+        gap: 0.75rem;
+        color: #5a4010;
     }
 
     .admin-banner {
-        background: #e8eaf6;
-        border: 1px solid #9fa8da;
-        border-radius: 8px;
-        padding: 10px 16px;
-        margin-bottom: 16px;
-        font-size: 13px;
-        color: #283593;
+        background: var(--ink);
+        color: rgba(255,255,255,0.75);
+        padding: 0.85rem 1.25rem;
+        font-size: 0.8rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        letter-spacing: 0.3px;
+    }
+
+        .admin-banner i {
+            color: var(--gold);
+        }
+
+    /* ── Metrics Ribbon ── */
+    .metrics-ribbon {
+        background: var(--white);
+        border: 1px solid var(--border);
+        display: flex;
+        margin: 2rem 0;
+    }
+
+    .metric-cell {
+        flex: 1;
+        padding: 1.4rem 1.5rem;
+        border-right: 1px solid var(--border);
+        text-align: center;
+        cursor: pointer;
+        transition: background .15s;
+    }
+
+        .metric-cell:last-child {
+            border-right: none;
+        }
+
+        .metric-cell:hover {
+            background: var(--cream);
+        }
+
+        .metric-cell.active {
+            background: var(--ink);
+        }
+
+            .metric-cell.active .mv {
+                color: var(--gold);
+            }
+
+            .metric-cell.active .ml {
+                color: rgba(255,255,255,.6);
+            }
+
+    .mv {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1;
+    }
+
+    .ml {
+        font-size: .6rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--ash);
+        margin-top: 4px;
+    }
+
+    /* ── Enhanced User Row Design ── */
+    .res-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .res-row {
+        display: grid;
+        grid-template-columns: 64px 1fr auto;
+        gap: 1.25rem;
+        align-items: center;
+        padding: 1.25rem;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-top: none;
+        transition: background .15s;
+    }
+
+        .res-row:first-child {
+            border-top: 1px solid var(--border);
+        }
+
+        .res-row:hover {
+            background: var(--cream);
+        }
+
+    .res-cover {
+        width: 64px;
+        height: 88px;
+        flex-shrink: 0;
+        background: var(--cream-deep);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+        .res-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .res-cover-ph {
+        font-size: 1.1rem;
+        color: var(--border);
+    }
+
+    .res-info {
+        min-width: 0;
+    }
+
+    .res-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: .15rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .res-author {
+        font-size: .78rem;
+        color: var(--ash);
+        margin-bottom: .6rem;
+    }
+
+    .res-meta {
+        font-size: .72rem;
+        color: var(--ash);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .res-meta-item {
+        display: flex;
+        align-items: center;
+        gap: .3rem;
+    }
+
+        .res-meta-item i {
+            font-size: .65rem;
+            color: var(--gold);
+        }
+
+    /* ── Shared Badges & Table Buttons ── */
+    .res-status {
+        display: inline-block;
+        padding: 2px 10px;
+        font-size: .62rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border: 1px solid;
+    }
+
+    .rs-pending {
+        background: #fffbe6;
+        border-color: #c9a84c;
+        color: #7a5c00;
+    }
+
+    .rs-ready {
+        background: #e6f4ea;
+        border-color: #1a6832;
+        color: #1a6832;
+    }
+
+    .rs-fulfilled {
+        background: var(--cream);
+        border-color: var(--border);
+        color: var(--ash);
+    }
+
+    .rs-cancelled {
+        background: #fdecea;
+        border-color: #f0b4b0;
+        color: #9c2f2f;
+    }
+
+    .res-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: .6rem;
+    }
+
+    .btn-res-cancel {
+        font-size: .63rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #9c2f2f;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid #9c2f2f;
+        padding: 0 0 1px;
+        cursor: pointer;
+        transition: opacity .2s;
+    }
+
+        .btn-res-cancel:hover {
+            opacity: .65;
+        }
+
+    .res-queue-pos {
+        font-size: .72rem;
+        font-weight: 600;
+        color: var(--ash);
+        display: flex;
+        align-items: center;
+        gap: .3rem;
+    }
+
+        .res-queue-pos strong {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            color: var(--gold);
+        }
+
+    /* Admin Table Styling */
+    .cover-sm {
+        width: 34px;
+        height: 48px;
+        object-fit: cover;
+        border: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+
+    .cover-sm-ph {
+        width: 34px;
+        height: 48px;
+        background: var(--cream-deep);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.55rem;
+        color: var(--ash);
+        flex-shrink: 0;
+    }
+
+    .book-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .book-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--ink);
+    }
+
+    .book-author {
+        font-size: 0.72rem;
+        color: var(--ash);
+        margin-top: 1px;
+    }
+
+    .member-name {
+        font-weight: 600;
+        font-size: 0.82rem;
+    }
+
+    .member-email {
+        font-size: 0.7rem;
+        color: var(--ash);
+    }
+
+    .expiry-warn {
+        font-size: 0.68rem;
+        color: var(--red-soft);
+        font-weight: 700;
+        display: block;
+        margin-top: 2px;
+    }
+
+    .btn-table {
+        padding: 0.35rem 0.8rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        display: inline-block;
+        border-radius: 0;
+    }
+
+    .btn-cancel-sm {
+        background: #fdecea;
+        color: var(--red-soft);
+        border-color: #f5c6cb;
+    }
+
+        .btn-cancel-sm:hover {
+            background: var(--red-soft);
+            color: var(--white);
+        }
+
+    .btn-pickup {
+        background: var(--gold-light);
+        color: var(--gold-dark);
+        border-color: var(--gold);
+    }
+
+        .btn-pickup:hover {
+            background: var(--gold);
+            color: var(--white);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 1rem;
+        color: var(--ash);
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        color: var(--border);
+        margin-bottom: 1rem;
+    }
+
+    @@media(max-width:576px) {
+        .res-row {
+            grid-template-columns: 56px 1fr;
+        }
+
+        .res-actions {
+            flex-direction: row;
+            align-items: center;
+            grid-column: 1/-1;
+        }
+
+        .metrics-ribbon {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+        }
+
+        .metric-cell {
+            border-right: none;
+            background: var(--white);
+        }
     }
 </style>
 
-<div class="page-header">
-    <div>
-        <h2>
-            @if (Model.IsAdminView)
-            {
-                <text>📋 All System Reservations</text>
-            }
-            else
-            {
-                <text>📚 My Reservations</text>
-            }
-        </h2>
-        <p style="color:#777;font-size:13px;margin:0">
-            @if (Model.IsAdminView)
-            {
-                <text>Manage all user reservations across the library system.</text>
-            }
-            else
-            {
-                <text>Track your place in the queue and pickup notifications.</text>
-            }
-        </p>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-        @if (Model.IsAdminView)
-        {
-            <form asp-action="ExpireSweep" method="post" style="display:inline">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-secondary"
-                        onclick="return confirm('Run expiry sweep on overdue reservations?')">
-                    🔄 Expire Sweep
-                </button>
-            </form>
-        }
-        <a asp-controller="Books" asp-action="Index" class="btn btn-secondary">Browse Books</a>
+<div class="res-header">
+    <div class="container">
+        <div class="res-eyebrow">@(Model.IsAdminView ? "Management Panel" : "Member Portal")</div>
+        <h1 class="res-page-title">@(Model.IsAdminView ? "All System Reservations" : "My Reservations")</h1>
     </div>
 </div>
-<hr />
 
-@* ── Alerts ── *@
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">✅ @TempData["SuccessMessage"]</div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-error">⚠ @TempData["ErrorMessage"]</div>
-}
+<div class="container" style="padding:0 0 5rem">
 
-@* ── Urgent alerts ── *@
-@foreach (var urgent in Model.UrgentAlerts)
-{
-    <div class="alert alert-urgent">
-        ⚠ <strong>Expiring Soon:</strong>
+    <div class="toolbar-row">
+        <div>
+            <span class="section-eyebrow">
+                @(Model.IsAdminView ? "System Management" : "Your Account")
+            </span>
+        </div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center">
+            @if (Model.IsAdminView)
+            {
+                <form asp-action="ExpireSweep" method="post" style="display:inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-ghost"
+                            onclick="return confirm('Run expiry sweep on all overdue reservations?')"
+                            style="font-size:0.72rem">
+                        <i class="fa-solid fa-rotate me-1"></i>Expiry Sweep
+                    </button>
+                </form>
+            }
+            <a asp-controller="Books" asp-action="Index" class="btn-ghost" style="font-size:0.72rem">
+                <i class="fa-solid fa-books me-1"></i>Browse Catalog
+            </a>
+        </div>
+    </div>
+
+    @foreach (var urgent in Model.UrgentAlerts)
+    {
+        <div class="urgent-alert">
+            <i class="fa-solid fa-triangle-exclamation" style="color:var(--gold);flex-shrink:0"></i>
+            <div>
+                <strong>Expiring Soon:</strong>
+                @if (Model.IsAdminView)
+                {
+                    <strong>@urgent.UserFullName's</strong>
+                    <text> reservation for </text>
+                }
+                else
+                {
+                    <text>Your reservation for </text>
+                }
+                <strong>@urgent.BookTitle</strong> expires
+                <strong>@urgent.ExpiresAtDisplay</strong>.
+            </div>
+        </div>
+    }
+
+    @if (Model.IsAdminView)
+    {
+        <div class="admin-banner">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>
+                Viewing all system reservations as <strong>@(User.IsInRole("Admin") ? "Administrator" : "Librarian")</strong>.
+                You may cancel any reservation or confirm pickup on behalf of members.
+            </span>
+        </div>
+    }
+
+    <div class="metrics-ribbon">
+        <div class="metric-cell active" onclick="filterRes('all',this)">
+            <div class="mv">@totalCount</div><div class="ml">Total</div>
+        </div>
+        <div class="metric-cell" onclick="filterRes('Pending',this)">
+            <div class="mv">@pendingCount</div><div class="ml">In Queue</div>
+        </div>
+        <div class="metric-cell" onclick="filterRes('Ready',this)">
+            <div class="mv">@readyCount</div><div class="ml">Ready</div>
+        </div>
+        <div class="metric-cell" onclick="filterRes('Fulfilled',this)">
+            <div class="mv">@fulfilledCount</div><div class="ml">Fulfilled</div>
+        </div>
+        <div class="metric-cell" onclick="filterRes('Cancelled',this)">
+            <div class="mv">@cancelledCount</div><div class="ml">Cancelled</div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div style="padding:.9rem 1.25rem;background:#e6f4ea;border-left:3px solid #1a6832;margin-bottom:1rem;font-size:.85rem;color:#1a6832;">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["Success"]
+        </div>
+    }
+
+    @if (!displayList.Any())
+    {
+        <div style="border:1px solid var(--border)">
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fa-solid fa-bookmark"></i></div>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;margin-bottom:0.5rem">
+                    @(Model.IsAdminView ? "No reservations in the system" : "No reservations yet")
+                </p>
+                <a asp-controller="Books" asp-action="Index" class="btn-ghost" style="font-size:0.75rem;margin-top:0.75rem">
+                    Browse Catalog
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
         @if (Model.IsAdminView)
         {
-            <text><strong>@urgent.UserFullName's</strong> reservation for</text>
+            <div style="border:1px solid var(--border);overflow-x:auto" id="resContainer">
+                <table class="lib-table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Member</th>
+                            <th>Reserved</th>
+                            <th>Expires / Pickup By</th>
+                            <th>Status</th>
+                            <th style="text-align:right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in displayList)
+                        {
+                            <tr data-status="@r.Status">
+                                <td>
+                                    <div class="book-cell">
+                                        @if (!string.IsNullOrEmpty(r.BookCoverUrl))
+                                        {
+                                            <img src="@r.BookCoverUrl" class="cover-sm" alt="cover" />
+                                        }
+                                        else
+                                        {
+                                            <div class="cover-sm-ph">N/A</div>
+                                        }
+                                        <div>
+                                            <div class="book-name">@r.BookTitle</div>
+                                            <div class="book-author">@r.BookAuthor</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="member-name">@r.UserFullName</div>
+                                    <div class="member-email">@r.UserEmail</div>
+                                </td>
+                                <td style="font-size:0.82rem;color:var(--ash)">@r.ReservedAtDisplay</td>
+                                <td style="font-size:0.82rem">
+                                    @r.ExpiresAtDisplay
+                                    @if (r.IsExpiringSoon)
+                                    {
+                                        <span class="expiry-warn">
+                                            <i class="fa-solid fa-triangle-exclamation me-1"></i>Expiring soon
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @switch (r.Status)
+                                    {
+                                        case Project.Core.Enums.ReservationStatus.Pending:
+                                            <span class="res-status rs-pending">In Queue</span>
+                                            break;
+                                        case Project.Core.Enums.ReservationStatus.Ready:
+                                            <span class="res-status rs-ready">Ready for Pickup</span>
+                                            break;
+                                        case Project.Core.Enums.ReservationStatus.Fulfilled:
+                                            <span class="res-status rs-fulfilled">Fulfilled</span>
+                                            break;
+                                        case Project.Core.Enums.ReservationStatus.Cancelled:
+                                            <span class="res-status rs-cancelled">Cancelled</span>
+                                            break;
+                                        default:
+                                            <span class="res-status">@r.StatusLabel</span>
+                                            break;
+                                    }
+                                </td>
+                                <td style="text-align:right">
+                                    <div style="display:flex;gap:0.4rem;justify-content:flex-end">
+                                        @if (r.Status == Project.Core.Enums.ReservationStatus.Ready)
+                                        {
+                                            <form asp-controller="Reservations" asp-action="Pickup" method="post" style="display:inline"
+                                                  onsubmit="return confirm('Confirm pickup for @r.BookTitle?')">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="reservationId" value="@r.Id" />
+                                                <button type="submit" class="btn-table btn-pickup">
+                                                    <i class="fa-solid fa-circle-check me-1"></i>Pickup
+                                                </button>
+                                            </form>
+                                        }
+                                        @if (r.IsCancellable)
+                                        {
+                                            <form asp-action="AdminCancel" method="post" style="display:inline"
+                                                  onsubmit="return confirm('Cancel @r.UserFullName\'s reservation for @r.BookTitle?')">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@r.Id" />
+                                                <input type="hidden" name="reservationUserId" value="@r.UserId" />
+                                                <button type="submit" class="btn-table btn-cancel-sm">Cancel</button>
+                                            </form>
+                                        }
+                                        @if (!r.IsCancellable && r.Status != Project.Core.Enums.ReservationStatus.Ready)
+                                        {
+                                            <span style="color:var(--border);font-size:0.8rem">—</span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
         else
         {
-            <text>Your reservation for</text>
-        }
-        <strong>@urgent.BookTitle</strong> expires <strong>@urgent.ExpiresAtDisplay</strong>.
-    </div>
-}
-
-@* ── Stat cards ── *@
-<div class="stats-row">
-    <div class="stat-card">
-        <div class="stat-number">@Model.TotalCount</div>
-        <div class="stat-label">Total</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number" style="color:#f0a500">@Model.PendingCount</div>
-        <div class="stat-label">In Queue</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number" style="color:#4caf50">@Model.ReadyCount</div>
-        <div class="stat-label">Ready</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number" style="color:#9e9e9e">@Model.FulfilledCount</div>
-        <div class="stat-label">Fulfilled</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number" style="color:#e25555">@Model.CancelledCount</div>
-        <div class="stat-label">Cancelled</div>
-    </div>
-</div>
-
-@* ── Table ── *@
-@if (!displayList.Any())
-{
-    <div class="empty-state">
-        <div style="font-size:44px">📚</div>
-        <p>@(Model.IsAdminView ? "No reservations found in the system." : "You have no reservations yet.")</p>
-        <a asp-controller="Books" asp-action="Index" class="btn btn-secondary">Browse Books</a>
-    </div>
-}
-else
-{
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>Book</th>
-                    @if (Model.IsAdminView)
-                    {
-                        <th>Member</th>
-                    }
-                    <th>Reserved On</th>
-                    <th>Expires / Pickup By</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @foreach (var r in displayList)
+            <div class="res-list" id="resContainer">
+                @foreach (var res in displayList)
                 {
-                    <tr>
-                        <td>
-                            <div class="book-thumb">
-                                @if (!string.IsNullOrEmpty(r.BookCoverUrl))
-                                {
-                                    <img src="@r.BookCoverUrl" />
-                                }
-                                else
-                                {
-                                    <div class="no-img">N/A</div>
-                                }
-                                <div>
-                                    <div style="font-weight:600">@r.BookTitle</div>
-                                    <div style="font-size:12px;color:#888">@r.BookAuthor</div>
-                                </div>
-                            </div>
-                        </td>
+                    string statusClass = res.Status switch
+                    {
+                        Project.Core.Enums.ReservationStatus.Ready => "rs-ready",
+                        Project.Core.Enums.ReservationStatus.Fulfilled => "rs-fulfilled",
+                        Project.Core.Enums.ReservationStatus.Cancelled => "rs-cancelled",
+                        _ => "rs-pending"
+                    };
 
-                        @if (Model.IsAdminView)
-                        {
-                            <td>
-                                <div style="font-weight:600;font-size:13px">@r.UserFullName</div>
-                                <div style="font-size:11px;color:#888">@r.UserEmail</div>
-                            </td>
-                        }
+                    string statusLabel = res.Status switch
+                    {
+                        Project.Core.Enums.ReservationStatus.Ready => "Ready to Borrow",
+                        Project.Core.Enums.ReservationStatus.Fulfilled => "Fulfilled",
+                        Project.Core.Enums.ReservationStatus.Cancelled => "Cancelled",
+                        _ => (!string.IsNullOrEmpty(res.StatusLabel) && res.StatusLabel != "0" && res.StatusLabel != "1")
+                            ? $"In Queue #{res.StatusLabel}"
+                            : "Next in Queue"
+                    };
 
-                        <td style="font-size:13px">@r.ReservedAtDisplay</td>
-
-                        <td style="font-size:13px">
-                            @r.ExpiresAtDisplay
-                            @if (r.IsExpiringSoon)
+                    <div class="res-row" data-status="@res.Status">
+                        <div class="res-cover">
+                            @if (!string.IsNullOrEmpty(res.BookCoverUrl))
                             {
-                                <span style="color:#e25555;font-size:10px;display:block">⚠ Soon!</span>
-                            }
-                        </td>
-
-                        <td>
-                            <span class="badge @r.StatusBadgeClass">@r.StatusLabel</span>
-                        </td>
-
-                        <td>
-
-                            @* ================= PICKUP BUTTON (ADDED ONLY) ================= *@
-                            @if (Model.IsAdminView && r.StatusLabel.Contains("Ready"))
-                            {
-                                <form asp-controller="Reservations"
-                                      asp-action="Pickup"
-                                      method="post"
-                                      style="display:inline"
-                                      onsubmit="return confirm('Confirm pickup for @r.BookTitle ?')">
-
-                                    @Html.AntiForgeryToken()
-
-                                    <input type="hidden" name="reservationId" value="@r.Id" />
-
-                                    <button type="submit" class="btn btn-success btn-sm">
-                                        Pickup
-                                    </button>
-                                </form>
-                            }
-
-                            @* ================= CANCEL (UNCHANGED) ================= *@
-                            @if (r.IsCancellable)
-                            {
-                                @if (Model.IsAdminView)
-                                {
-                                    <form asp-action="AdminCancel" method="post"
-                                          style="display:inline"
-                                          onsubmit="return confirm('Cancel @r.UserFullName\'s reservation for \'@r.BookTitle\'?')">
-
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@r.Id" />
-                                        <input type="hidden" name="reservationUserId" value="@r.UserId" />
-
-                                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
-                                    </form>
-                                }
-                                else
-                                {
-                                    <form asp-action="Cancel"
-                                          asp-route-id="@r.Id"
-                                          method="post"
-                                          style="display:inline"
-                                          onsubmit="return confirm('Cancel your reservation for \'@r.BookTitle\'?')">
-
-                                        @Html.AntiForgeryToken()
-
-                                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
-                                    </form>
-                                }
+                                <img src="@res.BookCoverUrl" alt="@res.BookTitle" loading="lazy" />
                             }
                             else
                             {
-                                <span style="color:#ccc;font-size:12px">—</span>
+                                <i class="fa-solid fa-book res-cover-ph"></i>
                             }
+                        </div>
 
-                        </td>
-                    </tr>
+                        <div class="res-info">
+                            <div class="res-title">@res.BookTitle</div>
+                            @if (!string.IsNullOrEmpty(res.BookAuthor))
+                            {
+                                <div class="res-author">@res.BookAuthor</div>
+                            }
+                            <div class="res-meta">
+                                <div class="res-meta-item">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    Reserved @res.ReservedAtDisplay
+                                </div>
+                                @if (res.Status == Project.Core.Enums.ReservationStatus.Ready)
+                                {
+                                    <div class="res-meta-item">
+                                        <i class="fa-solid fa-clock"></i>
+                                        Expires @res.ExpiresAtDisplay
+                                    </div>
+                                }
+                            </div>
+                            <div style="margin-top:.6rem">
+                                <span class="res-status @statusClass">@statusLabel</span>
+                            </div>
+                        </div>
+
+                        <div class="res-actions">
+                            @if (res.Status == Project.Core.Enums.ReservationStatus.Pending && !string.IsNullOrEmpty(res.StatusLabel) && res.StatusLabel != "0")
+                            {
+                                <div class="res-queue-pos">
+                                    <i class="fa-solid fa-list-ol" style="font-size:.65rem;color:var(--ash)"></i>
+                                    Position <strong>#@res.StatusLabel</strong>
+                                </div>
+                            }
+                            @if (res.IsCancellable)
+                            {
+                                <form asp-action="Cancel" asp-route-id="@res.Id" method="post" style="display:inline"
+                                      onsubmit="return confirm('Cancel this reservation?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-res-cancel">
+                                        <i class="fa-solid fa-times me-1"></i>Cancel
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
                 }
-            </tbody>
-        </table>
-    </div>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function filterRes(status, btn) {
+            // Highlight current tab button
+            document.querySelectorAll('.metric-cell').forEach(cell => cell.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Find rows regardless of whether it's the Admin <tr> layout or User <div> layout
+            const rows = document.querySelectorAll('#resContainer tbody tr, #resContainer .res-row');
+
+            rows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                if (status === 'all' || rowStatus === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
 }

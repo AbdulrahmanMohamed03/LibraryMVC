@@ -1,62 +1,270 @@
-﻿@using Project.Application.ViewModels.BorrowingRecord
+﻿
+
+
+@using Project.Application.ViewModels.BorrowingRecord
 @model IEnumerable<BorrowingRecordVM>
 
 @{
-    ViewData["Title"] = "Pending Borrow Requests";
+    ViewData["Title"] = "Pending Approvals";
+    Layout = "_Layout";
+    int total = Model?.Count() ?? 0;
 }
 
-<h2>Pending Borrow Requests</h2>
+<style>
+    .pending-header {
+        padding: 2.5rem 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--cream);
+    }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
+    .pending-eyebrow {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: .4rem;
+    }
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
-}
+    .pending-page-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+    }
 
-<table class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Borrower</th>
-            <th>Book</th>
-            <th>Requested At</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
+    .urgent-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .35rem .85rem;
+        background: #fdecea;
+        border: 1px solid #f0b4b0;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #9c2f2f;
+    }
 
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.BorrowerName</td>
-                <td>@item.BookTitle</td>
-                <td>@item.RequestedAt.ToString("yyyy-MM-dd HH:mm")</td>
-
-                <td>
-                    <a asp-action="Details"
-                       asp-route-id="@item.Id"
-                       class="btn btn-info btn-sm">
-                        Details
-                    </a>
-
-                    <form asp-action="Approve" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@item.Id" />
-
-                        <button type="submit" class="btn btn-success btn-sm">
-                            Approve
-                        </button>
-                    </form>
-                </td>
-            </tr>
+        .urgent-badge .dot {
+            width: 7px;
+            height: 7px;
+            background: #c0392b;
+            border-radius: 50%;
+            animation: blink 1.2s infinite;
         }
-    </tbody>
-</table>
+
+    @@keyframes blink {
+        0%, 100% {
+            opacity: 1
+        }
+
+        50% {
+            opacity: .2
+        }
+    }
+
+    .pend-table-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+
+    .pend-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .pend-table thead tr {
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .pend-table thead th {
+            padding: .9rem 1.25rem;
+            font-size: .63rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ash);
+            text-align: left;
+            background: var(--cream);
+        }
+
+        .pend-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+
+            .pend-table tbody tr:hover {
+                background: var(--cream);
+            }
+
+        .pend-table td {
+            padding: 1.1rem 1.25rem;
+            font-size: .88rem;
+            color: var(--ink-soft);
+            vertical-align: middle;
+        }
+
+    .bwr-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: .15rem;
+    }
+
+    .bwr-name {
+        font-size: .88rem;
+        font-weight: 600;
+        color: var(--ink);
+    }
+
+    .book-title-cell {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .date-cell {
+        font-size: .82rem;
+        color: var(--ink-soft);
+    }
+
+    .date-days {
+        display: block;
+        font-size: .65rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #9c2f2f;
+        margin-top: 2px;
+    }
+
+    .acts-wrap {
+        display: flex;
+        gap: .5rem;
+        align-items: center;
+    }
+
+    .btn-approve {
+        padding: .42rem 1rem;
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        background: var(--ink);
+        color: var(--white);
+        border: 1px solid var(--ink);
+        border-radius: 0;
+        cursor: pointer;
+        transition: background .2s, border-color .2s;
+        white-space: nowrap;
+    }
+
+        .btn-approve:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+</style>
+
+<div class="pending-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <div class="pending-eyebrow">Admin Panel</div>
+                <h1 class="pending-page-title">Pending Borrow Requests</h1>
+            </div>
+            @if (total > 0)
+            {
+                <div class="urgent-badge">
+                    <span class="dot"></span>
+                    @total @(total == 1 ? "request" : "requests") awaiting review
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding:2.5rem 0 5rem">
+    @* @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="padding:.9rem 1.25rem;background:#e6f4ea;border-left:3px solid #1a6832;margin-bottom:1.5rem;font-size:.85rem;color:#1a6832;">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+        </div>
+    } *@
+    @* @if (TempData["ErrorMessage"] != null)
+    {
+        <div style="padding:.9rem 1.25rem;background:#fdecea;border-left:3px solid #c0392b;margin-bottom:1.5rem;font-size:.85rem;color:#9c2f2f;">
+            <i class="fa-solid fa-circle-xmark me-2"></i>@TempData["ErrorMessage"]
+        </div>
+    } *@
+
+    <div class="pend-table-wrap">
+        @if (Model == null || !Model.Any())
+        {
+            <div style="padding:4rem;text-align:center;color:var(--ash)">
+                <i class="fa-solid fa-inbox" style="font-size:2rem;color:var(--border);display:block;margin-bottom:1rem"></i>
+                No pending borrow requests at this time.
+            </div>
+        }
+        else
+        {
+            <table class="pend-table">
+                <thead>
+                    <tr>
+                        <th>#ID</th>
+                        <th>Borrower</th>
+                        <th>Book</th>
+                        <th>Requested At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                      
+                        int daysWaiting = (int)(DateTime.Now - item.RequestedAt).TotalDays;
+
+                        <tr>
+                            <td style="color:var(--ash);font-size:.8rem;width:60px">#@item.Id</td>
+                            <td>
+                                <div class="bwr-wrap">
+                                    <span class="bwr-name">@item.BorrowerName</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="book-title-cell">@item.BookTitle</div>
+                            </td>
+                            <td>
+                                <div class="date-cell">
+                                    @item.RequestedAt.ToString("yyyy-MM-dd HH:mm")
+                                    @if (daysWaiting > 0)
+                                    {
+                                        <span class="date-days">@daysWaiting @(daysWaiting == 1 ? "day" : "days") ago</span>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="acts-wrap">
+                                    <form asp-action="Approve" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn-approve">
+                                            <i class="fa-solid fa-check me-1"></i>Approve
+                                        </button>
+                                    </form>
+
+                                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-returnUrl="@Context.Request.Path"  class="btn text-decoration-none small fw-bold" style="color: var(--gold); font-size: .7rem; letter-spacing:1px; text-transform:uppercase;">
+                                        Details <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

@@ -2,6 +2,13 @@
 
 @{
     ViewData["Title"] = "Borrowing Details";
+    bool isAdminOrLibrarian = User.IsInRole("Admin") || User.IsInRole("Librarian");
+
+    string fallbackUrl = isAdminOrLibrarian
+            ? Url.Action("Pending")  // Admin default backup page
+            : Url.Action("Index");   // Regular user default backup page ("My Borrows")
+
+    string backUrl = ViewBag.ReturnUrl ?? fallbackUrl;
 }
 
 <div class="container mt-4">
@@ -125,7 +132,7 @@
                 </div>
             </div>
 
-            <!-- Notes -->
+            @* <!-- Notes -->
             @if (!string.IsNullOrEmpty(Model.Notes))
             {
                 <hr />
@@ -133,7 +140,21 @@
                 <p>@Model.Notes</p>
             }
 
-            <a asp-action="Index" class="btn btn-secondary mt-3">Back</a>
+            <a asp-action="pending" class="btn btn-secondary mt-3">Back</a> *@
+
+            <div class="container mt-4">
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <hr />
+                    <h5 class="text-muted">Notes</h5>
+                    <p>@Model.Notes</p>
+                }
+
+                <a href="@backUrl" class="btn btn-secondary mt-3">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back
+                </a>
+
+            </div>
 
         </div>
     </div>

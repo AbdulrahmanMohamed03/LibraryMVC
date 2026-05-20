@@ -1,164 +1,347 @@
-﻿@using Project.Application.ViewModels.BorrowingRecord
+﻿
+
+@using Project.Application.ViewModels.BorrowingRecord
 @using Project.Core.Enums
 @model IEnumerable<BorrowingRecordVM>
 
 @{
-    ViewData["Title"] = "Borrowing Records";
+    ViewData["Title"] = User.IsInRole("Admin") || User.IsInRole("Librarian")
+        ? "Borrowing Records"
+        : "My Borrows";
+
+    bool isAdminOrLibrarian = User.IsInRole("Admin") || User.IsInRole("Librarian");
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show">
-        @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-
-<div class="container mt-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="fw-bold">Borrowing Records</h2>
-    </div>
-
-    @if (User.IsInRole("Admin") || User.IsInRole("Librarian"))
-    {
-        <form method="get" class="d-flex gap-2 mb-3">
-            <input type="text"
-                   name="search"
-                   value="@ViewBag.Search"
-                   class="form-control w-25"
-                   placeholder="Search by National ID..." />
-
-            <button type="submit" class="btn btn-primary">Search</button>
-
-            @if (!string.IsNullOrEmpty(ViewBag.Search as string))
-            {
-                <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
-            }
-        </form>
+<style>
+    /* Page Container to fix layout stretching to screen edges */
+    .borrows-page-wrapper {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-0">
-            <table class="table table-hover align-middle mb-0">
+    .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
 
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
+    .search-line {
+        display: flex;
+        align-items: center;
+        border-bottom: 2px solid var(--ink);
+        gap: 0;
+    }
+
+        .search-line input {
+            border: none;
+            background: transparent;
+            padding: 0.5rem 0;
+            font-family: 'Jost',sans-serif;
+            font-size: 0.875rem;
+            color: var(--ink);
+            width: 260px;
+        }
+
+            .search-line input:focus {
+                outline: none;
+            }
+
+        .search-line button {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: var(--ink);
+            transition: color 0.2s;
+        }
+
+            .search-line button:hover {
+                color: var(--gold);
+            }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+        flex-shrink: 0;
+    }
+
+    .overdue-flag {
+        color: var(--red-soft);
+        font-size: 0.72rem;
+        font-weight: 700;
+        display: block;
+    }
+
+    .cover-thumb {
+        width: 38px;
+        height: 54px;
+        object-fit: cover;
+        border: 1px solid var(--border);
+    }
+
+    .cover-fallback {
+        width: 38px;
+        height: 54px;
+        background: var(--cream-deep);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        color: var(--ash);
+    }
+
+    .row-actions {
+        display: flex;
+        gap: 0.4rem;
+    }
+
+    .btn-table {
+        padding: 0.35rem 0.8rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        display: inline-block;
+        border-radius: 0;
+    }
+
+    .btn-details {
+        background: var(--cream);
+        color: var(--ink);
+        border-color: var(--border);
+    }
+
+        .btn-details:hover {
+            border-color: var(--ink);
+            color: var(--ink);
+        }
+
+    .btn-return {
+        background: var(--gold-light);
+        color: var(--gold-dark);
+        border-color: var(--gold);
+    }
+
+        .btn-return:hover {
+            background: var(--gold);
+            color: var(--white);
+        }
+
+    .btn-cancel-sm {
+        background: #fdecea;
+        color: var(--red-soft);
+        border-color: #f5c6cb;
+    }
+
+        .btn-cancel-sm:hover {
+            background: var(--red-soft);
+            color: var(--white);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 1rem;
+        color: var(--ash);
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        color: var(--border);
+        margin-bottom: 1rem;
+    }
+
+    /* Clean inner spacing defaults for table rows */
+    .lib-table th, .lib-table td {
+        padding: 1rem 0.75rem !important;
+    }
+</style>
+
+<div class="borrows-page-wrapper">
+    <div class="toolbar">
+        <div>
+            <span class="section-eyebrow">Library Records</span>
+            <h2 class="section-title" style="font-size:1.5rem; margin-top: 0.25rem;">
+                @(isAdminOrLibrarian ? "All Borrowing Records" : "My Borrowing Records")
+            </h2>
+        </div>
+
+        @if (isAdminOrLibrarian)
+        {
+            <form method="get">
+                <div class="search-line">
+                    <input type="text" name="search" value="@ViewBag.Search"
+                           placeholder="Search by National ID…" />
+                    <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </form>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+    {
+        <div style="margin-bottom:1rem;font-size:0.85rem;color:var(--ash)">
+            Showing results for <strong>@ViewBag.Search</strong> —
+            <a asp-action="Index" style="color:var(--gold)">Clear filter</a>
+        </div>
+    }
+
+    <div style="border:1px solid var(--border); background: #ffffff;">
+        <table class="lib-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="width:50px">#</th>
+                    @if (isAdminOrLibrarian)
+                    {
                         <th>Borrower</th>
-                        <th>Book</th>
-                        <th>Status</th>
-                        <th>Requested At</th>
-                        <th>Due Date</th>
-                        <th>Actions</th>
+                    }
+                    <th>Book</th>
+                    <th>Status</th>
+                    <th>Requested</th>
+                    <th>Due Date</th>
+                    <th style="text-align:right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="@(isAdminOrLibrarian ? 7 : 6)" style="padding:0;border:none">
+                            <div class="empty-state">
+                                <div class="empty-icon"><i class="fa-solid fa-book-open"></i></div>
+                                <p style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;margin-bottom:0.5rem">
+                                    No borrowing records found
+                                </p>
+                                <span style="font-size:0.8rem">
+                                    @(!string.IsNullOrEmpty(ViewBag.Search as string)
+                                        ? $"No records for National ID: {ViewBag.Search}"
+                                        : "There are no borrowing records in this view.")
+                                </span>
+                            </div>
+                        </td>
                     </tr>
-                </thead>
-
-                <tbody>
-                    @if (!Model.Any())
+                }
+                else
+                {
+                    int idx = 1;
+                    foreach (var item in Model)
                     {
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
-                                @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+                            <td style="color:var(--ash);font-size:0.8rem">@idx</td>
+
+                            @if (isAdminOrLibrarian)
+                            {
+                                <td style="font-weight:600">@item.BorrowerName</td>
+                            }
+
+                            <td style="color:var(--ink-soft); font-weight: 500;">@item.BookTitle</td>
+
+                            <td>
+                                @switch (item.Status)
                                 {
-                                    <span>No records found for National ID: <strong>@ViewBag.Search</strong></span>
-                                }
-                                else
-                                {
-                                    <span>No borrowing records found</span>
+                                    case BorrowingStatus.Pending:
+                                        <span class="badge-booksaw badge-pending">
+                                            <span class="status-dot" style="background:#d4a017"></span>Pending
+                                        </span>
+                                        break;
+                                    case BorrowingStatus.Active:
+                                        <span class="badge-booksaw badge-active">
+                                            <span class="status-dot" style="background:#2980b9"></span>Active
+                                        </span>
+                                        break;
+                                    case BorrowingStatus.Returned:
+                                        <span class="badge-booksaw badge-returned">
+                                            <span class="status-dot" style="background:#27ae60"></span>Returned
+                                        </span>
+                                        break;
+                                    case BorrowingStatus.ReturnedOverdue:
+                                        <span class="badge-booksaw badge-overdue">
+                                            <span class="status-dot" style="background:#c0392b"></span>Overdue Return
+                                        </span>
+                                        break;
+                                    default:
+                                        <span class="badge-booksaw badge-cancelled">@item.StatusLabel</span>
+                                        break;
                                 }
                             </td>
-                        </tr>
-                    }
-                    else
-                    {
-                        int index = 1;
-                        foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>@index</td>
-                                <td class="fw-semibold">@item.BorrowerName</td>
-                                <td>@item.BookTitle</td>
 
-                                <td>
-                                    @switch (item.Status)
+                            <td style="font-size:0.82rem;color:var(--ash)">
+                                @item.RequestedAt.ToString("MMM dd, yyyy")
+                            </td>
+
+                            <td style="font-size:0.82rem">
+                                @if (item.DueDate.HasValue)
+                                {
+                                    bool isLate = item.DueDate.Value < DateTime.Now
+                                                  && item.Status == BorrowingStatus.Active;
+                                    if (isLate)
                                     {
-                                        case BorrowingStatus.Pending:
-                                            <span class="badge bg-warning text-dark">@item.StatusLabel</span>
-                                            break;
-                                        case BorrowingStatus.Active:
-                                            <span class="badge bg-primary">@item.StatusLabel</span>
-                                            break;
-                                        case BorrowingStatus.Returned:
-                                            <span class="badge bg-success">@item.StatusLabel</span>
-                                            break;
-                                        case BorrowingStatus.ReturnedOverdue:
-                                            <span class="badge bg-danger">@item.StatusLabel</span>
-                                            break;
-                                        case BorrowingStatus.ReturnedDamaged:
-                                            <span class="badge bg-dark">@item.StatusLabel</span>
-                                            break;
-                                        default:
-                                            <span class="badge bg-secondary">@item.StatusLabel</span>
-                                            break;
-                                    }
-                                </td>
-
-                                <td>@item.RequestedAt.ToString("yyyy-MM-dd")</td>
-
-                                <td>
-                                    @if (item.DueDate.HasValue &&
-                                         item.DueDate.Value < DateTime.Now &&
-                                         item.Status == BorrowingStatus.Active)
-                                    {
-                                        <span class="text-danger fw-bold">
-                                            @item.DueDate.Value.ToString("yyyy-MM-dd") ⚠ Overdue
+                                        <span style="color:var(--red-soft);font-weight:600">
+                                            @item.DueDate.Value.ToString("MMM dd, yyyy")
+                                        </span>
+                                        <span class="overdue-flag">
+                                            <i class="fa-solid fa-triangle-exclamation me-1"></i>Overdue
                                         </span>
                                     }
                                     else
                                     {
-                                        @(item.DueDate?.ToString("yyyy-MM-dd") ?? "N/A")
+                                        @item.DueDate.Value.ToString("MMM dd, yyyy")
                                     }
-                                </td>
+                                }
+                                else
+                                {
+                                    <span style="color:var(--ash)">—</span>
+                                }
+                            </td>
 
-                                <td>
-                                    <a asp-action="Details" asp-route-id="@item.Id"
-                                       class="btn btn-sm btn-outline-primary">Details</a>
+                            <td style="text-align:right">
+                                <div class="row-actions" style="justify-content:flex-end">
+                                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-returnUrl="@Context.Request.Path" class=" btn-table btn-details">
+                                        Details
+                                    </a>
 
-                                    @if (item.Status == BorrowingStatus.Active &&
-                                         (User.IsInRole("Admin") || User.IsInRole("Librarian")))
+                                    @if (item.Status == BorrowingStatus.Active && isAdminOrLibrarian)
                                     {
-                                        <a asp-action="Return" asp-route-id="@item.Id"
-                                           class="btn btn-warning btn-sm">Return</a>
+                                        <a asp-action="Return" asp-route-id="@item.Id" class="btn-table btn-return">
+                                            <i class="fa-solid fa-rotate-left me-1"></i>Return
+                                        </a>
                                     }
 
-                                    @if (item.Status == BorrowingStatus.Pending &&
-                                         !User.IsInRole("Admin") && !User.IsInRole("Librarian"))
+                                    @if (item.Status == BorrowingStatus.Pending && !isAdminOrLibrarian)
                                     {
-                                        <form asp-action="CancelRequest" method="post" style="display:inline;">
+                                        <form asp-action="CancelRequest" method="post" style="display:inline">
+                                            @Html.AntiForgeryToken()
                                             <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" class="btn btn-danger btn-sm"
-                                                    onclick="return confirm('Cancel this request?')">
+                                            <button type="submit" class="btn-table btn-cancel-sm"
+                                                    onclick="return confirm('Cancel this borrow request?')">
                                                 Cancel
                                             </button>
                                         </form>
                                     }
-                                </td>
-                            </tr>
-                            index++;
-                        }
+                                </div>
+                            </td>
+                        </tr>
+                        idx++;
                     }
-                </tbody>
-
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
 </div>

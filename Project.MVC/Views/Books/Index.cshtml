@@ -1,190 +1,721 @@
-﻿@model Project.Application.ViewModels.Book.BookIndexViewModel
-
+﻿
+@model Project.Application.ViewModels.Book.BookIndexViewModel
 @{
-    ViewData["Title"] = "Our Books Collection";
+    ViewData["Title"] = "Book Catalog";
     bool isAdminMode = User.IsInRole("Admin") || User.IsInRole("Librarian");
+    int activeCatId = Model.FilterCategoryId ?? 0;
+    var categories = (ViewBag.Categories as IEnumerable<dynamic>) ?? Enumerable.Empty<dynamic>();
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/vendor.css" />
-    <link rel="stylesheet" href="~/icomoon/style.css" />
-    <link rel="stylesheet" href="~/css/style.css" />
-    
-    <style>
-        /* Modern, minimal search bar container */
-        .header-search-form {
-            display: inline-block;
-            border-bottom: 2px solid #111;
-            width: 280px;
-            margin-right: 15px;
+<style>
+    .catalog-hero {
+        background: var(--ink);
+        padding: 3.5rem 0 2.5rem;
+        text-align: center
+    }
+
+        .catalog-hero h1 {
+            font-family: 'Cormorant Garamond',serif;
+            font-size: clamp(2rem,5vw,3.2rem);
+            font-weight: 300;
+            color: var(--white);
+            letter-spacing: 2px;
+            margin: 0
         }
 
-        .header-search-input {
-            border: none !important;
-            background: transparent;
-            padding: 6px 0;
-            font-size: 0.9rem;
-            color: #111;
-            width: 100%;
-        }
-
-            .header-search-input:focus {
-                outline: none !important;
-                box-shadow: none !important;
+            .catalog-hero h1 strong {
+                font-weight: 700;
+                color: var(--gold)
             }
 
-        /* Clean action button completely free of baseline borders */
-        .header-search-button {
-            background: none;
-            border: none;
-            padding: 6px 15px;
-            color: #111;
-            cursor: pointer;
-            font-weight: bold;
+        .catalog-hero p {
+            font-size: 0.78rem;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 0.5rem
+        }
+
+    .filter-bar {
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 0;
+        position: sticky;
+        top: 68px;
+        z-index: 50
+    }
+
+    .filter-bar-inner {
+        display: flex;
+        align-items: stretch;
+        overflow-x: auto;
+        scrollbar-width: none
+    }
+
+        .filter-bar-inner::-webkit-scrollbar {
+            display: none
+        }
+
+    .filter-search {
+        display: flex;
+        align-items: center;
+        border-right: 1px solid var(--border);
+        padding: 0 1.25rem;
+        min-width: 250px;
+        flex-shrink: 0;
+        gap: 0.4rem
+    }
+
+        .filter-search input {
+            border: none;
+            background: transparent;
+            font-family: 'Jost',sans-serif;
+            font-size: 0.85rem;
+            color: var(--ink);
+            padding: 1rem 0;
+            width: 100%
+        }
+
+            .filter-search input:focus {
+                outline: none
+            }
+
+            .filter-search input::placeholder {
+                color: var(--ash)
+            }
+
+    .fsearch-icon {
+        color: var(--gold);
+        font-size: 0.82rem;
+        flex-shrink: 0
+    }
+
+    .fsearch-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--ash);
+        font-size: 0.75rem;
+        flex-shrink: 0;
+        padding: 0 0.4rem;
+        transition: color 0.2s
+    }
+
+        .fsearch-btn:hover {
+            color: var(--gold)
+        }
+
+    .clear-lnk {
+        color: var(--ash);
+        font-size: 0.7rem;
+        white-space: nowrap;
+        text-decoration: none;
+        flex-shrink: 0;
+        padding: 0 0.2rem
+    }
+
+        .clear-lnk:hover {
+            color: var(--red-soft)
+        }
+
+    .cat-nav {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        flex: 1;
+        overflow-x: auto;
+        scrollbar-width: none
+    }
+
+        .cat-nav::-webkit-scrollbar {
+            display: none
+        }
+
+        .cat-nav li a {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 1rem 1.1rem;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--ash);
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            transition: color 0.2s,border-color 0.2s
+        }
+
+            .cat-nav li a:hover {
+                color: var(--ink)
+            }
+
+            .cat-nav li a.active {
+                color: var(--gold);
+                border-bottom-color: var(--gold)
+            }
+
+    .cat-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 3px;
+        background: rgba(197,168,128,0.25);
+        color: var(--gold-dark);
+        font-size: 0.5rem;
+        font-weight: 700
+    }
+
+    .cat-nav li a.active .cat-count {
+        background: var(--gold);
+        color: var(--white)
+    }
+
+    .admin-bar {
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 0.75rem 0
+    }
+
+    .books-section {
+        padding: 3rem 0 5rem;
+        background: var(--cream)
+    }
+
+    .booksaw-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: transform 0.22s,box-shadow 0.22s;
+        cursor: pointer
+    }
+
+        .booksaw-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 32px rgba(0,0,0,0.1)
+        }
+
+        .booksaw-card .cover-frame {
+            width: 100%;
+            aspect-ratio: 2/3;
+            overflow: hidden;
+            background: var(--cream-deep);
+            position: relative;
+            flex-shrink: 0
+        }
+
+            .booksaw-card .cover-frame img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.4s
+            }
+
+        .booksaw-card:hover .cover-frame img {
+            transform: scale(1.04)
+        }
+
+    .cover-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: var(--ash)
+    }
+
+        .cover-placeholder i {
+            font-size: 2rem;
+            color: var(--border)
+        }
+
+        .cover-placeholder span {
+            font-size: 0.65rem;
             letter-spacing: 1px;
-            transition: color 0.2s ease;
+            text-transform: uppercase
         }
 
-            .header-search-button:hover {
-                color: #c5a880;
-            }
+    .cover-badge {
+        position: absolute;
+        top: 0.65rem;
+        right: 0.65rem;
+        font-size: 0.58rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 2px 7px
+    }
 
-        .search-clear-link {
-            font-size: 0.8rem;
-            color: #999;
-            text-decoration: underline;
-            margin-left: 5px;
+    .badge-avail {
+        background: #e6f4ea;
+        color: #1a6832
+    }
+
+    .badge-unavail {
+        background: #fdecea;
+        color: #9c2f2f
+    }
+
+    .booksaw-card .card-body-book {
+        padding: 1.25rem 1.25rem 1rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem
+    }
+
+    .book-category-tag {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--gold)
+    }
+
+    .book-title-card {
+        font-family: 'Cormorant Garamond',serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.25;
+        margin: 0
+    }
+
+    .book-author-card {
+        font-size: 0.75rem;
+        color: var(--ash);
+        margin: 0
+    }
+
+    .book-fee-card {
+        font-size: 0.78rem;
+        color: var(--ink-soft);
+        margin-top: auto;
+        padding-top: 0.5rem;
+        border-top: 1px solid #f0ede8
+    }
+
+        .book-fee-card span {
+            font-weight: 600;
+            color: var(--gold)
         }
-        
-            .search-clear-link:hover {
-                color: #111;
-            }
-    </style>
-}
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show">
-        @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
+    .booksaw-card .card-actions {
+        padding: 0 1.25rem 1.25rem;
+        display: flex;
+        gap: 0.5rem
+    }
 
-<section id="popular-books" class="bookshelf py-5" style="background-color: #f3f2ec;">
+    .btn-card-detail {
+        flex: 1;
+        padding: 0.55rem 0;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-align: center;
+        text-decoration: none;
+        background: var(--ink);
+        color: var(--white);
+        border: 1px solid var(--ink);
+        transition: all 0.2s;
+        border-radius: 0
+    }
+
+        .btn-card-detail:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--white)
+        }
+
+    .btn-card-reserve {
+        padding: 0.55rem 0.85rem;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        background: transparent;
+        color: var(--gold);
+        border: 1px solid var(--gold);
+        transition: all 0.2s;
+        border-radius: 0
+    }
+
+        .btn-card-reserve:hover {
+            background: var(--gold);
+            color: var(--white)
+        }
+
+    .btn-tbl {
+        padding: 0.3rem 0.7rem;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        border-radius: 0;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+        display: inline-block
+    }
+
+    .btn-tbl-edit {
+        background: var(--gold-light);
+        color: var(--gold-dark);
+        border-color: var(--gold)
+    }
+
+        .btn-tbl-edit:hover {
+            background: var(--gold);
+            color: var(--white)
+        }
+
+    .btn-tbl-del {
+        background: #fdecea;
+        color: var(--red-soft);
+        border-color: #f5c6cb
+    }
+
+        .btn-tbl-del:hover {
+            background: var(--red-soft);
+            color: var(--white)
+        }
+
+    .empty-catalog {
+        text-align: center;
+        padding: 5rem 0
+    }
+
+        .empty-catalog i {
+            font-size: 3rem;
+            color: var(--border);
+            margin-bottom: 1rem;
+            display: block
+        }
+
+        .empty-catalog p {
+            font-family: 'Cormorant Garamond',serif;
+            font-size: 1.4rem;
+            color: var(--ash);
+            margin: 0
+        }
+
+    .results-bar {
+        margin-bottom: 1.5rem;
+        font-size: 0.82rem;
+        color: var(--ash);
+        padding: 0.65rem 1rem;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--gold)
+    }
+
+
+
+
+    .service-banner-section {
+        background-color: var(--ink);
+        color: var(--white);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sb-item {
+        padding: 3rem 1.5rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .sb-icon-box {
+        font-size: 2.2rem;
+        color: var(--gold);
+        margin-bottom: 1.25rem;
+        line-height: 1;
+    }
+
+    .sb-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.35rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: var(--white);
+        margin-bottom: 0.4rem;
+    }
+
+    .sb-desc {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.45);
+        line-height: 1.5;
+        max-width: 260px;
+        margin: 0 auto;
+    }
+
+    .sb-border-right {
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+
+
+</style>
+
+<div class="catalog-hero">
     <div class="container">
-        
-        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-5">
-            
-            <div class="section-header">
-                <span class="text-muted text-uppercase tracking-widest small">Our Catalog</span>
-                <h2 class="section-title text-uppercase m-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 700;">Books Collection</h2>
-            </div>
-            
-            <div class="d-flex align-items-center">
-                @if (isAdminMode)
-                {
-                    <a asp-action="Create" class="btn btn-outline-dark rounded-0 px-4 text-uppercase fw-bold">+ Add New Book</a>
-                }
-                else
-                {
-                    <form asp-action="Index" method="get" class="d-flex align-items-center m-0">
-                        
-                        <div class="header-search-form">
-                            <input type="text" name="searchString" class="header-search-input" placeholder="Search title, author, ISBN..." value="@Context.Request.Query["searchString"]" />
-                        </div>
-                        
-                        <button type="submit" class="header-search-button">Search</button>
+        <p>Bibliotheca Collection</p>
+        <h1>The <strong>Catalog</strong></h1>
+    </div>
+</div>
 
-                        @if (!string.IsNullOrEmpty(Context.Request.Query["searchString"]))
-                        {
-                            <a asp-action="Index" class="search-clear-link">Clear</a>
-                        }
-                    </form>
-                }
+@if (isAdminMode)
+{
+    <div class="admin-bar">
+        <div class="container d-flex align-items-center justify-content-between gap-3 flex-wrap">
+            <div style="font-size:0.78rem;color:var(--ash)">
+                <strong>@Model.TotalBooks</strong> titles in catalog
             </div>
-            
+            <a asp-action="Create" class="btn-gold" style="padding:0.5rem 1.25rem;font-size:0.72rem">
+                <i class="fa-solid fa-plus me-1"></i>Add New Book
+            </a>
         </div>
+    </div>
+}
+else
+{
+    <div class="filter-bar">
+        <div class="container p-0">
+            <div class="filter-bar-inner">
+                <!-- SEARCH — preserves active categoryId via hidden input -->
+                <form asp-action="Index" method="get" class="filter-search">
+                    @if (activeCatId > 0)
+                    {
+                        <input type="hidden" name="categoryId" value="@activeCatId" />
+                    }
+                    <i class="fa-solid fa-magnifying-glass fsearch-icon"></i>
+                    <input type="text" name="searchString" value="@Model.SearchTerm"
+                           placeholder="Title, author, ISBN…" />
+                    <button type="submit" class="fsearch-btn">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+                    {
+                        <a asp-action="Index"
+                           asp-route-categoryId="@(activeCatId > 0 ? activeCatId : (int?)null)"
+                           class="clear-lnk" title="Clear search">✕</a>
+                    }
+                </form>
+
+                <!-- CATEGORY TABS — server-side GET, preserves searchString -->
+                <ul class="cat-nav">
+                    <li>
+                        <a asp-action="Index" asp-route-searchString="@Model.SearchTerm"
+                           class="@(activeCatId == 0 ? "active" : "")">All</a>
+                    </li>
+                    @foreach (var cat in categories)
+                    {
+                        <li>
+                            <a asp-action="Index"
+                               asp-route-categoryId="@cat.Id"
+                               asp-route-searchString="@Model.SearchTerm"
+                               class="@(activeCatId == (int)cat.Id ? "active" : "")">
+                                @cat.Name
+                                <span class="cat-count">@cat.Count</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="books-section">
+    <div class="container">
+
+        @if (!string.IsNullOrWhiteSpace(Model.SearchTerm) || activeCatId > 0)
+        {
+            <div class="results-bar">
+                <i class="fa-solid fa-filter me-2" style="color:var(--gold)"></i>
+                <strong>@Model.FilteredBooks.Count()</strong> result(s)
+                @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+                {
+                    <text> matching "<strong>@Model.SearchTerm</strong>"</text>
+                }
+                @if (activeCatId > 0 && ViewBag.ActiveCategoryName != null)
+                {
+                    <text> in <strong>@ViewBag.ActiveCategoryName</strong></text>
+                }
+                <a asp-action="Index" style="margin-left:1rem;font-size:0.75rem;color:var(--ash)">Clear all</a>
+            </div>
+        }
 
         @if (isAdminMode)
         {
-            @await Html.PartialAsync("_AdminBookTable", Model)
-        }
-        else
-        {
-            <div class="row">
-                @if (Model.Books != null && Model.Books.Any())
-                {
-                    @foreach (var book in Model.Books)
-                    {
-                        <div class="col-md-3 col-sm-6 mb-4">
-                            <div class="product-item bg-white p-3 border text-center h-100 d-flex flex-column justify-content-between" style="transition: all 0.3s ease;">
-                                <div class="image-holder mb-3" style="height: 300px; overflow: hidden; background: #faf9f5;">
-                                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
-                                    {
-                                        <img src="@book.CoverImageUrl" alt="@book.Title" class="img-fluid h-100 w-100" style="object-fit: contain;" />
-                                    }
-                                    else
-                                    {
-                                        <div class="d-flex align-items-center justify-content-center h-100 text-muted bg-light border">
-                                            <span>No Cover</span>
-                                        </div>
-                                    }
-                                </div>
-                                
-                                <div class="product-detail">
-                                    <h3 class="product-title h6 text-uppercase fw-bold m-0" style="letter-spacing: 0.5px;">
-                                        <a asp-action="Details" asp-route-id="@book.Id" class="text-decoration-none text-dark">@book.Title</a>
-                                    </h3>
-                                    <span class="item-author text-muted small font-italic d-block mb-2">By @book.AuthorName</span>
-
-                                    <div class="mb-3">
-                                        @if (book.AvailableCopies > 0)
+            @if (!Model.Books.Any())
+            {
+                <div class="empty-catalog"><i class="fa-solid fa-books"></i><p>No books yet.</p></div>
+            }
+            else
+            {
+                <div style="border:1px solid var(--border);overflow-x:auto">
+                    <table class="lib-table">
+                        <thead>
+                            <tr>
+                                <th style="width:46px">#</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>ISBN</th>
+                                <th>Copies</th>
+                                <th>Fee</th>
+                                <th style="text-align:right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int n = 1;
+                            }
+                            @foreach (var b in Model.Books)
+                            {
+                                <tr>
+                                    <td style="color:var(--ash);font-size:0.78rem">@n</td>
+                                    <td style="font-weight:600">
+                                        <a asp-action="Details" asp-route-id="@b.Id"
+                                           style="color:var(--ink);text-decoration:none">@b.Title</a>
+                                    </td>
+                                    <td style="color:var(--ash)">@b.AuthorName</td>
+                                    <td><span style="font-size:0.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold)">@b.CategoryName</span></td>
+                                    <td style="font-size:0.78rem;color:var(--ash)">@b.ISBN</td>
+                                    <td>
+                                        @if (b.AvailableCopies > 0)
                                         {
-                                            <span class="badge bg-success rounded-0 text-uppercase small">@book.AvailableCopies Available</span>
+                                            <span class="badge-booksaw badge-available">@b.AvailableCopies / @b.TotalCopies</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-danger rounded-0 text-uppercase small">Out of Stock</span>
-                                        }
-                                    </div>
 
-                                    <div class="d-grid gap-2">
-                                        <a asp-action="Details" asp-route-id="@book.Id" class="btn btn-dark rounded-0 text-uppercase tracking-wider btn-sm">View Details</a>
-                                        
-                                        @if (book.AvailableCopies == 0)
-                                        {
-                                            <a asp-controller="Reservations" asp-action="Confirm" asp-route-id="@book.Id" class="btn btn-accent rounded-0 text-uppercase btn-sm" style="background-color: #c5a880; color: white;">
-                                                Reserve Book
-                                            </a>
+                                            <span class="badge-booksaw badge-checked-out">0 / @b.TotalCopies</span>
                                         }
-                                    </div>
+                                    </td>
+                                    <td style="font-weight:600;color:var(--gold)">@b.BorrowFee.ToString("C")</td>
+                                    <td style="text-align:right">
+                                        <div style="display:flex;gap:0.4rem;justify-content:flex-end">
+                                            <a asp-action="Details" asp-route-id="@b.Id" class="btn-tbl" style="background:var(--cream);color:var(--ink);border-color:var(--border)">Details</a>
+                                            <a asp-action="Edit" asp-route-id="@b.Id" class="btn-tbl btn-tbl-edit">Edit</a>
+                                            <a asp-action="Delete" asp-route-id="@b.Id" class="btn-tbl btn-tbl-del">Delete</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                n++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+        else
+        {
+            @if (!Model.FilteredBooks.Any())
+            {
+                <div class="empty-catalog">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <p>No books match your search.</p>
+                    <a asp-action="Index" class="btn-ghost" style="margin-top:1.5rem;font-size:0.75rem;display:inline-block">Clear filters</a>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    @foreach (var book in Model.FilteredBooks)
+                    {
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="booksaw-card">
+                                <div class="cover-frame">
+                                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                                    {
+                                        <img src="@book.CoverImageUrl" alt="@book.Title" loading="lazy" />
+                                    }
+                                    else
+                                    {
+
+                                        <div class="cover-placeholder"><i class="fa-solid fa-book"></i><span>No Cover</span></div>
+                                    }
+                                    @if (book.AvailableCopies > 0)
+                                    {
+                                        <span class="cover-badge badge-avail">Available</span>
+                                    }
+                                    else
+                                    {
+
+                                        <span class="cover-badge badge-unavail">Checked Out</span>
+                                    }
+                                </div>
+                                <div class="card-body-book">
+                                    <div class="book-category-tag">@book.CategoryName</div>
+                                    <p class="book-title-card">@book.Title</p>
+                                    <p class="book-author-card">@book.AuthorName</p>
+                                    <div class="book-fee-card">Borrow fee <span>@book.BorrowFee.ToString("C")</span></div>
+                                </div>
+                                <div class="card-actions">
+                                    <a asp-action="Details" asp-route-id="@book.Id" class="btn-card-detail">View Details</a>
+                                    @if (!book.IsAvailable && !book.HasActiveReservation && User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <a asp-controller="Reservations" asp-action="Confirm" asp-route-id="@book.Id"
+                                           class="btn-card-reserve" title="Reserve"><i class="fa-solid fa-bookmark"></i></a>
+                                    }
                                 </div>
                             </div>
                         </div>
                     }
-                }
-                else
-                {
-                    <div class="col-12 text-center py-5">
-                        <p class="text-muted fs-5">No books match your search criteria.</p>
-                    </div>
-                }
-            </div>
+                </div>
+            }
         }
     </div>
+</div>
+<section class="service-banner-section">
+    <div class="container">
+        <div class="row g-0">
+            <div class="col-md-3 sb-border-right">
+                <div class="sb-item">
+                    <div class="sb-icon-box"><i class="fa-solid fa-truck-fast"></i></div>
+                    <h4 class="sb-title">Free Delivery</h4>
+                    <p class="sb-desc">On orders over $50.00 allocated for premium subscription tiers.</p>
+                </div>
+            </div>
+            <div class="col-md-3 sb-border-right">
+                <div class="sb-item">
+                    <div class="sb-icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h4 class="sb-title">Secure Payment</h4>
+                    <p class="sb-desc">100% protected checkout payments system with strict SSL security.</p>
+                </div>
+            </div>
+            <div class="col-md-3 sb-border-right">
+                <div class="sb-item">
+                    <div class="sb-icon-box"><i class="fa-solid fa-rotate-left"></i></div>
+                    <h4 class="sb-title">Easy Returns</h4>
+                    <p class="sb-desc">Hassle-free 30 day return option if you change your reading mind.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="sb-item">
+                    <div class="sb-icon-box"><i class="fa-solid fa-headset"></i></div>
+                    <h4 class="sb-title">24/7 Support</h4>
+                    <p class="sb-desc">Our digital library staff is ready to answer questions at any hour.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
-
-@section Scripts {
-    <script src="~/js/modernizr.js"></script>
-    <script src="~/js/plugins.js"></script>
-    <script src="~/js/script.js"></script>
-}

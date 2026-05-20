@@ -1,54 +1,77 @@
-﻿@using Project.Application.ViewModels.User
+﻿
+
+
+
+@using Project.Application.ViewModels.User
 @model LibrariansDataVM
 
 @{
     ViewData["Title"] = "Librarian Details";
 }
 
-<div class="container mt-4">
+<div class="container py-5" style="max-width: 750px;">
 
-    <div class="card shadow">
+    <div style="margin-bottom: 2rem;">
+        <a asp-action="ManageLibrarians" class="bs-link" style="display: inline-flex; align-items: center; gap: .5rem; font-size: .72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ash); text-decoration: none; padding-bottom: 2px; border-bottom: 1px solid transparent; transition: all .2s;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Roster
+        </a>
+    </div>
 
-        <div class="card-header bg-dark text-white">
-            <h3>Librarian Details</h3>
+    <div class="booksaw-card" style="background: var(--white); border: 1px solid var(--border); box-shadow: 0 15px 45px rgba(0,0,0,0.04);">
+
+        <div style="background: var(--ink); padding: 2.5rem; text-align: center; position: relative;">
+            <div style="width: 70px; height: 70px; background: var(--gold); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: var(--white); font-size: 1.8rem; box-shadow: 0 8px 20px rgba(0,0,0,0.2);">
+                <i class="fa-solid fa-id-card-clip"></i>
+            </div>
+            <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 400; color: var(--white); margin: 0;">
+                Staff <strong>Profile</strong>
+            </h3>
+            <p style="font-size: 0.72rem; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin: 4px 0 0 0;">Internal Administration Dossier</p>
         </div>
 
-        <div class="card-body">
+        <div style="padding: 2.5rem 3rem; background: var(--white);">
 
-            <p><strong>Full Name:</strong> @Model.FullName</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border);">
+                <span style="font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ash);">Legal Full Name</span>
+                <span style="font-size: 0.95rem; font-weight: 700; color: var(--ink);">@Model.FullName</span>
+            </div>
 
-            <p><strong>National ID:</strong> @Model.NationalId</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border);">
+                <span style="font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ash);">National Identity Code</span>
+                <span style="font-size: 0.9rem; font-family: monospace; color: var(--ink-soft);">@Model.NationalId</span>
+            </div>
 
-            <p><strong>Email:</strong> @Model.Email</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border);">
+                <span style="font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ash);">Secure Corporate Email</span>
+                <span style="font-size: 0.9rem; color: var(--ink-soft);">@Model.Email</span>
+            </div>
 
-            <p><strong>Hired At:</strong> @Model.HiredAt.ToString("yyyy-MM-dd")</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border);">
+                <span style="font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ash);">Enlistment Date</span>
+                <span style="font-size: 0.9rem; color: var(--ink-soft); font-weight: 500;">@Model.HiredAt.ToString("MMMM dd, yyyy")</span>
+            </div>
 
-            <p>
-                <strong>Status:</strong>
-
-                @if (Model.IsStillWorking)
-                {
-                    <span class="badge bg-success">Active</span>
-                }
-                else
-                {
-                    <span class="badge bg-danger">Fired</span>
-                }
-            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 0 0 0;">
+                <span style="font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ash);">Employment Status</span>
+                <div>
+                    @if (Model.IsStillWorking)
+                    {
+                        <span class="csb csb-a" style="font-size: .6rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; padding: 4px 12px; background: #e6f4ea; color: #1a6832; display: inline-block;">Active Employment</span>
+                    }
+                    else
+                    {
+                        <span class="csb csb-o" style="font-size: .6rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; padding: 4px 12px; background: #fdecea; color: #9c2f2f; display: inline-block;">Archived / Discharged</span>
+                    }
+                </div>
+            </div>
 
         </div>
 
-        <div class="card-footer">
-
-            <a asp-action="ManageLibrarians"
-               class="btn btn-secondary">
-
-                Back
-
+        <div style="padding: 1.5rem 3rem; background: var(--cream); border-top: 1px solid var(--border); display: flex; justify-content: flex-end;">
+            <a href="@Url.Action("EditLibrarian", "Admin", new { id = Model.UserId })" class="btn-cd" style="padding: .5rem 1.8rem; font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; background: var(--ink); color: var(--white); border: 1px solid var(--ink); text-decoration:none; text-align: center; border-radius:0;">
+                <i class="fa-solid fa-pen-to-square me-2"></i>Modify Records
             </a>
-
         </div>
 
     </div>
-
 </div>

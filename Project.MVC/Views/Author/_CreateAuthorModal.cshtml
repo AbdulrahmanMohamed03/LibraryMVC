@@ -1,8 +1,118 @@
-﻿@* Views/Authors/_CreateAuthorModal.cshtml *@
+﻿
+
 @model Project.Application.ViewModels.Author.CreateAuthorDto
 
+<style>
+    .modal-content {
+        border-radius: 0 !important;
+        border: 1px solid var(--border) !important;
+        background: var(--white) !important;
+        font-family: 'Jost', sans-serif;
+    }
+
+    .modal-header {
+        background: var(--cream);
+        border-bottom: 1px solid var(--border);
+        padding: 1.25rem 1.75rem;
+    }
+
+        .modal-header h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin: 0;
+        }
+
+    .modal-close {
+        background: transparent;
+        border: none;
+        color: var(--ash);
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: color .2s;
+    }
+
+        .modal-close:hover {
+            color: var(--ink);
+        }
+
+    .modal-body {
+        padding: 1.75rem;
+    }
+
+    .modal-form-label {
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--ash);
+        margin-bottom: .4rem;
+        display: block;
+    }
+
+    .modal-form-input, .modal-form-textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        padding: .6rem .85rem;
+        font-size: .9rem;
+        color: var(--ink);
+        background: transparent;
+        outline: none;
+        border-radius: 0;
+        transition: border-color .2s;
+    }
+
+        .modal-form-input:focus, .modal-form-textarea:focus {
+            border-color: var(--gold);
+        }
+
+    .modal-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+        border-top: 1px solid var(--border);
+        padding-top: 1.25rem;
+    }
+
+    .btn-modal-save {
+        padding: .65rem 1.5rem;
+        background: var(--gold);
+        color: var(--white);
+        border: none;
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background .2s;
+    }
+
+        .btn-modal-save:hover {
+            background: var(--ink);
+        }
+
+    .btn-modal-cancel {
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--ash);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        border-bottom: 1px solid transparent;
+    }
+
+        .btn-modal-cancel:hover {
+            color: var(--ink);
+            border-bottom-color: var(--ink);
+        }
+</style>
+
 <div class="modal-content">
-    <div class="modal-header">
+    <div class="modal-header d-flex align-items-center justify-content-between">
         <h3>Add New Author</h3>
         <button type="button" class="modal-close" onclick="closeAuthorModal()">✕</button>
     </div>
@@ -10,30 +120,27 @@
         <form id="authorModalForm">
             @Html.AntiForgeryToken()
 
-            <div class="form-group">
-                <label>Full Name *</label>
-                <input asp-for="FullName" class="form-control" id="modalAuthorName" />
-                <span class="text-danger" id="modalNameError"></span>
+            <div class="form-group mb-3">
+                <label class="modal-form-label">Full Name *</label>
+                <input asp-for="FullName" class="modal-form-input" id="modalAuthorName" placeholder="e.g. Jane Austen" />
+                <span class="text-danger small d-block mt-1" id="modalNameError"></span>
             </div>
 
-            <div class="form-group">
-                <label>Nationality</label>
-                <input asp-for="Nationality" class="form-control" id="modalAuthorNationality" />
+            <div class="form-group mb-3">
+                <label class="modal-form-label">Nationality</label>
+                <input asp-for="Nationality" class="modal-form-input" id="modalAuthorNationality" placeholder="e.g. British" />
             </div>
 
-            <div class="form-group">
-                <label>Bio</label>
-                <textarea asp-for="Bio" class="form-control" rows="3"
-                          id="modalAuthorBio"></textarea>
+            <div class="form-group mb-3">
+                <label class="modal-form-label">Biography</label>
+                <textarea asp-for="Bio" class="modal-form-textarea" rows="3" id="modalAuthorBio" placeholder="Brief metadata profile..."></textarea>
             </div>
 
             <div class="modal-actions">
-                <button type="button" class="btn btn-primary"
-                        onclick="submitAuthorModal()">
+                <button type="button" class="btn-modal-save" onclick="submitAuthorModal()">
                     Save Author
                 </button>
-                <button type="button" class="btn btn-secondary"
-                        onclick="closeAuthorModal()">
+                <button type="button" class="btn-modal-cancel" onclick="closeAuthorModal()">
                     Cancel
                 </button>
             </div>

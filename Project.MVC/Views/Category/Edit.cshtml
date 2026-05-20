@@ -1,40 +1,142 @@
-﻿@model Project.Application.ViewModels.Category.CategoryFormViewModel
+﻿
+
+
+
+@model Project.Application.ViewModels.Category.CategoryFormViewModel
+
 @{
-    ViewData["Title"] = "Edit Category";
+    ViewData["Title"] = Model.FormTitle;
+    Layout = "_Layout";
 }
 
-<div class="container" style="max-width:560px">
-    <div class="mt-4 mb-3">
-        <a asp-action="Index" class="text-decoration-none text-muted small">
-            <i class="bi bi-arrow-left me-1"></i>Back to Categories
-        </a>
+<style>
+    .cat-header {
+        padding: 2.5rem 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--cream);
+    }
+
+    .cat-page-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+    }
+
+    .cat-eyebrow {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: .4rem;
+    }
+
+    .form-card-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        margin-top: 3rem;
+        padding: 2.5rem;
+        max-width: 540px;
+    }
+
+    .custom-label {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ash);
+        display: block;
+        margin-bottom: .6rem;
+    }
+
+    .custom-input {
+        width: 100%;
+        border: 1px solid var(--border);
+        padding: .75rem 1rem;
+        font-size: .95rem;
+        font-family: 'Jost', sans-serif;
+        color: var(--ink);
+        outline: none;
+        transition: border-color .2s;
+        border-radius: 0;
+    }
+
+        .custom-input:focus {
+            border-color: var(--gold);
+        }
+
+    .btn-gold-submit {
+        padding: .75rem 2rem;
+        background: var(--gold);
+        color: var(--white);
+        border: none;
+        cursor: pointer;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        transition: background .2s;
+    }
+
+        .btn-gold-submit:hover {
+            background: var(--ink);
+        }
+
+    .btn-link-cancel {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ash);
+        text-decoration: none;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 2px;
+        transition: color .2s, border-color .2s;
+    }
+
+        .btn-link-cancel:hover {
+            color: var(--ink);
+            border-color: var(--ink);
+        }
+</style>
+
+<div class="cat-header">
+    <div class="container">
+        <div class="mb-3">
+            <a asp-action="Index" class="text-decoration-none text-muted small" style="font-size: .78rem; letter-spacing: 1px; text-transform: uppercase;">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Categories
+            </a>
+        </div>
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="cat-eyebrow">Admin Panel</div>
+                <h1 class="cat-page-title">@Model.FormTitle</h1>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white border-bottom py-3">
-            <h4 class="mb-0 fw-bold text-dark">
-                <i class="bi bi-pencil-square text-warning me-2"></i>@Model.FormTitle
-            </h4>
-        </div>
-        <div class="card-body p-4">
-            <form asp-action="Edit" method="post" novalidate>
-                @Html.AntiForgeryToken()
-                <input asp-for="Id" type="hidden" />
+<div class="container d-flex justify-content-center" style="padding-bottom: 5rem;">
+    <div class="form-card-wrap w-100">
+        <form asp-action="@(Model.IsEditMode ? "Edit" : "Create")" method="post" novalidate>
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
 
-                <div class="mb-4">
-                    <label asp-for="Name" class="form-label fw-semibold">Category Name</label>
-                    <input asp-for="Name" class="form-control form-control-lg" autofocus />
-                    <span asp-validation-for="Name" class="text-danger small"></span>
-                </div>
+            <div class="mb-4">
+                <label asp-for="Name" class="custom-label">Category Name</label>
+                <input asp-for="Name" class="custom-input" placeholder="e.g. Science Fiction" autofocus />
+                <span asp-validation-for="Name" class="text-danger small d-block mt-2"></span>
+            </div>
 
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-warning px-4 text-white">
-                        <i class="bi bi-save me-1"></i>Update Changes
-                    </button>
-                    <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
-                </div>
-            </form>
-        </div>
+            <div class="d-flex align-items-center gap-4 mt-4">
+                <button type="submit" class="btn-gold-submit">
+                    <i class="fa-solid fa-check me-2"></i> Save Category
+                </button>
+                <a asp-action="Index" class="btn-link-cancel">Cancel</a>
+            </div>
+        </form>
     </div>
 </div>
 

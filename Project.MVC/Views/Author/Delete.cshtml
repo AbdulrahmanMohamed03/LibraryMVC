@@ -1,14 +1,131 @@
-﻿@model Project.Application.ViewModels.Author.AuthorDto
+﻿
 
-<h2>Delete Author</h2>
 
-<h3>Are you sure you want to delete this?</h3>
+@model Project.Application.ViewModels.Author.AuthorDto
 
-<p><b>@Model.FullName</b></p>
+@{
+    ViewData["Title"] = "Delete Author";
+    Layout = "_Layout";
+}
 
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
+<style>
+    .aut-header {
+        padding: 2.5rem 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--cream);
+    }
 
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
+    .aut-page-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #b33;
+        margin: 0;
+    }
+
+    .aut-eyebrow {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: .4rem;
+    }
+
+    .form-card-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        margin-top: 3rem;
+        padding: 3rem;
+        max-width: 550px;
+        text-align: center;
+    }
+
+    .warn-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 1rem;
+    }
+
+    .warn-desc {
+        font-size: .9rem;
+        color: var(--ash);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .btn-danger-submit {
+        padding: .75rem 2rem;
+        background: #b33;
+        color: var(--white);
+        border: none;
+        cursor: pointer;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        transition: opacity .2s;
+    }
+
+        .btn-danger-submit:hover {
+            opacity: 0.85;
+        }
+
+    .btn-link-cancel {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ash);
+        text-decoration: none;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 2px;
+        transition: color .2s, border-color .2s;
+    }
+
+        .btn-link-cancel:hover {
+            color: var(--ink);
+            border-color: var(--ink);
+        }
+</style>
+
+<div class="aut-header">
+    <div class="container">
+        <div>
+            <div class="aut-eyebrow">Admin Panel</div>
+            <h1 class="aut-page-title">Remove System Record</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container d-flex flex-column align-items-center" style="padding-bottom: 5rem;">
+
+    <div class="w-100" style="max-width: 550px; margin-top: 2rem;">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div style="padding:.9rem 1.25rem;background:#fdf2f2;border-left:3px solid #b33;font-size:.85rem;color:#b33; text-align: left;">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["ErrorMessage"]
+            </div>
+        }
+    </div>
+
+    <div class="form-card-wrap w-100">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; color: #b33; margin-bottom: 1.5rem;"></i>
+        <h3 class="warn-title">Are you sure you want to delete this author?</h3>
+        <p class="warn-desc">
+            You are attempting to permanently remove <b>@Model.FullName</b> from the database index. This action cannot be reversed.
+        </p>
+
+        <form asp-action="Delete" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex align-items-center justify-content-center gap-4 mt-4">
+                <button type="submit" class="btn-danger-submit">Permanently Delete</button>
+                <a asp-action="Index" class="btn-link-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

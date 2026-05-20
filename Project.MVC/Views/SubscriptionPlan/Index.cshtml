@@ -1,51 +1,275 @@
-﻿@model IEnumerable<Project.Application.ViewModels.SubscriptionPlan.SubscriptionPlanDTO>
+﻿
+@model IEnumerable<Project.Application.ViewModels.SubscriptionPlan.SubscriptionPlanDTO>
 
 @{
     ViewData["Title"] = "Subscription Plans";
+    Layout = "_Layout";
 }
 
-<h2 class="mb-4">Subscription Plans</h2>
-<a asp-action="Create" class="btn btn-primary">Add Plan</a>
+<style>
+    .sp-header {
+        padding: 2.5rem 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--cream);
+    }
 
+    .sp-eyebrow {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: .4rem;
+    }
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">
-        No subscription plans found.
-    </div>
-}
-else
-{
-    <div class="row">
-        @foreach (var plan in Model)
-        {
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm border-0 rounded-3">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold text-primary">
-                            @plan.Name
-                        </h5>
-                        <hr />
-                        <p class="card-text mb-1">
-                            <strong>Fee:</strong> @plan.MonthlyFee.ToString("C")
-                        </p>
-                        <p class="card-text mb-1">
-                            <strong>Limit:</strong> @plan.MonthlyBorrowLimit Books
-                        </p>
-                        <p class="card-text mb-0">
-                            <strong>Duration:</strong> @plan.LoanDurationDays Days
-                        </p>
-                    </div>
-                    <div class="card-footer bg-light border-0 d-flex justify-content-around py-3">
-                        <a asp-action="Edit" asp-route-id="@plan.Id" class="btn btn-outline-primary btn-sm rounded-pill px-3">Edit</a>
+    .sp-page-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+    }
 
-                        <a asp-action="Delete" asp-route-id="@plan.Id"
-                           class="btn btn-outline-danger btn-sm rounded-pill px-3">Delete</a>
-                    </div>
-                </div>
+    /* Table */
+    .sp-table-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        margin-top: 2rem;
+    }
 
+    .sp-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .sp-table thead tr {
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .sp-table thead th {
+            padding: 1rem 1.25rem;
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ash);
+            text-align: left;
+            background: var(--cream);
+        }
+
+            .sp-table thead th.num {
+                text-align: right;
+            }
+
+        .sp-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+
+            .sp-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .sp-table tbody tr:hover {
+                background: var(--cream);
+            }
+
+        .sp-table td {
+            padding: 1.1rem 1.25rem;
+            font-size: .88rem;
+            color: var(--ink-soft);
+            vertical-align: middle;
+        }
+
+            .sp-table td.num {
+                text-align: right;
+            }
+
+    .sp-plan-name {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .sp-price {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--gold);
+    }
+
+    .sp-duration {
+        display: inline-block;
+        padding: 2px 8px;
+        background: var(--cream-deep);
+        border: 1px solid var(--border);
+        font-size: .7rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: var(--ash);
+    }
+
+    .sp-books {
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--ink);
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.1rem;
+    }
+
+    .sp-actions {
+        display: flex;
+        gap: .6rem;
+        justify-content: flex-end;
+    }
+
+    .sp-act-edit {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ink);
+        text-decoration: none;
+        border-bottom: 1px solid var(--ink);
+        padding-bottom: 1px;
+        transition: color .2s, border-color .2s;
+    }
+
+        .sp-act-edit:hover {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+    .sp-act-del {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #b33;
+        text-decoration: none;
+        border-bottom: 1px solid #b33;
+        padding-bottom: 1px;
+        transition: opacity .2s;
+        background: transparent;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        cursor: pointer;
+    }
+
+        .sp-act-del:hover {
+            opacity: .65;
+        }
+
+    .sp-empty {
+        padding: 4rem 1.25rem;
+        text-align: center;
+        color: var(--ash);
+    }
+
+        .sp-empty i {
+            font-size: 2rem;
+            color: var(--border);
+            display: block;
+            margin-bottom: 1rem;
+        }
+</style>
+
+<!-- PAGE HEADER -->
+<div class="sp-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <div class="sp-eyebrow">Admin Panel</div>
+                <h1 class="sp-page-title">Subscription Plans</h1>
             </div>
+            <a asp-action="Create" class="btn-gold">
+                <i class="fa-solid fa-plus me-2"></i>New Plan
+            </a>
+        </div>
+    </div>
+</div>
 
+<!-- PLANS TABLE -->
+<div class="container" style="padding:2.5rem 0 5rem">
+    @if (TempData["Success"] != null)
+    {
+        <div style="padding:.9rem 1.25rem;background:#e6f4ea;border-left:3px solid #1a6832;margin-bottom:1.5rem;font-size:.85rem;color:#1a6832;">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["Success"]
+        </div>
+    }
+
+    <div class="sp-table-wrap">
+        @if (!Model.Any())
+        {
+            <div class="sp-empty">
+                <i class="fa-solid fa-rectangle-list"></i>
+                No subscription plans defined yet.
+                <div style="margin-top:1rem">
+                    <a asp-action="Create" class="btn-gold">Create First Plan</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <table class="sp-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Plan Name</th>
+                        <th>Description</th>
+                        <th class="num">Price</th>
+                        <th>Duration</th>
+                        <th class="num">Max Books</th>
+                        <th class="num">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int row = 1;
+                    }
+                    @foreach (var plan in Model)
+                    {
+                        <tr>
+                            <td style="color:var(--ash);font-size:.8rem;width:40px">@(row++)</td>
+                            <td>
+                                <div class="sp-plan-name">@plan.Name</div>
+                            </td>
+                            @* <td style="max-width:260px;color:var(--ash);font-size:.82rem">
+                                @if (!string.IsNullOrEmpty(plan.Description))
+                                {
+                                    @(plan.Description.Length > 80 ? plan.Description[..80] + "…" : plan.Description)
+                                }
+                                else
+                                {
+
+                                    <span style="opacity:.5">—</span>
+                                }
+                            </td> *@
+                            <td class="num">
+                                <span class="sp-price">@plan.MonthlyFee.ToString("C")</span>
+                            </td>
+                            <td>
+                                <span class="sp-duration">@plan.LoanDurationDays Days</span>
+                            </td>
+                            <td class="num">
+                                <span class="sp-books">@plan.MonthlyBorrowLimit</span>
+                            </td>
+                            <td class="num">
+                                <div class="sp-actions">
+                                    <a asp-action="Edit" asp-route-id="@plan.Id" class="sp-act-edit">Edit</a>
+                                    <form asp-action="Delete" asp-route-id="@plan.Id" method="post" style="display:inline"
+                                          onsubmit="return confirm('Delete plan \'@plan.Name\'? This cannot be undone.')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="sp-act-del">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
     </div>
-}
+</div>
