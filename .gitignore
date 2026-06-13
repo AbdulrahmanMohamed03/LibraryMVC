@@ -57,4 +57,4 @@ ehthumbs.db
 .vscode/
 .idea/
 
-Project.MVC/wwwroot/images/
+Project.MVC/wwwroot/images/.vs/
